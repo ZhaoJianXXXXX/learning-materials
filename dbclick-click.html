@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+	<head>
+		<script src="http://static.runoob.com/assets/react/react-0.14.7/build/react.min.js"></script>
+		<script src="http://static.runoob.com/assets/react/react-0.14.7/build/react-dom.min.js"></script>
+		<script src="http://static.runoob.com/assets/react/browser.min.js"></script>
+	</head>
+	<body>
+		<div id = 'id'>
+			123
+		</div>
+	</body>
+	<script type = 'text/javascript'>
+		window.flag = [
+			{ src : 'https://img.ishanshan.com/gimg/img/fa78332e0d89045a645a31c6f34ef223' , callback : function(e){ console.info('1',e) } },
+			{ src : 'https://img.ishanshan.com/gimg/img/fa78332e0d89045a645a31c6f34ef223' , callback : function(e){ console.info('2',e) } },
+			{ src : 'https://img.ishanshan.com/gimg/img/fa78332e0d89045a645a31c6f34ef223' , callback : function(e){ console.info('3',e) } },
+		];
+
+		function loadImg(flag, ...args){
+			for(let i = 0 ; i < flag.length ; i++){
+				let img = new Image();
+				img.src = flag[i].src;
+				img.onload = flag[i].callback.apply(null, args);
+			}
+		}
+
+		window.addEventListener('load', () => {
+			loadImg(window.flag, '测试')
+		})
+
+	</script>
+</html>

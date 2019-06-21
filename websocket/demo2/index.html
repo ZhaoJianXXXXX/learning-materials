@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset = 'urf-8'/>
+		<title>websocket</title>
+	</head>
+	<body>
+		<h1>Test</h1>
+		<input id = 'sendTxt' type = 'text'/>
+		<button id = 'sendBtn'>发送</button>
+		<div id = 'recv'></div>
+		<script type = 'text/javascript'>
+			let websocket = new WebSocket('ws://localhost:3000');
+			websocket.onopen = function(){
+				console.info('websocket open');
+				document.getElementById('recv').innerHTML = 'Connected';
+			}
+			websocket.onclose = function(){
+				console.info('websocket close');
+			}
+			websocket.onmessage = function(e){
+				console.info('onmessage',e);
+				document.getElementById('recv').innerHTML = e.data;
+			}
+			document.getElementById('sendBtn').onclick = function(){
+				let txt = document.getElementById('sendTxt').value;
+				websocket.send(txt)
+			}
+		</script>
+	</body>
+</html>

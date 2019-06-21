@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+	<head>
+		<style>
+			html,body{
+				margin : 0;
+				padding : 0;
+			}
+			.all{
+				height : 100vh;
+				width : 100vw;
+				background-color : aqua;
+				display : flex;
+				flex-direction : column;
+			}
+			.top{
+				height : 10%;
+				width : 100%;
+				background-color : bisque;
+			}
+			.bottom{
+				width : 100%;
+				display : flex;
+				flex-wrap : nowrap;
+				flex : 1;
+			}
+			.bottom-left{
+				width : 20%;
+				height : 100%;
+				background-color : blue;
+			}
+			.bottom-right{
+				flex : 1;
+				height : 100%;
+				overflow : auto;
+				background-color : fuchsia;
+			}
+		</style>
+	</head>
+	<body>
+		<div class = 'all'>
+			<div class = 'top'></div>
+			<div class = 'bottom'>
+				<div class = 'bottom-left'></div>
+				<div class = 'bottom-right'></div>
+			</div>
+		</div>
+	</body>
+	<script type = 'text/javascript'>
+		let bottomLeft = document.querySelector('.bottom-right');
+		let num = 100;
+		for(let i = 0 ; i < num ; i++){
+			let div = document.createElement('div');
+			div.innerHTML = i;
+			bottomLeft.appendChild(div);
+		}
+	</script>
+</html>

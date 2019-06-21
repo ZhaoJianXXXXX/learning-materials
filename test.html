@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>无缝滚动</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .marquee-wrap{
+            width: 1000px;
+            height: 150px;
+            overflow: hidden;
+            margin: 100px auto;
+            position: relative;
+            border: 1px solid red;
+        }
+        .marquee-wrap ul{
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .marquee-wrap ul li{
+            float: left;
+            width: 200px;
+            height: 150px;
+            list-style: none;
+        }
+        .marquee-wraps{
+            position: relative;
+        }
+        .marquee-wraps a:first-child{
+            position: absolute;
+            left: 0;
+            top: 75px;
+            z-index: 10;
+        }
+        .marquee-wraps a:nth-child(2){
+            position: absolute;
+            right: 0;
+            top: 75px;
+            z-index: 10;
+        }
+		.hehehe{
+			width : 200px;
+			display : flex;
+			flex-direction : column;
+			align-items : center;
+		}
+		.title{
+
+		}
+		.content{
+			word-break : break-all;
+		}
+    </style>
+</head>
+<body>
+	<div class = 'hehehe'>
+		<div class = 'title'>标题</div>
+		<div class = 'content'>Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</div>
+	</div>
+	<img src = './shuiyinxie.png' width = '200px' height = '200px'/>
+	<img src = './shuiyinxie.png' width = '200px' height = '200px' style = 'transform:rotateY(180deg)'/>
+<div class="marquee-wraps" id="marquee-wraps">
+    <a href="javascript:">向左走</a>
+    <a href="javascript:">向右走</a>
+</div>
+<div class="marquee-wrap" id="marquee-wrap">
+    <ul id = 'ul1'>
+        <li><img src="./shuiyinxie.png" alt="1" width="200" height="150"></li>
+        <li><img src="./shuiyinxie.png" alt="2" width="200" height="150"></li>
+        <li><img src="./shuiyinxie.png" alt="3" width="200" height="150"></li>
+        <li><img src="./shuiyinxie.png" alt="4" width="200" height="150"></li>
+        <li><img src="./shuiyinxie.png" alt="5" width="200" height="150"></li>
+    </ul>
+</div>
+<canvas id="c" width="1000" height="560"></canvas>
+</body>
+<script>
+	var b = document.body;
+	var c = document.getElementsByTagName('canvas')[0];
+	var a = c.getContext('2d');
+
+	_=" G=[V,j= WV,-j]];j   X = 8 3,( + 3+KE37 Uj i&32?70: ,-80Y2] b=a[j]=c.cloneNode(L  Fb.getContext('2d' bAb  ;x= 8#	 8-x, 6+x (j<17 X 7    ;  <x eB@x* @x*y,.07$O setInterval  c LF5 ;a	e# 73 E  -=7$7<ZaB0#-i$Q,-8O j++;ZF8Q/((i+  )%30  95W 0- e*5,6 -e#*5#OG.sort return  -eV]}OG.map  = L^ )/   -  [ , =   +  ]V];y=^X^ ) (X /6)+ ;x= 0Y8Q;  ~~H2]W -@x-~H4]/1 *^5+ /  H3]-@y L ;!H2]&&Z_beginPath( _moJ bezierCurJ    ()})},j=4Oj  Lj?cA1Q:9Q;z= x=  *y Zj|(z+1)%.5<.1&& (z*(191 +(F52736  8,xD9+Ui 3*e,(59525 -y*(5188 + (  +(2 80 * ,yD8-(j&2  ] j|| abs(F8-i% )<54-E &&  YE2e4#+e* /   |[1$4$,,$,8$][~~(E48+e/3)%10W90+E8,i])  cos( >>j*4&15)  sin(i (function(b#){ H0] )* --;) H1]	. StylF'hsla('+[ for(  `,  j  +y, Math. ),  i  G.push([ _drawImage(a[  /8`/2,y _ 270 +'%', (j&15    K(y= ))  50 fill 16 60 j/ .height= 1]+')',i (.5+ .5 #,e$,1@30+A.width=B. Rect(D*(1 0 *Ei/Fe=Hb[JveTo(Yi*Li=O);Qe3U  PI*V[0W],X +Y-KZi ^  _a.`+x+ ";
+	for(Y=0;$="`_^ZYXWVUQOLKJHFEDBA@$#                    	        "[Y++];){
+		with(_.split($))
+			_=join(pop());
+		}
+	eval(_)
+</script>
+<script>
+	function roll(){
+		var oDiv=document.getElementById('marquee-wrap');
+        var oDiv1=document.getElementById('marquee-wraps');
+        var oUl=document.getElementsByTagName('ul')[0];
+        var aLi=document.getElementsByTagName('li');
+        var speed=-2;
+        oUl.innerHTML+=oUl.innerHTML;
+        oUl.style.width=aLi[0].offsetWidth*aLi.length+'px';
+        function marqueeFn(){
+            if(oUl.offsetLeft<-oUl.offsetWidth/2){
+                oUl.style.left='0';
+            }
+            if(oUl.offsetLeft>0){
+                oUl.style.left=-oUl.offsetWidth/2+'px';
+            }
+            oUl.style.left=oUl.offsetLeft+speed+'px';
+        }
+        var timer=setInterval(marqueeFn,20);
+        oDiv.onmouseover=function(){
+            clearInterval(timer);
+        };
+        oDiv.onmouseout=function(){
+            timer=setInterval(marqueeFn,20);
+        };
+        oDiv1.getElementsByTagName('a')[0].onclick=function(){
+            speed=-4;
+        };
+        oDiv1.getElementsByTagName('a')[1].onclick=function(){
+            speed=2;
+        };
+	}
+
+	function ul(){
+		var oUl = document.getElementById("ul1");
+		oUl.onclick = function(ev){
+			var ev = ev || window.event;
+			var target = ev.target || ev.srcElement;
+			console.info('ev',ev);
+			console.info('target',target);
+//			if(target.nodeName.toLowerCase() == 'img'){
+//				alert(123);
+//				alert(target.innerHTML);
+//			}
+		}
+	}
+
+    window.onload = function(){
+     	roll();
+		ul();
+    };
+
+	let array = [
+		{
+			id : '1' ,
+			pid : null,
+			label : '市场管理',
+			children : [
+				{
+					id : '1.1',
+					pid : '1',
+					label : '订单管理',
+					children : [
+						{
+							id : '1.1.1',
+						  	pid : '1.1',
+							label : '查询'
+						},
+						{
+							id : '1.1.2',
+						  	pid : '1.1',
+							label : '新增'
+						}
+					]
+				},
+				{
+					id : '1.2',
+					pid : '1',
+					label : '套餐管理'
+				}
+			]
+		},
+		{
+			id : '2',
+			pid : null,
+			label : '教务管理',
+		}
+	]
+
+	class PingPuToTree{
+		constructor(array){
+			this.getArray = () => this.do(array);
+		}
+		insertChild(array, pid){
+			for(let i = 0 ; i < array.length ; i++){
+				array[i].children = [];
+				if(pid === array[i].pid){
+					array[i].children.push(array[i]);
+					this.insertChild(array[i].children, array[i].id)
+				}
+			}
+			return array;
+		}
+		do(targetArray, initArray = []){
+			for(let i = 0 ; i < targetArray.length ; i++){
+				if(targetArray[i].pid === null){
+					initArray.push(targetArray[i]);
+					this.insertChild(targetArray[i], targetArray[i].id)
+				}
+			}
+			return initArray;
+		}
+	}
+
+	class TreeToPuping{
+		constructor(array){
+			this.getArray = () => this.do(array);
+		}
+
+		do(targetArray, initArray = []){
+			for(let i = 0 ; i < targetArray.length ; i++){
+				initArray.push(targetArray[i]);
+				if(targetArray[i].children && targetArray[i].children.length > 0){
+					this.do(targetArray[i].children, initArray);
+				}
+			}
+			return initArray;
+		}
+	}
+
+	let a = new TreeToPuping(array);
+	let b = new PingPuToTree(a.getArray());
+	console.info(a.getArray());
+	console.info(b.getArray());
+</script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

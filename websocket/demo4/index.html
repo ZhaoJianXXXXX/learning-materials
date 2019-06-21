@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset = 'urf-8'/>
+		<title>socket</title>
+		<script src = "./resource/socketIO.js"></script>
+		<style>
+			.content{
+				display : flex;
+			}
+			.alert, .text{
+				padding : 10px;
+				border : 1px solid #ddd;
+			}
+			.alert{
+				width : 200px;
+			}
+			.text{
+				width : 300px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Test</h1>
+		<h3></h3>
+		<input id = 'sendTxt' type = 'text'/>
+		<button id = 'sendBtn'>发送</button>
+		<div id = 'content' class = 'content'></div>
+		<script type = 'text/javascript'>
+			let socket = io.connect('ws://192.168.30.21:3000');
+			function showMsg(data){
+				let { type , content , nickname } = data;
+				let div = document.createElement('div');
+				switch(type){
+					case 'text' : div.innerHTML = `${nickname}：${content}`; break;
+					case 'alert' : div.innerHTML = `${nickname} ` + content; break;
+				}
+				//根据不同的type创建不同的div
+				if(!document.getElementById(type)){
+					let area = document.createElement('div');
+					area.id = type;
+					area.className = type;
+					document.getElementById('content').appendChild(area)
+				}
+				document.getElementById(type).appendChild(div)
+			}
+			document.getElementById('sendBtn').onclick = function(){
+				let text = document.getElementById('sendTxt').value;
+				if(text){
+					socket.emit('message', text)
+				}
+			}
+			socket.on('enter', function(data){
+				console.info('enter data', data)
+				showMsg(Object.assign(data, { type : 'alert' }));
+			})
+
+			socket.on('message', function(data){
+				console.info('message', data)
+				showMsg(Object.assign(data, { type : 'text' }));
+			})
+
+			socket.on('leave', function(data){
+				console.info('leave', data);
+				showMsg(Object.assign(data, { type : 'alert' }));
+			})
+
+			socket.on('hello', function (data) {
+				document.getElementsByTagName('h3')[0].innerHTML= `Hello ${data}`
+				//向服务端发送消息
+				socket.emit('my other event', { my: 'data' });
+			});
+		</script>
+	</body>
+</html>

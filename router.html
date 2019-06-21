@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+	<head>
+	</head>
+	<body>
+		<ul>
+			<li>
+				<a href="#/">home</a>
+			</li>
+			<li>
+				<a href="#/login">
+					login
+					<ul>
+						<li><a href="#/login/login1">login1</a></li>
+						<li><a href="#/login/login2">login2</a></li>
+						<li><a href="#/login/login3">login3</a></li>
+					</ul>
+				</a>
+			</li>
+			<li>
+				<a href="#/abort">abort</a>
+			</li>
+		</ul>
+		<div id = "content"></div>
+	</body>
+	<script type = 'text/javascript'>
+		let getById = (id) => document.getElementById(id);
+		let jusType = (type, param) => Object.prototype.toString.call(param) === '[object ' + type + ']';
+	</script>
+	<script type = 'text/javascript'>
+		class Router{
+			constructor(){
+				this.currentUrl = '',
+				this.routers = {}
+				this.init();
+			}
+
+			listen(path, callback){
+				if(!this.routers[path]){
+					this.routers[path] = [];
+				}
+				this.routers[path].push(callback);
+			}
+
+			updatePath(){
+				this.currentUrl = window.location.hash.slice(1);
+				for(let i = 0 ; i < this.routers[this.currentUrl].length ; i++){
+					this.routers[this.currentUrl][i]();
+				}
+			}
+
+			init(){
+				window.addEventListener('load', () => this.updatePath(), false);
+				window.addEventListener('hashchange', () => this.updatePath(), false);
+			}
+		}
+	</script>
+	<script type = 'text/javascript'>
+		let router = new Router();
+		router.listen('/',() => { getById('content').innerHTML = 'home' });
+		router.listen('/login',() => { console.info('login-') });
+		router.listen('/login',() => { console.info('login+') });
+		router.listen('/login/login1',() => { getById('content').innerHTML = 'login1' });
+		router.listen('/login/login2',() => { getById('content').innerHTML = 'login2' });
+		router.listen('/login/login3',() => { getById('content').innerHTML = 'login3' });
+		router.listen('/abort',() => { getById('content').innerHTML = 'abort' });
+	</script>
+	<script>
+		let start = 1544351024000;		//2018-12-9 18:23:44
+		let end = 1544589023000;		//2018-12-12 12:30:23
+		function countDownFun(start, end, timeout, interval, callback) {
+			let cha = end - start;
+			let days = Math.floor((cha)/1000/60/60/24);
+			let hours = Math.floor((cha - days*24*60*60*1000)/1000/60/60);
+			let mins = Math.floor((cha - days*24*60*60*1000-hours*60*60*1000)/1000/60);
+			let secs = Math.floor((cha - days*24*60*60*1000-hours*60*60*1000-mins*60*1000)/1000);
+			callback(days,hours,mins,secs);
+			clearTimeout(timeout)
+			let time = setTimeout(() => countDownFun(start+interval, end, time, interval, callback), interval)
+		}
+
+		function calc(callback){
+			let interval = 998.5;
+			let time = setTimeout(() => countDownFun(start, end, time, interval, callback), interval)
+		}
+
+		function callback(days, hours, mins, secs){
+			console.info('callback', days, hours, mins, secs)
+		}
+
+		calc(callback);
+	</script>
+</html>

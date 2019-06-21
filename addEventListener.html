@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+	<div id="id1" style="width:200px; height:200px; position:absolute; top:100px; left:100px; background-color:blue; z-index:4">
+		1
+		<div id="id2" style="width:200px; height:200px; position:absolute; top:20px; left:70px; background-color:green; z-index:1">2</div>
+	</div>
+	<button onclick = "choose(false, false)">全false</button>
+	<button onclick = "choose(false, true)">1false 2true</button>
+	<button onclick = "choose(true, false)">1true 2false</button>
+	<button onclick = "choose(true, true)">全true</button>
+	<div id = 'code'></div>
+</body>
+<script type = 'text/javascript'>
+	"use strict";
+	//addEventListener中的第三个参 数是useCapture, 一个bool类型。当为false时为冒泡获取(由里向外)，true为capture方式(由外向里)。
+	let id1 = document.getElementById('id1');
+	let id2 = document.getElementById('id2');
+	let code = document.getElementById('code');
+	function choose(a, b){
+		id1.addEventListener('click', () => { console.info('id1') }, a);
+		id2.addEventListener('click', () => { console.info('id2') }, b);
+		code.innerHTML = `${a}/${b}`;
+	}
+</script>
+</html>

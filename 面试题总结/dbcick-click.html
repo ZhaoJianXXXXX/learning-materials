@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body onload="onload()">
+
+	</body>
+	<script type="text/javascript">
+		//单击延时触发
+		var clickTimeId;
+
+		//页面初始化
+		function onload() {
+			window.addEventListener('click', onDocumentClick);
+			window.addEventListener('dblclick', onDocumenDblClick);
+		}
+
+		/*
+		* 鼠标单击事件响应
+		* event 鼠标事件对象
+		*/
+		function onDocumentClick(event) {
+			// 取消上次延时未执行的方法
+			clearTimeout(clickTimeId);
+			//执行延时
+			clickTimeId = setTimeout(function() {
+			  	//此处为单击事件要执行的代码
+				console.log("鼠标单击");
+			}, 250);
+		}
+
+		/*
+		* 鼠标双击事件响应
+		* event 鼠标事件对象
+		*/
+		function onDocumenDblClick(event) {
+			// 取消上次延时未执行的方法
+			clearTimeout(clickTimeId);
+			console.log("鼠标双击");
+		}
+	</script>
+</html>

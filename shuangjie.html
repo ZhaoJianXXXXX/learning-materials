@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset = 'utf-8'/>
+		<style>
+			html,body{
+				margin : 0;
+				padding : 0;
+			}
+			#father{
+				display : flex;
+/*				flex-wrap : wrap; */
+				background : green;
+			}
+/*
+			#father>div{
+				height : 50px;
+				background : #5d9;
+				margin-bottom : 10px;
+			}
+*/
+			#father>div{
+				height : 100px;
+				overflow : auto;
+			}
+
+			#father>div:first-child{
+				width : 30%;
+				background : #5d9;
+			}
+			#father>div:last-child{
+				background : #5d9cec;
+			}
+		</style>
+	</head>
+	<body>
+		<div id = father>
+			<div>11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111</div>
+			<div>2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222</div>
+		</div>
+	</body>
+<!--
+	<script type = 'text/javascript'>
+		function timeChunk(arr, fn = function(){ console.info('callback') }, count = 1, interval = 200){
+			let obj, t;
+			let start = function(){
+				for(let i = 0 ; i < Math.min(count, arr.length) ; i++){
+					let obj = arr.shift();
+					fn(obj);
+				}
+			};
+			let loop = function(){
+				t = setTimeout(function(){
+					start();
+					if(arr.length !== 0){
+						loop();
+					}else{
+						clearTimeout(t);
+					}
+				}, interval)
+			}
+			return loop;
+		}
+	</script>
+	<script type = 'text/javascript'>
+		let source = Array(10).fill();
+		let limit = 3;
+		let interval = 10;
+		let width = 50;
+		let father = document.getElementById('father');
+		father.style.padding = `${interval}px ${interval}px 0 0`;
+		father.style.width = `${limit * width + limit * interval}px`;
+		let render = timeChunk(source, function(){
+			let child = document.createElement('div');
+			child.style.width = `${width}px`;
+			child.style.marginLeft = `${interval}px`;
+			father.appendChild(child);
+		}, 1, 1000)()
+	</script>
+-->
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset = "utf-8">
+		<style>
+			html, body{
+				margin : 0;
+				padding : 0;
+			}
+			body{
+				position : relative;
+			}
+			div{
+				position : absolute;
+				top : 50px;
+				left : 100px;
+				height : 50px;
+				width : 50px;
+				background : #5d9;
+				cursor : pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div onclick = "getPos(this)"></div>
+	</body>
+	<script type = 'text/javascript'>
+		function getPos(node){
+			console.info(window.innerHeight)
+			console.info(node.getBoundingClientRect())
+		}
+	</script>
+</html>

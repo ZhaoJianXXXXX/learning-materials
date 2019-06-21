@@ -1,0 +1,115 @@
+<html>
+	<head>
+		<title>Hacker News</title>
+	</head>
+	<body>
+		<button onclick = "getDate()">请求当前日期</button>
+		<button onclick = "login()">登陆</button>
+	</body>
+	<script type = 'text/javascript'>
+		'use strict';
+
+		window.BASE_URL = 'http://192.168.10.201:18087';
+
+		String.prototype.json = function(){ return JSON.parse(this) }
+
+		//校验数据类型
+		function jusType(param, type){
+			return Object.prototype.toString.call(param) === `[object ${type}]`;
+		}
+		//请求返回参数格式化
+		function checkRes(e){
+			if(e && e.target && e.target.status >= 200 && e.target.status < 300){
+				return e.target.response.json()
+			}
+			throw new Error(e)
+		}
+
+		//请求公共方法
+		function request(options){
+			let { url , method , headers , data } = options;
+			let xhr;
+			if(window.XMLHttpRequest){
+				xhr = new XMLHttpRequest();
+			}else if(window.ActiveXObject){
+				xhr = new ActiveXObject("Microsoft.XMLHTTP");
+			}else{
+				throw new Error('不支持XMLHttpRequest');
+				return;
+			}
+			return new Promise((resolve, reject) => {
+				xhr.addEventListener('load', (e) => { resolve(checkRes(e)) }, false);
+				xhr.addEventListener('error', (e) => { reject(e) }, false);
+				xhr.addEventListener('abort', (e) => { reject(e) }, false);
+
+//				xhr.addEventListener('abort', function () { ajaxEventTrigger.call(this, 'ajaxAbort'); }, false);
+//				xhr.addEventListener('error', function () { ajaxEventTrigger.call(this, 'ajaxError'); }, false);
+//				xhr.addEventListener('load', function () { ajaxEventTrigger.call(this, 'ajaxLoad'); }, false);
+//				xhr.addEventListener('loadstart', function () { ajaxEventTrigger.call(this, 'ajaxLoadStart'); }, false);
+//				xhr.addEventListener('progress', function () { ajaxEventTrigger.call(this, 'ajaxProgress'); }, false);
+//				xhr.addEventListener('timeout', function () { ajaxEventTrigger.call(this, 'ajaxTimeout'); }, false);
+//				xhr.addEventListener('loadend', function () { ajaxEventTrigger.call(this, 'ajaxLoadEnd'); }, false);
+//				xhr.addEventListener('readystatechange', function() { ajaxEventTrigger.call(this, 'ajaxReadyStateChange'); }, false);
+				xhr.open(method, url);
+				//循环遍历设置headers
+				if(jusType(headers, 'Object')){
+					for(let i in headers){
+						xhr.setRequestHeader(i, headers[i]);
+					}
+				}
+				xhr.send(data || {});
+			})
+		}
+
+	</script>
+	<script type = 'text/javascript'>
+		async function getDate(){
+			try{
+				let data = await request({
+					url : `${window.BASE_URL}/pdabc-common/common/getCurTimeStamp`,
+					headers : {
+						'Content-Type' : 'application/json',
+						'access-token' : '7f84e9340cc046fa92ba6c1fa44ecc60',
+						'userId' : '123191',
+						'cookie' : 'Cookie'
+					},
+					data : JSON.stringify({
+						channel : "CRM",
+						password : "123456",
+						phone : "18358188430"
+					}),
+					method : 'get'
+				});
+				let p = document.createElement('p');
+				p.innerHTML = `时间：${data.data}`;
+				document.body.appendChild(p)
+			}catch(e){
+				console.error(e)
+			}
+		}
+
+		async function login(){
+			let data = await request({
+				url : `${window.BASE_URL}/pdabc-common/oauth/adm`,
+				headers : {
+					'Content-Type' : 'application/json',
+					'access-token' : '7f84e9340cc046fa92ba6c1fa44ecc60',
+					'userId' : '123191'
+				},
+				data : JSON.stringify({
+					channel : "CRM",
+					password : "123456",
+					phone : "18358188430"
+				}),
+				method : 'post'
+			});
+			try{
+				let p = document.createElement('p');
+				p.innerHTML = JSON.stringify(data.data);
+				document.body.appendChild(p)
+			}catch(e){
+				console.error(e)
+			}
+		}
+	</script>
+</html>

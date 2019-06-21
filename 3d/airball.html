@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Document</title>
+		<style>
+			*{ padding : 0; margin : 0 }
+			html, body { width : 100%; height : 100%; }
+			body { background : #333; }
+			.scene{ width : 100%; height : 100%; display : flex; justify-content : center; align-items : center; perspective : 800px; }
+			.ball{
+				width : 300px;
+				height : 300px;
+				position : relative;
+				transform-style : preserve-3d;
+				animation : airball 10s linear infinite;
+			}
+			.ball-line{
+				position : absolute;
+				width : 100%;
+				height : 100%;
+	/*			background : #5d9cec;*/
+	/*
+				background-image : url('./image/ride.gif');
+				background-size : 100% 100%;
+				background-repeat : no-repeat;
+	*/
+				border : 5px solid #fff;
+				border-radius : 50% 50% 50% 0;
+/*				border-radius : 50%; */
+				box-sizing : border-box;
+			}
+			@keyframes airball{
+				from{ transform : rotateZ(0deg) rotateY(0deg) }
+				to{ transform : rotateZ(0deg) rotateY(360deg) }
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class = 'scene'>
+			<div class = 'ball' id = 'ball'>
+			</div>
+		</div>
+		<script type = 'text/javascript'>
+			function createDOM({ father = document.body, type = 'div', props = {}, callback }){
+				let node = document.createElement(type);
+				for(let i in props){
+					node.setAttribute(i, props[i]);
+				}
+				typeof callback === 'function' && callback(node);
+				father.appendChild(node);
+			}
+		</script>
+		<script type = 'text/javascript'>
+			const father = document.getElementById('ball');
+			let obj = {
+				father,
+				longitude : { num : 6 , props : { class : 'ball-line' } , callback : function(div, angle){
+					div.style.transform = `rotateY(${angle}deg) rotateZ(-45deg)`;
+				} },
+				latitude : { num : 4 , props : { class : 'ball-line' } , callback : function(div){
+					div.style.transform = `rotateX(90deg)`
+				} }
+			}
+			function renderBall({ father = document.body, longitude, latitude }){
+				//绘制经度面
+				let angle = 180/longitude.num;
+				for(let i = 0 ; i < longitude.num ; i++){
+					createDOM({
+						father,
+						type : 'div',
+						props : longitude.props,
+						callback : (node) => longitude.callback(node, i*angle)
+					})
+				}
+			}
+			renderBall(obj);
+		</script>
+	</body>
+</html>

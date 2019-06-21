@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset = 'urf-8'/>
+		<title>websocket</title>
+		<style>
+			.content{
+				display : flex;
+			}
+			.alert, .text{
+				padding : 10px;
+				border : 1px solid #ddd;
+			}
+			.alert{
+				width : 200px;
+			}
+			.text{
+				width : 300px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Test</h1>
+		<input id = 'sendTxt' type = 'text'/>
+		<button id = 'sendBtn'>发送</button>
+		<div id = 'content' class = 'content'></div>
+		<script type = 'text/javascript'>
+			let websocket = new WebSocket('ws://localhost:3000/');
+			function showMsg(data){
+				let { type , content , nickname } = data;
+				let div = document.createElement('div');
+				switch(type){
+					case 'text' : div.innerHTML = `${nickname}：${content}`; break;
+					case 'alert' : div.innerHTML = `${nickname} ` + content; break;
+				}
+				//根据不同的type创建不同的div
+				if(!document.getElementById(type)){
+					let area = document.createElement('div');
+					area.id = type;
+					area.className = type;
+					document.getElementById('content').appendChild(area)
+				}
+				document.getElementById(type).appendChild(div)
+			}
+			websocket.onopen = function(){
+				console.info('websocket open');
+				document.getElementById('sendBtn').onclick = function(){
+					let txt = document.getElementById('sendTxt').value;
+					if(txt){
+						websocket.send(txt)
+					}
+				}
+			}
+			websocket.onclose = function(){
+				console.info('websocket close');
+			}
+			websocket.onmessage = function(e){
+				console.info('onmessage',e);
+				showMsg(e && e.data && JSON.parse(e.data))
+			}
+		</script>
+	</body>
+</html>

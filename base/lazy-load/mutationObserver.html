@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset = 'urf-8'/>
+	</head>
+	<body>
+		<button onclick = 'addChild()'>addChild</button>
+		<button onclick = 'addListener()'>addListener</button>
+		<button onclick = 'removeListener()'>removeListener</button>
+		<div id = 'father'></div>
+	</body>
+
+	<!-- 设置公共变量 -->
+	<script type = 'text/javascript'>
+		window.father = document.getElementById('father');
+		window.mutationObserver = undefined;
+	</script>
+
+	<!-- 手动给父节点添加子节点，校验监听，移除监听 -->
+	<script type = 'text/javascript'>
+		//给父节点添加子节点事件
+		function addChild(){
+			let father = window.father;
+			let div = document.createElement('div');
+			div.innerHTML = `${Math.random()}（${window.mutationObserver ? '有监听' : '无监听'}）`;
+			father.appendChild(div);
+		}
+
+		//监听给父节点添加子节点事件
+		function addListener(){
+			if(window.mutationObserver){
+				removeListener();
+			}
+			window.mutationObserver = new MutationObserver((...rest) => { console.info(rest) });
+			mutationObserver.observe(window.father, { childList : true , attributes : true , characterData : true });
+		}
+
+		//移除给父节点添加子节点事件监听
+		function removeListener(){
+			window.mutationObserver && window.mutationObserver.disconnect && (typeof window.mutationObserver.disconnect === 'function') && window.mutationObserver.disconnect();
+		}
+	</script>
+</html>

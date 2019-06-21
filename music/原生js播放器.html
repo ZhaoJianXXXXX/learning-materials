@@ -1,0 +1,268 @@
+<html>
+<head>
+	<title>practice</title>
+	<meta charset="UTF-8">
+	<script type="text/javascript" src="method.js"></script>
+	<!--<script type="text/javascript" src="main.js" async="async"></script>-->
+	<style type="text/css">
+		html{
+			font-family: "KaiTi";
+		}
+		li:hover{
+			cursor:pointer;
+		}
+		div{
+			margin-top: 10px;
+		}
+		.button{
+			font-family: "KaiTi";
+			font-size: 17px;
+			cursor:pointer;
+		}
+		.text{
+			height: 25px;
+			width:248px;
+		}
+		.fl{
+			float: left;
+		}
+		#intro{
+			color: red;
+			font-size: 20px;
+		}
+	</style>
+</head>
+<body>
+<div>
+	添加歌曲(全名，例如"123.mp3",歌曲文件放在本文件夹中)<br/><input type="text" id="addsong" class="text fl"/>&nbsp;<input type="button" id="addaffirm" class="button fl" value="确认" onclick="affirm()">
+</div>
+<div id="musicBanner">
+	<audio id= "audio" src="" controls="controls" autoplay="autoplay"></audio>
+	&nbsp;&nbsp;
+			<span id="span">
+				<marquee  scrollamount=7  onmouseover='this.stop()' onmouseout='this.start()' behavior='scroll' width='15%'>
+					<font id="title" color='red'>Design by ZhaoJian</font>
+				</marquee>
+			</span>
+</div>
+<div id="last_next">
+	<input type="button" value=" 上一首 " class="button" id="last" onclick="last()"/>
+	<input type="button" value=" 下一首 " class="button" id="next" onclick="next()"/>
+</div>
+<div id="controlList1">
+	<input type="button" value="单曲播放" class="button" id="once" onclick="once()"/>
+	<input type="button" value="单曲循环" class="button" id="circle" onclick="circle()"/>
+	<input type="button" value="顺序播放" class="button" id="line" onclick="line()"/>
+	<input type="button" value="列表循环" class="button" id="allcircle" onclick="allcircle()"/>
+	<input type="button" value="随机播放" class="button" id="allcircle" onclick="randomplay()"/>
+</div>
+<div id="controlList2">
+	<input type="button" value="开始播放" class="button" id="stop" onclick="start()"/>
+	<input type="button" value="停止播放" class="button" id="start" onclick="stop()"/>
+</div>
+<div>
+	<p id="intro">当前播放模式:单曲播放</p>
+</div>
+<div id="musicList"></div>
+
+<script type="text/javascript">
+	var music = ["Katy Perry - Firework.mp3","moumoon - Sunshine Girl - 英文版.mp3","S翼乐团 - QQ爱.mp3","萌萌哒天团-帝都.mp3","Whiteeeen-あの頃~ジンジンバオヂュオニー~.mp3","童话镇.mp3"];
+	var div = document.getElementById("musicList");
+	var ul = document.createElement("ul");
+	div.appendChild(ul);
+	for(var i=0;i<music.length;i++){
+		var li = document.createElement("li");
+		li.setAttribute("id","a"+i);
+		li.setAttribute("onclick","playthis(this)");
+		var append = document.createTextNode(music[i]);
+		li.appendChild(append);   //li.innerHTML = music[i]
+		ul.appendChild(li);
+	}
+
+	//添加音乐
+	function affirm(){
+		var musiclength = document.getElementsByTagName("li").length;
+		var addsong = document.getElementById("addsong").value;
+		music.push(addsong);
+		for(var i=musiclength;i<music.length;i++){
+			var li = document.createElement("li");
+			var append = document.createTextNode(music[i]);
+			li.appendChild(append);   //li.innerHTML = music[i]
+			ul.appendChild(li);
+			li.setAttribute("id","a"+i);
+			li.setAttribute("onclick","playthis(this)");
+		}
+		document.getElementById("addsong").value = "";
+		document.getElementById("addsong").focus();
+	}
+
+	//点击列表中音乐播放
+	function playthis(a){
+		var audio = document.getElementById("audio");
+		audio.src = a.innerHTML;
+		span.innerHTML = "<marquee scrollamount=7 onmouseover='this.stop()' onmouseout='this.start()' behavior='scroll' width='15%' ><font id='title' color='#ff0000'>"+a.innerHTML+"</font></marque>";
+		var song = document.getElementById(a.id);
+		var id = parseInt((a.id).substring(1));
+		var all = document.getElementsByTagName("li");
+		for(var k=0;k<id;k++){ //将点击处之前的内容做修改
+			all[k].style.color="black";
+		}
+		for(var h=id+1;h<music.length;h++){ //将点击处之后的内容做修改
+			all[h].style.color="black";
+		}
+		song.style.color = "red";//点击处做修改
+	}
+
+	//上一首
+	function last(){
+		var all = document.getElementsByTagName("li");
+		if(document.getElementById(all[0].id).style.color=="red"){ //如果是第一首跳到最后一首
+			var change = document.getElementById(all[all.length-1].id);
+			var origin = document.getElementById(all[0].id);
+			change.style.color = "red";
+			origin.style.color = "black";
+			span.innerHTML = "<marquee scrollamount=7 onmouseover='this.stop()' onmouseout='this.start()' behavior='scroll' width='15%' ><font id='title' color='#ff0000'>"+change.innerHTML+"</font></marque>";
+			document.getElementById("audio").src = change.innerHTML;
+		}else{
+			for(var i=1;i<all.length;i++){
+				if(document.getElementById(all[i].id).style.color=="red"){
+					var change = document.getElementById(all[i-1].id);
+					var origin = document.getElementById(all[i].id);
+					change.style.color = "red";
+					origin.style.color = "black";
+					span.innerHTML = "<marquee scrollamount=7 onmouseover='this.stop()' onmouseout='this.start()' behavior='scroll' width='15%' ><font id='title' color='#ff0000'>"+change.innerHTML+"</font></marque>";
+					document.getElementById("audio").src = change.innerHTML;
+					return false;
+				}
+			}
+		}
+	}
+
+	//下一首
+	function next(){
+		var all = document.getElementsByTagName("li");
+		if(document.getElementById(all[all.length-1].id).style.color=="red"){ //如果是最后一首，跳到第一首
+			var origin = document.getElementById(all[all.length-1].id);
+			var change = document.getElementById(all[0].id);
+			change.style.color = "red";
+			origin.style.color = "black";
+			span.innerHTML = "<marquee scrollamount=7 onmouseover='this.stop()' onmouseout='this.start()' behavior='scroll' width='15%' ><font id='title' color='#ff0000'>"+change.innerHTML+"</font></marque>";
+			document.getElementById("audio").src = change.innerHTML;
+		}else{
+			for(var i=0;i<all.length;i++){
+				if(document.getElementById(all[i].id).style.color=="red"){
+					var origin = document.getElementById(all[i].id);
+					var change = document.getElementById(all[i+1].id);
+					change.style.color = "red";
+					origin.style.color = "black";
+					span.innerHTML = "<marquee scrollamount=7 onmouseover='this.stop()' onmouseout='this.start()' behavior='scroll' width='15%' ><font id='title' color='#ff0000'>"+change.innerHTML+"</font></marque>";
+					document.getElementById("audio").src = change.innerHTML;
+					return false;
+				}
+			}
+		}
+	}
+
+	//停止播放
+	function stop(){
+		var audio = document.getElementById("audio");
+		audio.src = "";
+		intro.innerHTML = "当前播放模式:停止播放";
+	}
+
+	//开始播放
+	function start(){
+		var audio = document.getElementById("audio");
+		audio.src = title.innerHTML;
+		intro.innerHTML = "当前播放模式:开始播放";
+	}
+
+	//单曲播放
+	function once(){
+		var audio = document.getElementById("audio");
+		audio.onended = function(){
+			audio.src="";
+		}
+		intro.innerHTML = "当前播放模式:单曲播放";
+	}
+
+	//单曲循环 (可直接点击进行播放)
+	function circle(){
+		var audio = document.getElementById("audio");
+		audio.onended = function(){
+			var name = document.getElementById("title");
+			audio.src = name.innerHTML;
+		}
+		intro.innerHTML = "当前播放模式:单曲循环";
+	}
+	//顺序播放
+	function line(){
+		var all = document.getElementsByTagName("li");
+		var audio = document.getElementById("audio");
+		audio.onended = function(){
+			for(var i=0;i<all.length;i++){
+				if(document.getElementById(all[i].id).style.color=="red"){
+					var origin = document.getElementById(all[i].id);
+					var change = document.getElementById(all[i+1].id);
+					change.style.color = "red";
+					origin.style.color = "black";
+					span.innerHTML = "<marquee scrollamount=7 onmouseover='this.stop()' onmouseout='this.start()' behavior='scroll' width='15%' ><font id='title' color='#ff0000'>"+change.innerHTML+"</font></marque>";
+					document.getElementById("audio").src = change.innerHTML;
+					return false;
+				}
+			}
+		}
+		intro.innerHTML = "当前播放模式:顺序播放";
+	}
+
+	//列表循环
+	function allcircle(){
+		var all = document.getElementsByTagName("li");
+		var audio = document.getElementById("audio");
+		audio.onended = function(){
+			if(document.getElementById(all[all.length-1].id).style.color=="red"){ //如果是最后一首，跳到第一首
+				var origin = document.getElementById(all[all.length-1].id);
+				var change = document.getElementById(all[0].id);
+				change.style.color = "red";
+				origin.style.color = "black";
+				span.innerHTML = "<marquee scrollamount=7 onmouseover='this.stop()' onmouseout='this.start()' behavior='scroll' width='15%' ><font id='title' color='#ff0000'>"+change.innerHTML+"</font></marque>";
+				document.getElementById("audio").src = change.innerHTML;
+			}else{
+				for(var i=0;i<all.length;i++){
+					if(document.getElementById(all[i].id).style.color=="red"){
+						var origin = document.getElementById(all[i].id);
+						var change = document.getElementById(all[i+1].id);
+						change.style.color = "red";
+						origin.style.color = "black";
+						span.innerHTML = "<marquee scrollamount=7 onmouseover='this.stop()' onmouseout='this.start()' behavior='scroll' width='15%' ><font id='title' color='#ff0000'>"+change.innerHTML+"</font></marque>";
+						document.getElementById("audio").src = change.innerHTML;
+						return false;
+					}
+				}
+			}
+		}
+		intro.innerHTML = "当前播放模式:列表循环";
+	}
+
+	//随机播放
+	function randomplay(){
+		var audio = document.getElementById("audio");
+		var all = document.getElementsByTagName("li");
+		audio.onended = function(){
+			var goal = Math.floor(Math.random()*all.length);//生成li标签对应id值的随机数
+			var target = document.getElementById("a"+goal);
+			target.style.color = "red";
+			audio.src = target.innerHTML;
+			for(var i=0;i<goal;i++){
+				all[i].style.color="black";
+			}
+			for(var h=goal+1;h<all.length;h++){ //将点击处之后的内容做修改
+				all[h].style.color="black";
+			}
+			span.innerHTML = "<marquee scrollamount=7 onmouseover='this.stop()' onmouseout='this.start()' behavior='scroll' width='15%' ><font id='title' color='#ff0000'>"+target.innerHTML+"</font></marque>";
+		}
+		intro.innerHTML = "当前播放模式:随机播放";
+	}
+</script>
+</body>
+</html>

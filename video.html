@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+	<head>
+	</head>
+	<body>
+		<video id = 'video' src = './music/S%E7%BF%BC%E4%B9%90%E5%9B%A2%20-%20QQ%E7%88%B1.mp3' controls="controls" loop/>
+	</body>
+	<script type = 'text/javascript'>
+		let video = document.getElementById('video');
+		video.addEventListener('ended', () => {
+			console.info('video播放完毕')
+		})
+	</script>
+</html>

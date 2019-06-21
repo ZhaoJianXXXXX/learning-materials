@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset = 'utf-8'/>
+		<meta name = 'viewport' content = 'width=device-width, initial-scale=1'/>
+		<title>负责板块抓阄</title>
+		<style>
+			*{ margin: 0; padding: 0 }
+			html, body{
+				font-size : 30px;
+			}
+			.forward{
+				width : 800px;
+				height : 800px;
+				border : 3px solid #000;
+				border-radius : 10px;
+				padding : 20px;
+				display : flex;
+				flex-wrap : nowrap;
+				justify-content : space-between;
+			}
+			.forward>div{
+				display : flex;
+				flex-direction : column;
+				justify-content : center;
+				align-items : center;
+			}
+			.forward-left, .forward-right{
+				width : 40%;
+				height : 100%;
+				border : 3px solid #000;
+				border-radius : 10px;
+
+			}
+			.forward-button{
+				width : 15%;
+				height : auto;
+			}
+			.input{
+				width : 400px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class = 'forward'>
+			<div id = 'forward-left' class = 'forward-left'></div>
+			<div class = 'forward-button' onclick = 'randomGet()'>
+				随机抽取
+			</div>
+			<div id = 'forward-right' class = 'forward-right'></div>
+		</div>
+	</body>
+	<script type = 'text/javascript'>
+		let leftData = [
+			{ key : 0 , label : '城区' },
+			{ key : 1 , label : '收展' },
+			{ key : 2 , label : '县域' },
+			{ key : 3 , label : '新筹' },
+			{ key : 4 , label : '电销' },
+		];
+		let rightData = [];
+		function renderData(node, data){
+			node.innerHTML = null;
+			data.map((item, index) => {
+				let div = document.createElement('div');
+				div.innerHTML = item.label;
+				node.appendChild(div);
+			})
+		}
+
+		function init(){
+			renderData(document.getElementById('forward-left'), leftData);
+			renderData(document.getElementById('forward-right'), rightData);
+		}
+
+		function randomGet(){
+			let length = leftData.length;
+			if(length > 0){
+				let index = Math.floor(Math.random()*length);
+				console.info('index',index)
+				let getItem = leftData[index];
+				leftData.splice(index, 1);
+				rightData.push(getItem);
+				init();
+				window.alert(`抽到了${getItem.label}`)
+			}else{
+				window.alert('已抽取完毕')
+			}
+		}
+
+		window.addEventListener('load', init)
+	</script>
+</html>

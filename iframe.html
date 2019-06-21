@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+		<style>
+			html,body{
+				margin : 0 !important;
+				padding : 0 !important;
+				background : #5d9;
+			}
+		</style>
+    </head>
+    <body>
+		<button onclick = 'buttonClick()'>点击iframe内alert</button>
+<!--        <iframe id="child" src="http://192.168.30.21:8000/#/main_page" width = '1400px' height = '900px'></iframe>  -->
+        <iframe id="child" src="./choose.html?bg=red" width = '1400px' height = '900px'></iframe>
+        <script type="text/javascript">
+//			function buttonClick(){
+////				let iframeWin = document.getElementById("child").contentWindow;
+//				let iframeWin = window.frames[0];
+//				iframeWin.postMessage({ send : 'success' }, "http://192.168.30.21:8000");
+//				iframeWin.postMessage({ send : 'fail' }, "http://192.168.30.21:8000");
+//			}
+        </script>
+    </body>
+</html>

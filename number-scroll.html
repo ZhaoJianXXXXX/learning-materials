@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<script src="http://static.runoob.com/assets/react/react-0.14.7/build/react.min.js"></script>
+		<script src="http://static.runoob.com/assets/react/react-0.14.7/build/react-dom.min.js"></script>
+		<script src="http://static.runoob.com/assets/react/browser.min.js"></script>
+		<style>
+			html,body,p{
+				margin : 0;
+				padding : 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id = 'id'></div>
+	</body>
+	<script type = "text/babel">
+		class Number extends React.Component{
+			constructor(props){
+				super(props);
+				this.state = {
+					num : [1,2,3,4,5],
+					commonStyle : { position : 'absolute' , width : 50 , height : 50 , transition : 'all .3s' ,  lineHeight : '50px' , textAlign : 'center' }
+				}
+			}
+
+			componentDidMount(){
+				document.onkeydown = (e) => {
+					//enter
+					if(e && e.keyCode === 13){
+						this.fight()
+					}
+				}
+				window.jumpNum = (n) => this.jumpNum(n);
+				window.fuck = function(){
+					window.open('http://www.baidu.com');
+					window.close();
+				}
+			}
+
+			fight(callback){
+				let { num } = this.state;
+				num.push(num.shift());
+				this.setState({ num }, callback);
+			}
+
+			jumpNum(n){
+				let { num } = this.state;
+				if(n !== num[num.length - 1]){
+					let t = setTimeout(() => this.fight(() => { clearTimeout(t); this.jumpNum(n) }), 200)
+				}
+			}
+
+			render(){
+				let { num , commonStyle } = this.state;
+				return(
+					<div style = {{ height : '100vh' , width : '100vw' , background : '#000' }}>
+						<div style = {{ position : 'relative' }}>
+							<div style = {{ position : 'absolute' , height : commonStyle.height , width : '100%' , background : '#fff' , top : (num.length - 1) * commonStyle.height }}></div>
+							{ num && num.map((item, index) => <div key = { item } style = {{ ...commonStyle , transform : `translateY(${commonStyle.height * index}px)` , color : index === num.length - 1 ? '#000' : '#fff' }}>{ item }</div>) }
+						</div>
+					</div>
+				)
+			}
+		}
+
+		ReactDOM.render(
+			<Number/>,
+			document.getElementById('id')
+		);
+	</script>
+</html>

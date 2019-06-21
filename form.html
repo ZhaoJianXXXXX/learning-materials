@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<style>
+			.ps{
+				position : relative;
+				height : 400px;
+			}
+			.ps > img{
+				position : absolute;
+			}
+			.ps > img:last-child{
+				left : 173px;
+				top : 63px;
+				transform : rotate(-10deg);
+				border-radius : 20px;
+			}
+			#imgPreview{
+				height : 100px;
+				width : 100px;
+				border : 1px solid #ddd;
+			}
+			.self-upload{
+				height : 100px;
+				width : 100px;
+				border : 1px solid #ddd;
+			}
+			.input-file-1{
+				width : 100%;
+				height : 100%;
+				opacity : 0;
+			}
+			.upload-file{
+			  position: relative;
+			  width: 100px;
+			  padding: 10px 15px;
+			  border: 1px solid rgb(119, 154, 80);
+			  border-radius: 5px;
+			  background-color: rgb(66, 215, 142);
+			  color: #333333;
+			  font-size: 14px;
+			  text-align: center;
+			  overflow: hidden;
+			}
+
+			.upload-file span{
+			  text-overflow: ellipsis;
+			  white-space: nowrap;
+			  overflow: hidden;
+			}
+
+			.upload-file:hover{
+			  font-size: 15px;
+			  border-color: rgb(39, 226, 81);
+			}
+
+			.upload-file input[type='file']{
+			  height: 100%;
+			  width: 100%;
+			  position: absolute;
+			  top: 0;
+			  right: 0;
+			  opacity: 0;
+			  filter: alpha(opacity=0);
+			  cursor: pointer;
+			}
+			.show_img{
+				height : 150px;
+				width : 150px;
+				display : inline-block;
+			}
+			.show_img:not(:last-child){
+				margin-right : 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<audio controls="controls" src = 'http://pdabc-dev.oss-cn-hangzhou.aliyuncs.com/20181023/b2d3076d-2c33-43ef-a43c-9f8be30c3b48.mp3'>您的浏览器不支持音频播放</audio>
+		<div class = 'ps'>
+			<img src = 'http://pdabc-dev.oss-cn-hangzhou.aliyuncs.com/20180918/68b9f9da-2fca-497e-8bd4-098b85ec1a63.png'/>
+			<img width = '85px' height = '100px' src = 'http://pdabc-dev.oss-cn-hangzhou.aliyuncs.com/20180918/d2df0708-f24b-4782-a6ab-eb47ea479ffa.png'/>
+		</div>
+		<img src = 'http://pdabc-dev.oss-cn-hangzhou.aliyuncs.com/20180918/7bdc3625-e97d-4045-a6f7-fd27c85c065c.png'/>
+		<form action = 'http://192.168.10.156:8087/pdabc-common/oauth/adm' method="post" name="login">
+			用户帐号<input type=text name="userId" size="18" value="" ><br>
+			登录密码<input type="password" name="password" size="19" value=""/>
+				   <input type='submit' name="submit" value="登陆" onclick="check(this.form)">
+		</form>
+		<div class = 'self-upload'>
+			<input type="file" id="file" multiple onchange="changepic(this)" accept="image/jpg,image/jpeg,image/png,image/PNG" class="input-file-1">
+		</div>
+		<div id="img_upload" class="upload-file">
+			<input type="file" id="file" multiple onchange="changepic(this)" accept="image/jpg,image/jpeg,image/png,image/PNG" class="input-file">
+			<span class="tip">点击上传图片</span>
+		</div>
+		<div id="img_preview">
+
+		</div>
+	</body>
+	<script type="text/javascript">
+		function changepic(pic){
+			if(window.FileReader){
+				for(let i = 0 ; i < pic.files.length ; i++){
+					let reader = new FileReader();
+					reader.readAsDataURL(pic.files[i]);
+					reader.onload = function(evt){
+						let img = document.createElement('img');
+						img.className = 'show_img';
+						img.src = evt.target.result;
+						document.getElementById('img_preview').appendChild(img)
+					}
+				}
+			}
+		}
+		function check(form) {
+			console.info('form',form)
+			console.info(form.userId.value);
+			console.info(form.password.value);
+			if(form.userId.value=='') {
+				alert("请输入用户帐号!");
+				form.userId.focus();
+				return false;
+			}
+			if(form.password.value==''){
+				alert("请输入登录密码!");
+				form.password.focus();
+				return false;
+			}
+			return true;
+			//return false;
+	//		form.submit();
+	}
+	</script>
+</html>

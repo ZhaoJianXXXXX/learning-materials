@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<meta charset = 'utf-8'>
+	</head>
+	<body>
+		<audio src = './music/S翼乐团 - QQ爱.mp3' id = 'audio' controls = 'controls'></audio>
+		<canvas id = 'canvas' width = '400px' height = '600px'></canvas>
+	</body>
+	<script type = 'text/javascript'>
+		//获取canvas节点
+		let canvas = document.getElementById('canvas');
+		//获取canvas 2d上下文
+		let ctx = canvas.getContext('2d');
+		//画出矩形方框，this.baseY是方框高度相对于窗口高度的基准线
+		ctx.beginPath();
+		ctx.moveTo(0, 0);
+		ctx.lineTo(0, 100);
+		ctx.lineTo(100, 100);
+		ctx.lineTo(100, 0);
+		ctx.fillStyle = 'rgba(102,102,102,0.8)';
+		ctx.fill();
+	</script>
+	<script type = 'text/javascript'>
+		let audio = document.getElementById('audio');
+		//获取web audio上下文
+		let audioContext = new window.AudioContext();
+		//使用audio标签作为音源
+		let source = audioContext.createMediaElementSource(audio);
+		//创建一个分析器
+		let analyser = audioContext.createAnalyser();
+		//串联起分析器节点和音源输出
+		analyser.connect(audioContext.destination);
+		source.connect(analyser);
+		//从分析器中获取当前播放的频率数据
+		let array = new Uint8Array(analyser.frequencyBinCount);
+		analyser.getByteFrequencyData(array);
+		console.info('array',array)
+	</script>
+</html>

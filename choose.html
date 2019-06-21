@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<style>
+			html, body{
+				width : 100%;
+				height : 100%;
+				overflow : hidden;
+				background-color : #423212;
+			}
+			html, body, a, p{
+				margin : 10px;
+				padding : 10px;
+			}
+			.all{
+				height : 100%;
+				width : 100%;
+				display : flex;
+				flex-direction : column;
+			}
+			.all > div{
+				width : 100px;
+				border : 1px solid #ddd;
+				color : #000;
+			}
+			.three{
+				flex : 1;
+				background-color : #5d9;
+				overflow : auto;
+			}
+			.three_child{
+				background : #5d9cec;
+				height : 90%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class = 'all'>
+			<div class = 'one'>one</div>
+			<div class = 'two'>two</div>
+			<div class = 'three' id = 'three'>
+				<div class = 'three_child'>three</div>
+			</div>
+		</div>
+	</body>
+	<script type = 'text/javascript'>
+		window.timeChunk = function(arr, fn, count, interval){
+			let obj, t;
+			let start = function(){
+				for(let i = 0 ; i < Math.min(count || 1, arr.length) ; i++){
+					let obj = arr.shift();
+					fn(obj);
+				}
+			};
+			return function(){
+				t = setInterval(function(){
+					if(arr.length === 0){
+						return clearInterval(t);
+					}
+					start();
+				}, (interval || 200))
+			}
+		}
+	</script>
+	<script type = 'text/javascript'>
+		let div3 = document.getElementById('three');
+		let array = [];
+		for(let i = 0 ; i < 100 ; i++){
+			let newDiv = document.createElement("div");
+			newDiv.innerHTML = i;
+			array.push(newDiv)
+		}
+		let renderFriendList = window.timeChunk(array, function(node){
+			div3.appendChild(node);
+		}, 8, 200)()
+//		function a(){
+//			"use strict"
+//			console.info('a this',this)
+//		}
+//		function b(){
+//			console.info('b this',this)
+//		}
+//		a();
+//		b();
+
+
+		function req1(){
+			return 100
+		}
+
+		function req2(){
+			return 50
+		}
+
+		let res = (async function(){
+			let time1 = await req1();
+			let time2 = await req2();
+			console.info(time1);
+			console.info(time2);
+		})()
+
+	</script>
+</html>

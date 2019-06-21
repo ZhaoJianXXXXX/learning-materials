@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+	<head>
+		<title>3d-cube</title>
+		<meta charset = 'utf-8'/>
+		<style>
+			*{ margin : 0; padding : 0; }
+			body{ height : 100vh; width : 100vw; display : flex; justify-content : center; align-items : center; }
+			.scene { perspective : 800px; }
+			.card-area { position : relative; width: 300px; height: 200px; transform-style: preserve-3d; }
+			.card { position : absolute; width: 300px; height: 200px; background-size : 100% 100%; background-repeat : no-repeat; transition: all .3s }
+			.card1{
+				animation : cardOne 2s linear infinite alternate;
+				background-image : url('./image/card1.png');
+			}
+			.card2{ background-image : url('./image/card2.png');  }
+			.card3{
+				animation : cardThree 2s linear infinite alternate;
+				background-image : url('./image/card3.png');
+			}
+			@keyframes cardOne{
+				from { margin-top : -5px; }
+				to { margin-top : -150px; }
+			}
+			@keyframes cardThree{
+				from { margin-top : 5px; }
+				to { margin-top : 150px; }
+			}
+		</style>
+	</head>
+	<body>
+		<div class="scene">
+			<div class='card-area'>
+				<div class="card card1"></div>
+				<div class="card card2"></div>
+				<div class="card card3"></div>
+			</div>
+		</div>
+	</body>
+	<script type = 'text/javascript'>
+		let rotate = { x : '40deg', y : '0deg' , z : '40deg' };
+		let overRotate = { x : '40deg' , y : '0deg' , z : '80deg' };
+		let card = document.getElementsByClassName('card');
+		for(let i = 0 ; i < card.length ; i++){
+			let overCard = rotateCard.bind(card[i], overRotate);
+			let outCard = rotateCard.bind(card[i], rotate);
+			card[i].addEventListener('mouseover', overCard);
+			card[i].addEventListener('mouseout', outCard);
+			rotateCard.call(card[i], rotate)
+		}
+		function rotateCard(rotate){
+			this.style.transform = `rotateX(${rotate.x}) rotateY(${rotate.y}) rotateZ(${rotate.z})`;
+		}
+	</script>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+	<head>
+		<title>history-router</title>
+	</head>
+	<body>
+		<ul>
+			<li><a data-href="/" href="#">home</a></li>
+			<li><a data-href="/about" href="#">about</a></li>
+			<li><a data-href="/topics" href="#">topics</a></li>
+		</ul>
+		<div id = "content"></div>
+	</body>
+	<script type = 'text/javascript'>
+		"use strict"
+		let getById = (id) => document.getElementById(id);
+		let jusType = (type, param) => Object.prototype.toString.call(param) === '[object ' + type + ']';
+	</script>
+	<script type = 'text/javascript'>
+		"use strict"
+		class HistoryRouter {
+			constructor() {
+				this.currentUrl = '';
+				this.routes = {};
+				this.init();
+			}
+			listen(path, callback) {
+				if(!this.routers[path]){
+					this.routers[path] = [];
+				}
+				this.routers[path].push(callback);
+			}
+			trigger(url) {
+				this.currentUrl = url;
+				if(this.routers[this.currentUrl] && this.routers[this.currentUrl].length > 0){
+					for(let i = 0 ; i < this.routers[this.currentUrl].length ; i++){
+						this.routers[this.currentUrl][i]();
+					}
+				}
+			}
+			bindLink() {
+				const allLink = document.querySelectorAll('a[data-href]');
+				for (let i = 0 ; i < allLink.length ; i++) {
+					const current = allLink[i];
+					current.addEventListener(
+						'click',
+						(e) => {
+							e.preventDefault();
+							const url = current.getAttribute('data-href');
+							//本地文件路径这里会报错 需要起个项目
+							window.history.pushState({}, null, url);
+							this.trigger(url);
+						},
+						false
+					);
+				}
+			}
+			init() {
+				this.bindLink();
+				window.addEventListener('popstate', (e) => { this.trigger(window.location.pathname) });
+				window.addEventListener('load', () => this.trigger('/'), false);
+			}
+		}
+	</script>
+	<script type = 'text/javascript'>
+		"use strict"
+		const router = new HistoryRouter();
+		router.listen('/', function() {
+			document.getElementById('content').innerHTML = 'home';
+		});
+		router.listen('/login', function() {
+			document.getElementById('content').innerHTML = 'login';
+		});
+		router.listen('/abort', function() {
+			document.getElementById('content').innerHTML = 'abort';
+		});
+	</script>
+</html>

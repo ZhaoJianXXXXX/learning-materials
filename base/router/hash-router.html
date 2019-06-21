@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+	<head>
+		<title>hash-router</title>
+	</head>
+	<body>
+		<ul>
+			<li><a href="#/">home</a></li>
+			<li><a href="#/login">
+					login
+					<ul>
+						<li><a href="#/login/login1">login1</a></li>
+						<li><a href="#/login/login2">login2</a></li>
+						<li><a href="#/login/login3">login3</a></li>
+					</ul>
+				</a></li>
+			<li><a href="#/abort">abort</a></li>
+		</ul>
+		<div id = "content"></div>
+	</body>
+	<script type = 'text/javascript'>
+		"use strict"
+		let getById = (id) => document.getElementById(id);
+	</script>
+	<script type = 'text/javascript'>
+		"use strict"
+		class HashRouter{
+			constructor(){
+				this.routers = {},
+				this.init();
+			}
+			listen(path, callback){
+				//如果routers中已经存在该hash，则为它pushcallback方法，否则新建一个相应数组，并push回调方法
+				if(!this.routers[path]){
+					this.routers[path] = [];
+				}
+				this.routers[path].push(callback);
+			}
+			trigger(){
+				//取出当前url中的hash部分，并过滤掉参数
+				let hash = window.location.hash && window.location.hash.split('?')[0];
+				//在routers中，找到相应的hash，并执行已保存在其中的回调方法
+				if(this.routers[hash] && this.routers[hash].length > 0){
+					for(let i = 0 ; i < this.routers[hash].length ; i++){
+						this.routers[hash][i]();
+					}
+				}
+			}
+			init(){
+				window.addEventListener('load', () => this.trigger(), false);
+				window.addEventListener('hashchange', () => this.trigger(), false);
+			}
+		}
+	</script>
+	<script type = 'text/javascript'>
+		"use strict"
+		let router = new HashRouter();
+		router.listen('#/',() => { getById('content').innerHTML = 'home' });
+		router.listen('#/login',() => { console.info('login-') });
+		router.listen('#/login',() => { console.info('login+') });
+		router.listen('#/login',() => { getById('content').innerHTML = 'login' });
+		router.listen('#/login/login1',() => { getById('content').innerHTML = 'login1' });
+		router.listen('#/login/login2',() => { getById('content').innerHTML = 'login2' });
+		router.listen('#/login/login3',() => { getById('content').innerHTML = 'login3' });
+		router.listen('#/abort',() => { getById('content').innerHTML = 'abort' });
+	</script>
+</html>

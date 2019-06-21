@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Hello React!</title>
+		<script src="http://static.runoob.com/assets/react/react-0.14.7/build/react.min.js"></script>
+		<script src="http://static.runoob.com/assets/react/react-0.14.7/build/react-dom.min.js"></script>
+		<script src="http://static.runoob.com/assets/react/browser.min.js"></script>
+	</head>
+	<body>
+		<div id="example"></div>
+		<div id='other'></div>
+		<script type="text/babel">
+			class Button extends React.Component{
+				constructor(props){
+					super(props);
+					this.state = {
+						num : 0
+					}
+				}
+				render(){
+					let { num } = this.state;
+					return(<div onClick = {() => { this.setState({ num : num+1 }) }}>测试按钮{ num }</div>)
+				}
+			}
+			ReactDOM.render(
+				<Button/>,
+				document.getElementById('example')
+			);
+		</script>
+		<script type = 'text/javascript'>
+			document.getElementById('other').innerHTML = 'other'
+		</script>
+	</body>
+</html>
