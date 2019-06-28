@@ -17,8 +17,8 @@ window.mouseRotate = function(ev){
 	document.onmouseup = function(e){
 		document.onmouseup = null;
 		document.onmousemove = null;
-//				div.releaseCapture && div.releaseCapture();
+		div.releaseCapture && div.releaseCapture();
 	}
-//			div.setCapture && div.setCapture();
-	//return false;
+	div.setCapture && div.setCapture();
+	return false;
 }
