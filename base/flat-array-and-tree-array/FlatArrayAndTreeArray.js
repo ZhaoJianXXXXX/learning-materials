@@ -25,15 +25,16 @@ class FlatToTree{
 			array : props && props.array || [],
 			idKey : props && props.idKey || 'id',
 			pidKey : props && props.pidKey || 'pid',
-			pidInit : props && props.pidInit || null,
+			pidInit : props && props.pidInit,
+			childrenKey : props && props.childrenKey || 'children',
 		}
 	}
 	insertChild(pid){
-		let { array , idKey , pidKey } = this.state;
+		let { array , idKey , pidKey , childrenKey } = this.state;
 		let newArr = [];
         for(let i = 0 ; i < array.length ; i++){
             if(array[i][pidKey] === pid){
-                array[i].children = this.insertChild(array[i][idKey]);
+                array[i][childrenKey] = this.insertChild(array[i][idKey]);
                 newArr.push(array[i]);
             }
         }
@@ -116,6 +117,6 @@ let arrayFlat = [
 ]
 
 let treeToFlat = new TreeToFlat({ array : arrayTree });
-let flatToTree = new FlatToTree({ array : arrayFlat , idKey : 'id' , pidKey : 'pid' , initPid : null });
+let flatToTree = new FlatToTree({ array : arrayFlat , idKey : 'id' , pidKey : 'pid' , initPid : null , childrenKey : 'children' });
 console.info(treeToFlat.getArray());
 console.info(flatToTree.getArray());
