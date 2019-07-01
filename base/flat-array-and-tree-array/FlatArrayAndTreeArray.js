@@ -26,8 +26,7 @@ class FlatToTree{
 			idKey : props && props.idKey || 'id',
 			pidKey : props && props.pidKey || 'pid',
 			pidInit : props && props.pidInit || null,
-		},
-		this.getArray = () => this.calc()
+		}
 	}
 	insertChild(pid){
 		let { array , idKey , pidKey } = this.state;
@@ -40,7 +39,7 @@ class FlatToTree{
         }
         return newArr;
 	}
-	calc(){
+	getArray(){
 		let { array , pidInit } = this.state;
 		if(array && array.length > 0){
 			//pidInit为最外层节点的pid
