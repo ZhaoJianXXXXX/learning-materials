@@ -2,9 +2,9 @@
 class TreeToFlat{
 	constructor(props){
 		this.state = {
-			childrenKey	: props && props.childrenKey || 'children'
+			childrenKey	: props && props.childrenKey || 'children',
+			array : props && props.array || [],
 		}
-		this.getArray = () => this.calc(props && props.array || []);
 	}
 	calc(targetArray, initArray = []){
 		let { childrenKey } = this.state;
@@ -15,6 +15,13 @@ class TreeToFlat{
 			}
 		}
 		return initArray;
+	}
+	getArray(){
+		let { array } = this.state;
+		if(array && array.length > 0){
+			return this.calc(array);
+		}
+		return [];
 	}
 }
 
