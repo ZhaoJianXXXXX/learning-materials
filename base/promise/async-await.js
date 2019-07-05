@@ -35,3 +35,44 @@ async function startGame(){
 }
 
 startGame();
+
+
+//在async/await中的串行与并行
+
+function getName () {
+    return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+            resolve('tony')
+        }, 2000)
+    })
+}
+function getId () {
+    return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+            resolve('123')
+        }, 3000)
+    })
+}
+
+//串行 等待时间之和后输出
+(async function(){
+    let name = await getName()
+    let id = await getId()
+    console.info(`name:${name}, id:${id}`)
+})()
+
+//并行 等待最长时间后输出
+(async function(){
+	//先生成所有 promise 实例
+	let namePromise = getName()
+    let idPromise = getId      ()
+    let name = await namePromise
+    let id = await idPromise
+    console.info(`name:${name}, id:${id}`)
+})()
+
+//并行 等待最长时间后输出(与上面相同)
+(async function(){
+	var result = await Promise.all([getName(), getId()])
+    console.info(`name:${result[0]}, id:${result[2]}`)
+})()
