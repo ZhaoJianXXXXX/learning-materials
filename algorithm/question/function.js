@@ -53,27 +53,24 @@
 	 * 场景:短时间内往页面中大量添加DOM节点显然会让浏览器吃不消，所以我们采用分时函数(本来1秒钟创建1000个节点，现在每过200毫秒创建x个节点)
 	 * @params
 	 * arr array 创建节点时所有的数据
-	 * fn function 创建节点的函数逻辑
+	 * callback function 创建节点的回调函数
 	 * count number 每一批创建的节点数量
-	 * interval number 创建时间间隔
+	 * interval number 创建时间间隔 单位ms
 	 */
-	function timeChunk(arr, fn, count, interval){
-		let obj, t;
+	function timeChunk(arr, callback, count, interval){
 		let start = function(){
 			for(let i = 0 ; i < Math.min(count || 1, arr.length) ; i++){
-				let obj = arr.shift();
-				fn(obj);
+				typeof callback === 'function' && callback(arr.shift());
 			}
 		};
 		let loop = function(){
-			t = setTimeout(function(){
+			let t = setTimeout(function(){
+				clearTimeout(t);
 				start();
 				if(arr.length !== 0){
 					loop();
-				}else{
-					clearTimeout(t);
 				}
 			}, interval)
 		}
 		return loop;
-}
+	}

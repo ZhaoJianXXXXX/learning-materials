@@ -134,3 +134,17 @@
 
 	// 方法三
 	[...Array(100).keys()]
+
+
+11.打乱一个数组 Fisher–Yates shuffle 洗牌算法
+	function shuffle(array) {
+		let m = array.length;
+		let t, i;
+		while (m) {
+			i = Math.floor(Math.random() * m--);
+			t = array[m];
+			array[m] = array[i];
+			array[i] = t;
+		}
+		return array;
+	}

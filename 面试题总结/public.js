@@ -200,26 +200,7 @@
 	var num1 = 100;
 	String.fromCharCode(num1);  // 'd'
 
-20. 1=>A 2=>B ... 26=>Z 27=>AA 28=>AB ... 52=>AZ 53=>BA
-//	function convert(num) {
-//		if (num <= 26) {
-//			return String.fromCharCode((num + 64));
-//		}
-//		let arr = [];
-//		let a = Math.floor((num - 1) / 26);
-//		if (a > 26) {
-//			arr.push(Math.floor((a - 1) / 26));
-//			arr.push(((a - 1) % 26) + 1);
-//			a = Math.floor(a / 26);
-//		} else {
-//			arr.push(a);
-//		}
-//		let b = ((num - 1) % 26) + 1;
-//		arr.push(b);
-//		return arr.map(e => String.fromCharCode(e + 64)).join('');
-//	}
-
-21.为什么操作DOM会很慢
+20.为什么操作DOM会很慢
 	1.虽然DOM是由JavaScript实现的。
 	2.但是在浏览器中都是把DOM和JavaScript分开来实现的。
 	3.比如IE中，JavaScript的实现名为JScript，放在"jscript.dll"文件中，而DOM则放在另一个叫做"mshtml.dll"的库中。
@@ -228,6 +209,17 @@
 
 	由于DOM和JavaScript是被分开独立实现的，因此，每一次在通过js操作DOM的时候，就需要先去连接js和DOM，我们可以这样理解：把DOM和JavaScript比作两个岛，他们之间通过一个收费的桥连接着，每一次访问DOM的时候，就需要经过这座桥，并且给“过路费”，访问的次数越多，路费就会越高，并且访问到DOM后，操作具体的DOM还需要给“操作费”，由于浏览器访问DOM的操作很多，因此，“路费”和“操作费”自然会增加，这就是为什么操作DOM会很慢的原因
 
+21.let，const 声明的变量不会绑定给window对象 而var会
+
+22.单向数据流和双向数据流
+	单向数据流
+		1.用户访问 View
+		2.View 发出用户的 Action
+		3.在Action里对state进行相应更新
+		4.state更新后会触发View更新页面
+	双向数据流
+		1.双向数据绑定，带来双向数据流。数据（state）和视图（View）之间的双向绑定。
+		2.说到底就是 （value 的单向绑定 + onChange 事件侦听）的一个语法糖
 
 
 

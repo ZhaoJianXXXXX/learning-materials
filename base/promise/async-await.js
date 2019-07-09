@@ -63,9 +63,9 @@ function getId () {
 
 //并行 等待最长时间后输出
 (async function(){
-	//先生成所有 promise 实例
+	//先 生成所有promise 实例
 	let namePromise = getName()
-    let idPromise = getId      ()
+    let idPromise = getId()
     let name = await namePromise
     let id = await idPromise
     console.info(`name:${name}, id:${id}`)
