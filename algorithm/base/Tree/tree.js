@@ -46,57 +46,49 @@ function BinarySearchTree(){
         postOrderTraverseNode(root, callback);
     }
 
-    //中序遍历具体方法实现
+    //中序遍历，通过左子树深入最底层获取最小值并升序输出
     let inOrderTraverseNode = function(node, callback){
-        if(node.left !== null){
+        if(node !== null){
             inOrderTraverseNode(node.left, callback);
-            callback();
+            callback(node);
             inOrderTraverseNode(node.right, callback);
         }
     }
 
-    //前序遍历具体方法实现
+    //前序遍历，如果是文件夹，先输出文件夹名，然后再依次输出该文件夹下的所有文件(包括子文件夹)，如果有子文件夹，则再进入该子文件夹，输出该子文件夹下的所有文件名
     let preOrderTraverseNode = function(node, callback){
-        if(node.left !== null){
-            callback();
+        if(node !== null){
+            callback(node);
             preOrderTraverseNode(node.left, callback);
             preOrderTraverseNode(node.right, callback);
         }
     }
 
-    //后序遍历具体方法实现
+    //后序遍历，若要知道某文件夹的大小，必须先知道该文件夹下所有文件的大小，如果有子文件夹，若要知道该子文件夹大小，必须先知道子文件夹所有文件的大小
     let postOrderTraverseNode = function(node, callback){
-        postOrderTraverseNode(node.left, Callback);
-        postOrderTraverseNode(node.right, Callback);
-        callback();
+		if(node !== null){
+			postOrderTraverseNode(node.left, callback);
+			postOrderTraverseNode(node.right, callback);
+			callback(node);
+		}
     }
 
     //取树最小值
     this.min = function(){
-        return minNode(root);
-    }
-
-    let minNode = function(node){
-        while(node.left){
-            node = node.left
-        }
-        return node;
-//        if(node.left){
-//            return minNode(node.left)
-//        }
-//        return node
+		let node = root;
+		while(node && node.left){
+			node = node.left;
+		}
+		return node
     }
 
     //取树最大值
     this.max = function(){
-        return maxNode(root);
-    }
-
-    let maxNode = function(){
-        while(node.right){
-            node = node.right
-        }
-        return node;
+       	let node = root;
+		while(node && node.right){
+			node = node.right;
+		}
+		return node
     }
 
     //找到一个特定的值
@@ -126,3 +118,24 @@ let tree = new BinarySearchTree();
 let array = [11,7,15,5,9,13,20,3,6,8,10,12,14,18,25];
 array.map((item) => { tree.insert(item) })
 tree.tree();
+tree.inOrderTraverse((node) => {console.info(node.key)})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

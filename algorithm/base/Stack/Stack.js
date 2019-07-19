@@ -1,4 +1,4 @@
-/*
+/**
  * 实现栈 Stack
  * LIFO last in first out 后进先出
  */
@@ -38,7 +38,7 @@ function Stack(){
 //十进制转换成各种进制方法
 function baseConverter(decNumber, base){
     let remStack = new Stack();
-    let rem;
+    let rem = 0;
     let baseString = '';
     let digits = '0123456789ABCDEF';
     while(decNumber > 0){

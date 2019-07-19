@@ -101,12 +101,15 @@ function Son(props){
 	Father.call(this, props);
 }
 
-function Common(){}
-
-//继承原型
-Son.prototype = new Father();
-//修复指向
-Son.prototype.constructor = Son;
+(function(){
+	// 创建一个没有实例方法的类
+	let Super = function(){};
+	Super.prototype = Father.prototype;
+	//继承原型
+	Son.prototype = new Super();
+	//修复指向
+	Son.prototype.constructor = Son;
+})();
 
 let father = new Father();
 let son = new Son({ id : 'sonId' , name : 'sonName' });
