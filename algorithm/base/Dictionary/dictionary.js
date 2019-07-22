@@ -11,7 +11,7 @@ function Dictionary(){
 	}
 	//判断字典中是否存在某个键
 	this.has = function(key){
-		return key in item
+		return key in items;
 	}
 	//移除字典中相应的元素
 	this.remove = function(key){
