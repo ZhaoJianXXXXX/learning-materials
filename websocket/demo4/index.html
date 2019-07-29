@@ -23,13 +23,14 @@
 	<body>
 		<h1>Test</h1>
 		<h3></h3>
-		<input id = 'sendTxt' type = 'text'/>
+		<input id = 'sendTxt' type = 'text' placeholder = '请输入内容'/>
 		<button id = 'sendBtn'>发送</button>
 		<div id = 'content' class = 'content'></div>
 		<script type = 'text/javascript'>
-			let socket = io.connect('ws://192.168.30.21:3000');
-			function showMsg(data){
-				let { type , content , nickname } = data;
+			//当前的ipv4地址
+			let socket = io.connect('ws://192.168.20.137:3000');
+			function showMsg(data, type){
+				let { content , nickname } = data;
 				let div = document.createElement('div');
 				switch(type){
 					case 'text' : div.innerHTML = `${nickname}：${content}`; break;
@@ -45,24 +46,27 @@
 				document.getElementById(type).appendChild(div)
 			}
 			document.getElementById('sendBtn').onclick = function(){
-				let text = document.getElementById('sendTxt').value;
+				let input =  document.getElementById('sendTxt');
+				let text = input.value;
 				if(text){
+					console.info('发送消息')
 					socket.emit('message', text)
 				}
+				input.value = '';
 			}
 			socket.on('enter', function(data){
 				console.info('enter data', data)
-				showMsg(Object.assign(data, { type : 'alert' }));
+				showMsg(data, 'alert');
 			})
 
 			socket.on('message', function(data){
 				console.info('message', data)
-				showMsg(Object.assign(data, { type : 'text' }));
+				showMsg(data, 'text');
 			})
 
 			socket.on('leave', function(data){
 				console.info('leave', data);
-				showMsg(Object.assign(data, { type : 'alert' }));
+				showMsg(data, 'alert');
 			})
 
 			socket.on('hello', function (data) {

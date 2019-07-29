@@ -24,10 +24,13 @@ function request(options){
 		throw new Error('不支持XMLHttpRequest');
 		return;
 	}
+	let success, error;
 	return new Promise((resolve, reject) => {
-		xhr.addEventListener('load', (e) => { resolve(checkRes(e)) }, false);
-		xhr.addEventListener('error', (e) => { reject(e) }, false);
-		xhr.addEventListener('abort', (e) => { reject(e) }, false);
+		success = function(e){ resolve(checkRes(e)) }
+		error = function(e){ reject(e) }
+		xhr.addEventListener('load', success, false);
+		xhr.addEventListener('error', error, false);
+		xhr.addEventListener('abort', error, false);
 		xhr.open(method, url);
 		//循环遍历设置headers
 		if(jusType(headers, 'Object')){
@@ -35,7 +38,13 @@ function request(options){
 				xhr.setRequestHeader(i, headers[i]);
 			}
 		}
-		xhr.send();
+		xhr.send(data || {});
+	}).catch(e => {
+		console.error('error', e)
+	}).finally(() => {
+		xhr.removeEventListener('load', success)
+		xhr.removeEventListener('error', error)
+		xhr.removeEventListener('abort', error)
 	})
 }
 

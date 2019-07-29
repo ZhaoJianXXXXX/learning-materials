@@ -102,6 +102,7 @@
 	 */
 	function New(fn = function(){ throw new Error('constructor must be define') }, ...args){
 		let obj = {};
+//		Object.setPrototypeOf(obj, fn.prototype);
 		obj.__proto__ = fn.prototype;
 		obj.__proto__.constructor= fn;
 		fn.apply(obj, args);

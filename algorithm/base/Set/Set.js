@@ -77,7 +77,7 @@ Set.prototype.intersection = function(...otherSet){
 	return intersectionSet;
 }
 
-//set取差集合
+//set取差集
 Set.prototype.difference = function(...otherSet){
 	let differenceSet = new Set();
 	this.forEach((item) => {

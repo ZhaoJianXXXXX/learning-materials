@@ -10,7 +10,7 @@ function BinarySearchTree(){
         if(root === null){
             root = node;
         }else{
-            insertNode(root,node)
+            insertNode(root,node);
         }
     }
     let insertNode = function(node, newNode){
@@ -19,14 +19,14 @@ function BinarySearchTree(){
             if(node.right === null){
                 node.right = newNode;
             }else{
-                insertNode(node.right, newNode)
+                insertNode(node.right, newNode);
             }
         }else{
             //新节点比原节点小于等于,往源节点左子节点添
             if(node.left === null){
-                node.left = newNode
+                node.left = newNode;
             }else{
-                insertNode(node.left, newNode)
+                insertNode(node.left, newNode);
             }
         }
     }
@@ -119,23 +119,5 @@ let array = [11,7,15,5,9,13,20,3,6,8,10,12,14,18,25];
 array.map((item) => { tree.insert(item) })
 tree.tree();
 tree.inOrderTraverse((node) => {console.info(node.key)})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+tree.preOrderTraverse((node) => {console.info(node.key)})
+tree.postOrderTraverse((node) => {console.info(node.key)})

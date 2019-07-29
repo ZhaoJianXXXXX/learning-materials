@@ -24,3 +24,22 @@ let Call = function(a,b,c){ console.info(a,b,c) };
 Call.apply(null,[1,2,3]);                   //1 2 3
 Call.call(null,1,2,3);                      //1 2 3
 
+
+
+//实现call方法
+Function.prototype.call = function(ctx, ...args){
+	let caller = undefined;
+	let res = undefined;
+	try{
+		ctx = ctx || window;
+		caller = Symbol('caller');
+		ctx[caller] = this;
+		res = ctx[caller](...args);
+		delete ctx[caller];
+	}catch(e){}
+	return res	
+}
+
+let obj = { id : 1 }
+function A(){ console.info(this.id) }
+A.call(obj)
