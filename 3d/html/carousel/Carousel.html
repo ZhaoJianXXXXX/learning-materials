@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset = 'utf-8'/>
+		<style>
+			html, body{
+				margin: 0;
+				padding : 0;
+				height : 100%;
+				width : 100%;
+				overflow: hidden;
+			}
+			body{
+				display : flex;
+				justify-content : center;
+				align-items : center;
+				perspective: 800px;
+				overflow: hidden;
+			}
+			#carousel{
+				position: relative;
+				transform-style: preserve-3d;
+				width: 80%;
+				height : 10rem;
+				transition: all .3s;
+			}
+			#carousel>img{
+				position: absolute;
+				left: 0;
+				bottom : 0;
+				transition: all .3s;
+			}
+		</style>
+	</head>
+	<body>
+		<div id = 'carousel'></div>
+	</body>
+	<script type = 'text/javascript' src = '../../js/mouse-rotate.js'></script>
+	<script type = 'text/javascript' src = '../../js/debounce.js'></script>
+	<script type = 'text/javascript'>
+		function imgOnload(callback){
+			let imgWidth = this.width;
+			let imgHeight = this.height;
+			this.height = carousel.offsetHeight;
+			this.width = this.height * (imgWidth / imgHeight);
+			typeof callback === 'function' && callback(this);
+		}
+		function renderInit(fatherNode, imgArr){
+			let fatherWidth = fatherNode.offsetWidth;
+			let singleRad = Math.PI * 2 / imgArr.length;
+			let offsetY = 200;
+			let offsetZ = 200;
+			let firstPoint = { ty: offsetY, tz: offsetZ };
+			Promise.all(imgArr).then(val => val.map((img) => {
+				firstPoint.tx = (fatherWidth-img.width)/2;
+				let index = img.getAttribute('index');
+				let rad = singleRad*index;
+				let tx = firstPoint.tx-firstPoint.tx*Math.sin(rad);
+				let ty = offsetY*Math.cos(rad);
+				let tz = offsetZ*Math.cos(rad);
+				img.style.transform = `translateX(${tx}px) translateY(${ty}px) translateZ(${tz}px)`;
+				img.onclick = function(){
+					imgArr.map((clickImg, clickIndex) => {
+						clickImg.then((clickImgNode) => {
+							if(clickImgNode.getAttribute('index') === this.getAttribute('index')){
+								rotateCarousel({ node: this, imgArr })
+							}
+						})
+					})
+				}
+				fatherNode.appendChild(img);
+			}))
+		}
+		function rotateCarousel(props){
+			let { node, imgArr } = props;
+			let half = imgArr.length/2;
+			let position = Number(node.getAttribute('position'));
+			//点击左半边图片
+			if(position < half){
+				rerenderLeft(imgArr, position);
+			}else if(position >= half){	//点击右半边图片
+				rerenderRight(imgArr, position);
+			}
+			/**
+			 * @parmas {array} imgArr 图片数组
+			 * @parmas {number} position 点击图片的位置
+			 */
+			function rerenderLeft(imgArr, position){
+				if(position > 0){
+					Promise.all(imgArr).then(val => {
+						let array = val.map((item) => item.style.transform);
+						val.map((img, i) => {
+							//数组元素中存有每img的样式，需要错位赋值
+							let index = i === 0 ? array.length-1 : i-1;
+							//position的替换 不能用index 需要使用img当前position-1 并考虑边界值的情况
+							let imgPos = Number(img.getAttribute('position'));
+							imgPos = imgPos < 1 ? array.length-1 : imgPos-1;
+							img.style.transform = array[index];
+							img.setAttribute('position', imgPos)
+						})
+						position -= 1;
+						let t = setTimeout(() => {
+							clearTimeout(t);
+							rerenderLeft(imgArr, position)
+						}, 300);
+					})
+				}
+			}
+			/**
+			 * @parmas {array} imgArr 图片数组
+			 * @parmas {number} position 点击图片的位置
+			 */
+			function rerenderRight(imgArr, position){
+				if(position < imgArr.length && position !== 0){
+					Promise.all(imgArr).then(val => {
+						let array = val.map((item) => item.style.transform);
+						val.map((img, i) => {
+							//数组元素中存有每img的样式，需要错位赋值
+							let index = i >= array.length-1 ? 0 : i+1;
+							//position的替换 不能用index 需要使用img当前position-1 并考虑边界值的情况
+							let imgPos = Number(img.getAttribute('position'));
+							imgPos = imgPos >= array.length-1 ? 0 : imgPos+1;
+							img.style.transform = array[index];
+							img.setAttribute('position', imgPos)
+						})
+						position = position >= imgArr.length-1 ? 0 : position+1;
+						let t = setTimeout(() => {
+							clearTimeout(t);
+							rerenderRight(imgArr, position)
+						}, 300);
+					})
+				}
+			}
+		}
+	</script>
+	<script type = 'text/javascript'>
+		let imgArray = new Array(6).fill().map((item, index) => {
+			let img = new Image();
+//			let num = Math.random() * 9 + 1;
+//			img.src = num > 5 ? '../../image/ride.gif' : '../../image/card.jpg';
+			img.src = '../../image/ride.gif';
+			img.setAttribute('index', index);
+			img.setAttribute('position', index);
+			return new Promise(resolve => {
+				img.onload = imgOnload.bind(img, resolve);
+			})
+		});
+		let carousel = document.getElementById('carousel');
+		renderInit(carousel, imgArray);
+		window.addEventListener('resize', debounce(() => renderInit(carousel, imgArray), 500));
+	</script>
+	<script type = 'text/javascript'>
+		let cube = document.getElementById('carousel');
+		let cubeRotate = window.mouseRotate.bind(cube);
+		cube.addEventListener('mousedown', cubeRotate);
+	</script>
+</html>

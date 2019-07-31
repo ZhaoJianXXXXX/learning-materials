@@ -74,3 +74,30 @@
  * 相当于3次循环/k次循环
  */
 
+
+/**
+ * 斐波那契数列分析
+ */
+//指数阶(2^n) 递归(入参为正整数)
+	function fib(n) {
+	  if (n === 1 || n === 2) return n - 1;
+	  return fib(n - 1) + fib(n - 2)
+	}
+	console.log(fib(10)); //34
+
+//线性阶O(n) 非递归(入参为正整数)
+	function fib(n) {
+		let a = 0;
+		let b = 1;
+		let c = a + b;
+		if(n === 1){
+			return a;
+		}
+		for (let i = 3; i < n; i++) {
+			a = b;
+			b = c;
+			c = a + b;
+		}
+		return c;
+	}
+	console.log(fib(10)); //34
