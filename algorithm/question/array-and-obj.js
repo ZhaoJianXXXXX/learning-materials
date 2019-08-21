@@ -87,12 +87,23 @@
     	return Array.from(new Set(array));
 	}
 
-7.寻找数组中的质数
-	function choosePrime(array){
-		return array.filter(isPrime);
-	}
+7.
+	7.1 寻找数组中的质数
+		function choosePrime(array){
+			return array.filter(isPrime);
+		}
 
-	function isPrime(element, index, array) {
+		function isPrime(element, index, array) {
+			let start = 2;
+			while (start <= Math.sqrt(element)) {
+				if (element % start++ < 1) {
+					return false;
+				}
+			}
+			return element > 1;
+		}
+	7.2 寻找小于一个非负整数下的所有质数
+	function isPrimeCase(element) {
 		let start = 2;
 		while (start <= Math.sqrt(element)) {
 			if (element % start++ < 1) {
@@ -101,6 +112,18 @@
 		}
 		return element > 1;
 	}
+	function isPrime(max) {
+		let now = 0;
+		let array = [];
+		while(now <= max){
+			if(isPrimeCase(now)){
+			 	array.push(now)
+			}
+			now++
+		}
+		return array
+	}
+	isPrime(10000)
 
 8.数组展平(降维) 将[[1, 2], 3, [[[4], 5]]] 展平为 [1, 2, 3, 4, 5]
 	function flatten(arr) {

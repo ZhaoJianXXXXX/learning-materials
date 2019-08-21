@@ -21,7 +21,7 @@
 				position: relative;
 				transform-style: preserve-3d;
 				width: 80%;
-				height : 10rem;
+				height : 240px;
 				transition: all .3s;
 			}
 			#carousel>img{
@@ -38,13 +38,17 @@
 	<script type = 'text/javascript' src = '../../js/mouse-rotate.js'></script>
 	<script type = 'text/javascript' src = '../../js/debounce.js'></script>
 	<script type = 'text/javascript'>
-		function Carousel(props){
+		//旋转木马类
+		function Carousel(props = {}){
 			let {
 				fatherNode,
 				offsetY,
 				offsetZ,
+				imgProps,
 			} = props;
 			let _imgArr = [];
+			let resize = debounce(() => this.imgRender(), 500);
+			window.addEventListener('resize', resize);
 			/**
 			 * 图片属性设置方法
 			 * @parmas {array} imgArr [{ src: 'xxx' }, { src: 'yyy }]
@@ -57,10 +61,8 @@
 					img.setAttribute('position', index);
 					return new Promise(resolve => {
 						img.onload = function(){
-							let imgWidth = this.width;
-							let imgHeight = this.height;
-							this.height = fatherNode.offsetHeight;
-							this.width = this.height * (imgWidth / imgHeight);
+							this.height = imgProps && imgProps.height || this.height;
+							this.width = imgProps && imgProps.width || this.width;
 							resolve(this)
 						}
 					})
@@ -72,11 +74,13 @@
 			 * @parmas {array} imgArr [{ src: 'xxx' }, { src: 'yyy }]
 			 */
 			this.imgRender = function(){
+				//清除所有子节点
+				while(fatherNode.hasChildNodes()){ fatherNode.removeChild(fatherNode.firstChild) }
 				let _this = this;
 				let fatherWidth = fatherNode.offsetWidth;
 				let singleRad = Math.PI * 2 / _imgArr.length;
 				let firstPoint = { ty: offsetY, tz: offsetZ };
-				Promise.all(_imgArr).then(val => val.map((img) => {
+				let test = Promise.all(_imgArr).then(val => val.map((img) => {
 					firstPoint.tx = (fatherWidth-img.width)/2;
 					let index = img.getAttribute('index');
 					let rad = singleRad*index;
@@ -94,7 +98,7 @@
 						})
 					}
 					fatherNode.appendChild(img);
-				}))
+				}));
 			}
 			/**
 			 * 图片元素点击之后的轮转方法
@@ -160,14 +164,21 @@
 					}
 				}
 			}
+
+			this.destory = function(){
+				_imgArr = [];
+				window.removeEventListener('resize', resize);
+				this.imgRender()
+			}
 		}
 	</script>
 	<script type = 'text/javascript'>
 //		let imgArray = new Array(6).fill().map(() => ({ src: './image/ride.gif' }))
-		let imgArray = new Array(10).fill().map(() => {
+		let imgArray = new Array(15).fill().map(() => {
 //			let num = Math.random() * 9 + 1;
 //			let src = num > 5 ? '../../image/ride.gif' : '../../image/card.jpg';
-			let src = '../../image/ride.gif';
+//			let src = '../../image/ride.gif';
+			let src = '../../image/card.jpg';
 			return { src };
 		})
 		let fatherNode = document.getElementById('carousel');
@@ -175,9 +186,9 @@
 			fatherNode,
 			offsetY: 150,
 			offsetZ: 200,
+			imgProps : { width: 240, height: 180 }
 		});
 		carousel.setImgArr(imgArray).imgRender();
-		window.addEventListener('resize', debounce(() => carousel.imgRender(), 500));
 		fatherNode.addEventListener('mousedown', window.mouseRotate.bind(fatherNode));
 	</script>
 </html>

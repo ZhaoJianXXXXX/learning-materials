@@ -119,7 +119,6 @@ son.__proto__.getName = function(){ console.info('son', this.name) }
 son.getName();
 father.getName();
 
-
 //构造函数的继承(ES6)
 class Father{
     constructor(props){

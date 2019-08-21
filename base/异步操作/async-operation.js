@@ -33,3 +33,11 @@
  * 5.多个回调之间无法建立联系
  */
 
+/**
+ * Ajax和Fetch区别
+ * ajax是使用XMLHttpRequest对象发起的，但是用起来很麻烦，所以ES6新规范就有了fetch，fetch发一个请求不用像ajax那样写一大堆代码
+ * 使用fetch无法取消一个请求，这是因为fetch基于Promise，而Promise无法做到这一点
+ * 在默认情况下，fetch不会接受或者发送cookies
+ * fetch没有办法原生监测请求的进度，而XMLHttpRequest可以
+ * fetch只对网络请求报错，对400，500都当做成功的请求，需要封装去处理fetch由于是ES6规范，兼容性上比不上XMLHttpRequest
+ */
