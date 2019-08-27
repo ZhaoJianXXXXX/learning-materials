@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<style>
+			.square{
+				width: 100px;
+				background: #5d9;
+				margin-bottom: 10px;
+			}
+			[data-animation = 'hidden']{
+				opacity: 0;
+				visibility: hidden;
+				height: 0;
+				transform: translateY(-50%);
+				margin: 0;
+				transition: all .5s;
+			}
+			[data-animation = 'show']{
+				opacity: 1;
+				visibility: visible;
+				height: 100%;
+				transform: translateY(0);
+				transition: all .5s;
+			}
+		</style>
+	</head>
+	<body>
+		<div id = '111' class = 'square' onclick = 'firstClick()'>
+			哈哈哈
+		</div>
+		<div id = '222' class = 'square' data-animation = 'hidden'>
+			<div>嘿嘿嘿</div>
+			<div>嘿嘿嘿</div>
+			<div>嘿嘿嘿</div>
+		</div>
+		<div class = 'square' id = '333' style = 'transition: all 5s'>
+			嘻嘻嘻1
+		</div>
+		<div class = 'square'>
+			嘻嘻嘻2
+		</div>
+		<div class = 'square'>
+			嘻嘻嘻3
+		</div>
+		<div class = 'square'>
+			嘻嘻嘻4
+		</div>
+		<div class = 'square'>
+			嘻嘻嘻5
+		</div>
+		<div class = 'square'>
+			嘻嘻嘻6
+		</div>
+		<div class = 'square'>
+			嘻嘻嘻7
+		</div>
+		<div class = 'square'>
+			嘻嘻嘻8
+		</div>
+	</body>
+	<script type="text/javascript">
+		function firstClick(){
+			let showDiv = document.getElementById('222');
+			let props = 'data-animation';
+			let chouti = showDiv.getAttribute(props);
+			switch(chouti){
+				case 'hidden': showDiv.setAttribute(props, 'show'); break;
+				case 'show': showDiv.setAttribute(props, 'hidden'); break;
+			}
+		}
+	</script>
+</html>

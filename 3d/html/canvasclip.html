@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+	<head>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			html, body{
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+			body{
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+			div{
+				box-sizing: border-box;
+			}
+			.canvas{
+				position: relative;
+				width: 500px;
+				height: 500px;
+				border: 1px solid #000;
+			}
+			.canvas > canvas{
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div class = 'canvas'>
+			<canvas id = 'canvas1' width = '500px' height = '500px'></canvas>
+			<canvas id = 'canvas2' width = '500px' height = '500px'></canvas>
+		</div>
+	</body>
+	<script type = 'text/javascript'>
+		let canvas1 = document.getElementById('canvas1');
+		let canvas2 = document.getElementById('canvas2');
+		let imgSrc = 'https://img.ishanshan.com/gimg/img/15fb063e290f0638c545f8633e2cfce4';
+		let canvas = document.createElement('canvas');
+		let img = new Image();
+		img.src = imgSrc;
+		img.onload = function(){
+			let ctx1 = canvas1.getContext('2d');
+			let ctx2 = canvas2.getContext('2d');
+			clip1(ctx1, this);
+			clip2(ctx2, this);
+			ctx1.drawImage(this, 0, 0);
+			ctx2.drawImage(this, 0, 0);
+		}
+		function clip1(ctx, img){
+			const width = img.width;
+			const height = img.height;
+			const position = { leftTop: [0, 0], rightTop: [width, 0], leftBottom: [0, height], rightBottom: [width, height] };
+			ctx.beginPath();
+			ctx.moveTo(50, height);
+			ctx.lineTo(150, 0);
+			ctx.lineTo(...position.rightTop);
+			ctx.lineTo(...position.rightBottom);
+			ctx.closePath();
+			ctx.stroke();
+			ctx.clip();
+		}
+		function clip2(ctx, img){
+			const width = img.width;
+			const height = img.height;
+			const position = { leftTop: [0, 0], rightTop: [width, 0], leftBottom: [0, height], rightBottom: [width, height] };
+			ctx.beginPath();
+			ctx.moveTo(0, 0);
+			ctx.lineTo(150, 0);
+			ctx.lineTo(50, height);
+			ctx.lineTo(0, height);
+			ctx.closePath();
+			ctx.stroke();
+			ctx.clip();
+		}
+	</script>
+</html>
