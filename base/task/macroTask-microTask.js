@@ -55,7 +55,7 @@ function CodingMan(name){
 		eat : function(type){
 			console.info(type)
 			return this;
-		}
+		},
 	}
 }
 

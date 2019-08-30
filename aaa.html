@@ -1,0 +1,117 @@
+<html>
+	<head>
+		<meta charset = 'utf-8'>
+	</head>
+	<body>
+		<canvas id = 'canvas' width = '400px' height = '600px'></canvas>
+	</body>
+	<script type = 'text/javascript'>
+		//获取canvas节点
+		let canvas = document.getElementById('canvas');
+		//获取canvas 2d上下文
+		let ctx = canvas.getContext('2d');
+		//画出矩形方框，this.baseY是方框高度相对于窗口高度的基准线
+		ctx.beginPath();
+		ctx.arc(100,100,50,0,2*Math.PI*0.75);
+		ctx.lineCap = 'round';
+		ctx.lineWidth = 10;
+		ctx.stroke();
+	</script>
+	<script type = 'text/javascript'>
+		//URLSearchParams()接口是用来解析和处理URL参数的api，请用calss URLSearchParams{}语法实现一个该接口的polyfill
+
+		//构造函数支持传入URL参数串
+		//searchParams = new URLSearchParams('foo=1&bar=2')
+
+		//构造函数也支持传入一个包含参数键值对的对象
+		//searchParams = new URLSearchParams({foo: 1, bar: 2})
+
+		//实例支持get() set() has() append四个方法
+		//console.log(searchParams.get('foo')) //'1'
+		//searchParams.set('foo', '10');
+		//console.log(searchParams.has('foo')) //true
+		//searchParams.append('foo', '100');
+
+		//实例支持toString()方法
+		//console.log(searchParams.toString()) //'foo=10&bar=20&foo=100'
+
+		//实例支持for-of迭代
+		//for(const [key, value] of searchParams){
+		//	console.log([key, value])
+		//}
+		//['foo', '10']
+		//['bar', '2']
+		//['foo', '100']
+
+		class URLSearchParams{
+			constructor(props){
+				return this.init(props);
+			}
+			init(props){
+				let params = [];
+				if(this.isType(props) === 'Object'){
+					for(let i in props){
+						params.push([i, props[i]])
+					}
+				}
+				if(this.isType(props) === 'String'){
+					params = props.split('&').map((item, index) => [item.split('=')[0], item.split('=')[1]])
+				}
+				params.__proto__.get = this.get;
+				params.__proto__.set = this.set;
+				params.__proto__.has = this.has;
+				params.__proto__.append = this.append;
+				params.__proto__.toString = this.toString;
+				return params;
+			}
+			isType(param){
+				return /\[object\s(.*?)\]/.exec(Object.prototype.toString.call(param))[1];
+			}
+			get(key){
+				let arr = [];
+				for(let i = 0 ; i < this.length ; i++){
+					if(key === this[i][0]){
+						arr.push(this[i][1])
+					}
+				}
+				return arr.join(',')
+			}
+			set(key, value){
+				for(let i = 0 ; i < this.length ; i++){
+					if(key === this[i][0]){
+						this[i][1] = value
+					}
+				}
+			}
+			has(key){
+				for(let i = 0 ; i < this.length ; i++){
+					if(this[i][0] === key){
+					 	return true;
+					}
+				}
+				return false;
+			}
+			append(key, value){
+				this.push([key, value])
+				return this;
+			}
+			toString(){
+				let arr = [];
+				for(let i = 0 ; i < this.length ; i++){
+					arr.push(`${this[i][0]}=${this[i][1]}`)
+				}
+				return arr.join('&')
+			}
+		}
+
+		let test1 = new URLSearchParams('foo=1&bar=2');
+		let test2 = new URLSearchParams({foo: 1, bar: 2});
+		console.info(test1)
+		console.info(test1.get('foo'))
+		console.info(test1.append('name', '123'))
+		console.info(test1.toString())
+		for(const [key, value] of test1){
+			console.log([key, value])
+		}
+	</script>
+</html>
