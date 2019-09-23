@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<script src="http://static.runoob.com/assets/react/react-0.14.7/build/react.min.js"></script>
+		<script src="http://static.runoob.com/assets/react/react-0.14.7/build/react-dom.min.js"></script>
+		<script src="http://static.runoob.com/assets/react/browser.min.js"></script>
+		<style>
+			html,body,p{
+				margin: 0;
+				padding: 0;
+			}
+			body{
+				background: #000;
+			}
+		</style>
+	</head>
+	<body>
+		<div id = 'id'></div>
+	</body>
+	<script type = "text/babel">
+		class Number extends React.Component{
+			constructor(props){
+				super(props);
+				this.state = {
+					num: [
+						{ index: 0, num: 1 },
+						{ index: 1, num: 2 },
+						{ index: 2, num: 3 },
+						{ index: 3, num: 4 },
+						{ index: 4, num: 5 },
+					],
+					nowIndex: 3,
+					commonStyle: { height: 50, width: 50, background: '#fff', textAlign: 'center', lineHeight: '50px' },
+				}
+			}
+
+			componentDidMount(){
+				window.jumpNum = (n) => this.jumpNum(n);
+				window.animation = (props) => this.animation(props);
+			}
+
+			jumpNum(index){
+				let { num, commonStyle } = this.state;
+				this.setState({ scrollStyle: { transition: 'all 3s', transform: `translateY(${-index*commonStyle.height}px)` } });
+			}
+
+			animation(props = {}){
+				let { rollNum = 6, resultIndex = 2, time = 3 } = props;
+				let { num, commonStyle } = this.state;
+				if(rollNum > 0){
+					let item = {};
+					let newNum = [];
+					for(let i = 0 ; i < num.length ; i++){
+						if(num[i].index === resultIndex){
+							item = num[i];
+							break;
+						}
+					}
+					for(let i = 0 ; i < rollNum-1 ; i++){
+						newNum = newNum.concat(num);
+					}
+					newNum.push(item);
+					this.setState({ num: newNum, nowIndex: resultIndex, scrollStyle: { transition: `all ${time}s`, transform: `translateY(${-(newNum.length-1)*commonStyle.height}px)` } });
+				}
+			}
+
+			roll(){
+
+			}
+
+			render(){
+				let { num, nowIndex, commonStyle, scrollStyle } = this.state;
+				return(
+					<div style = {{ height: 50, width: '100%', background: '#5d9', overflow: 'hidden' }}>
+						<div style = {{ transform: `translateY(${-nowIndex*commonStyle.height}px)`, ...scrollStyle }}>
+							{ num && num.map((item, index) => (
+								<div key = { index } style = { commonStyle }>{ item.num }</div>
+							)) }
+						</div>
+					</div>
+				)
+			}
+		}
+
+		ReactDOM.render(
+			<Number/>,
+			document.getElementById('id')
+		);
+	</script>
+</html>

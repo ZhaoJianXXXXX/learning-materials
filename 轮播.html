@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<script src="http://static.runoob.com/assets/react/react-0.14.7/build/react.min.js"></script>
+		<script src="http://static.runoob.com/assets/react/react-0.14.7/build/react-dom.min.js"></script>
+		<script src="http://static.runoob.com/assets/react/browser.min.js"></script>
+		<style>
+			html,body,p{
+				margin: 0;
+				padding: 0;
+			}
+			body{
+				background: #000;
+			}
+		</style>
+	</head>
+	<body>
+		<div id = 'id'></div>
+	</body>
+	<script type = "text/babel">
+		class Number extends React.Component{
+			constructor(props){
+				super(props);
+				this.state = {
+					num: [
+						{ index: 0, num: 1 },
+						{ index: 1, num: 2 },
+						{ index: 2, num: 3 },
+						{ index: 3, num: 4 },
+						{ index: 4, num: 5 },
+					],
+					width: 50,
+					height: 50,
+					animation: false,
+					animationTime: 0.5,
+					waitingTime: 1
+				}
+			}
+
+			componentDidMount(){
+				this.start();
+			}
+
+			start(){
+				let { num, animationTime, waitingTime } = this.state;
+				//先开启动画
+				this.setState({ animation: true }, () => {
+					//数组队列式替换
+					num.push(num.shift());
+					//动画时间定时器
+					let t1 = setTimeout(() => {
+						clearTimeout(t1);
+						//清空动画定时器并且setState新的显示数组
+						this.setState({ animation: false, num }, () => {
+							let t2 = setTimeout(() => {
+								clearTimeout(t2);
+								this.start();
+							}, waitingTime * 1000);
+						})
+					}, animationTime * 1000)
+				})
+			}
+
+			render(){
+				let { num, width, height, animation, animationTime } = this.state;
+				return(
+					<div className = 'aaa' style = {{ width: '100%', height: '100%', position: 'relative' }}>
+						<div style = {{ width, height, position: 'absolute', top: 0, left: 0, background: '#fff', zIndex: -1 }}></div>
+						<div style = {{ width, height, transition: animation ? `all ${animationTime}s` : null, transform: animation ? `translateY(${-height}px)` : null  }}>
+							{ num && num.map((item, index) => (
+								<div style = {{ width, height, textAlign: 'center', lineHeight: `${height}px`, color: '#000', fontWeight: 'bold' }}>{ item.num }</div>
+							)) }
+						</div>
+					</div>
+				)
+			}
+		}
+
+		ReactDOM.render(
+			<Number/>,
+			document.getElementById('id')
+		);
+	</script>
+</html>

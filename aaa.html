@@ -3,22 +3,37 @@
 		<meta charset = 'utf-8'>
 	</head>
 	<body>
-		<canvas id = 'canvas' width = '400px' height = '600px'></canvas>
+		<canvas id = 'canvas' width = '100px' height = '100px'></canvas>
 	</body>
 	<script type = 'text/javascript'>
 		//获取canvas节点
 		let canvas = document.getElementById('canvas');
 		//获取canvas 2d上下文
 		let ctx = canvas.getContext('2d');
+		//创建渐变对象：线性渐变
+		let grd = ctx.createLinearGradient(20,20,100,50);
 		//画出矩形方框，this.baseY是方框高度相对于窗口高度的基准线
 		ctx.beginPath();
-		ctx.arc(100,100,50,0,2*Math.PI*0.75);
+		ctx.arc(50,50,40,0,2*Math.PI*0.75);
 		ctx.lineCap = 'round';
 		ctx.lineWidth = 10;
+//		//设置渐变颜色及方式
+		grd.addColorStop(0,"#000");
+		grd.addColorStop(0.5,"#fff");
+		grd.addColorStop(1,"#000");
+		ctx.strokeStyle = grd;
 		ctx.stroke();
+		ctx.closePath();
+//		ctx.fillStyle = grd;
+//		ctx.fillRect(0,0,100,100);
+//		ctx.fill();
+
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillText("你已经拉了啊实际开发哈是尽快发货可接受的",50,50);
 	</script>
 	<script type = 'text/javascript'>
-		//URLSearchParams()接口是用来解析和处理URL参数的api，请用calss URLSearchParams{}语法实现一个该接口的polyfill
+		//URLSearchParams()接口是用来解析和处理URL参数的api，请用class URLSearchParams{}语法实现一个该接口的polyfill
 
 		//构造函数支持传入URL参数串
 		//searchParams = new URLSearchParams('foo=1&bar=2')
