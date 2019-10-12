@@ -108,6 +108,9 @@ setTimeout(() => {
     })
 }, 3000)
 
+//隔一秒后打印出 promise complete
+//隔两秒后打印出 hello world
+
 /*
  * 测试(所有方法都是Promise实例)
  */
@@ -174,11 +177,11 @@ new Promise((resolve) => {
 })
 .catch((err) => {
 	console.info('I catch:',err)
-	//throw new Error('anther error');
+	//throw new Error('anther error');		// 此行注释打开 则直接跳到最后的catch中
 })
 .then(() => {
 	console.info('arrive here')
-	//return Promise.reject('中断后续调用'); // 此时rejected的状态将直接跳到catch里，剩下的调用不会再继续
+	//return Promise.reject('中断后续调用'); 	// 此行注释打开 rejected的状态将直接跳到catch里 剩下的调用不会再继续 直接跳到最后的catch中
 })
 .then(() => {
 	console.info('...and here')
