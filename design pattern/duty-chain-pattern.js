@@ -181,6 +181,70 @@ let browerType = isIE.nextBrower(isEdge).nextBrower(isFF).nextBrower(isSafari).n
 console.info('browerType',browerType)
 
 
+/*根据类型和是否mvp判断文案*/
 
+function Type0(type, isMvp, array){
+	if(type === '0' && array[isMvp]){ return array[isMvp] }
+	return 'next';
+}
+
+function Type1(type, isMvp, array){
+	if(type === '1' && array[isMvp]){ return array[isMvp] }
+	return 'next';
+}
+
+function Type2(type, isMvp, array){
+	if(type === '2' && array[isMvp]){ return array[isMvp] }
+	return 'next';
+}
+
+function Type3(type, isMvp, array){
+	if(type === '3' && array[isMvp]){ return array[isMvp] }
+	return '';
+}
+
+Function.prototype.nextTypeMvp = function(fn, array){
+	let self = this;
+	return function(){
+		let args = Array.from(arguments)
+		args[args.length-1] = array;
+		let res = self.apply(this, args);
+		if(res === 'next'){
+			return fn.apply(this, arguments);
+		}
+		return res;
+	}
+}
+
+/**
+ * @params type {string} 类型
+ * @params isMvp {string} 是否vip
+ * @return {string} 当前文案
+ */
+function getResult(type, isMvp){
+	return Type0
+			.nextTypeMvp(Type1, ['哈佛noMvp', '哈佛isMvp'])
+			.nextTypeMvp(Type2, ['麻省noMvp', '麻省isMvp'])
+			.nextTypeMvp(Type3, ['普林斯顿noMvp', '普林斯顿isMvp'])
+			(type, isMvp, ['自然拼读noMvp', '自然拼读isMvp']);
+}
+
+let haFoNoMvp = getResult('0', '0');
+let haFoisMvp = getResult('0', '1');
+let maShengNoMvp = getResult('1', '0');
+let maShengIsMvp = getResult('1', '1');
+let puLinNoMvp = getResult('2', '0');
+let puLinIsMvp = getResult('2', '1');
+let ziRanNoMvp = getResult('3', '0');
+let ziRanIsMvp = getResult('3', '1');
+//let res = A.next(B, ['哈佛1', '哈佛2'])('1', '0', ['普林斯顿1', '普林斯顿2'])
+console.info('haFoNoMvp', haFoNoMvp)			//haFoNoMvp 哈佛1
+console.info('haFoisMvp', haFoisMvp)			//haFoNoMvp 哈佛2
+console.info('maShengNoMvp', maShengNoMvp)		//maShengNoMvp 麻省1
+console.info('maShengIsMvp', maShengIsMvp)		//maShengIsMvp 麻省2
+console.info('puLinNoMvp', puLinNoMvp)			//puLinNoMvp 普林斯顿1
+console.info('puLinIsMvp', puLinIsMvp)			//puLinIsMvp 普林斯顿2
+console.info('ziRanNoMvp', ziRanNoMvp)			//ziRanNoMvp 普林斯顿2
+console.info('ziRanIsMvp', ziRanIsMvp)			//ziRanNoMvp 普林斯顿2
 
 
