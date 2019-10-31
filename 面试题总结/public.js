@@ -247,7 +247,13 @@
 
 	双精度浮点数的小数部分最多支持 52 位，所以两者相加之后得到这么一串0.0100110011001100110011001100110011001100110011001100，因浮点数小数位的限制而截断的二进制数字，这时候，再将二进制转换为十进制，就成了 0.30000000000000004。
 
+27.如何修改chrome记住密码后自动填充表单的黄色背景
 
+input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
+	background-color: rgb(250, 255, 189); /* #FAFFBD; */
+	background-image: none;
+	color: rgb(0, 0, 0);
+}
 
 
 

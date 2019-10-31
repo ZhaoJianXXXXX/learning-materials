@@ -54,25 +54,25 @@ function getId () {
     })
 }
 
-//串行 等待时间之和后输出
+//串行 等待时间之和后输出(等待5s)
 (async function(){
-    let name = await getName()
-    let id = await getId()
+    let name = await getName();
+    let id = await getId();
     console.info(`name:${name}, id:${id}`)
 })()
 
-//并行 等待最长时间后输出
+//并行 等待最长时间后输出(等待3s)
 (async function(){
 	//先 生成所有promise 实例
-	let namePromise = getName()
-    let idPromise = getId()
-    let name = await namePromise
-    let id = await idPromise
+	let namePromise = getName();
+    let idPromise = getId();
+    let name = await namePromise;
+    let id = await idPromise;
     console.info(`name:${name}, id:${id}`)
 })()
 
-//并行 等待最长时间后输出(与上面相同)
+//并行 等待最长时间后输出((等待3s)
 (async function(){
 	var result = await Promise.all([getName(), getId()])
-    console.info(`name:${result[0]}, id:${result[2]}`)
+    console.info(`name:${result[0]}, id:${result[1]}`)
 })()

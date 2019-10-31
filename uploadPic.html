@@ -4,28 +4,76 @@
 <head>
 	<meta charset="UTF-8">
 	<title>uploadPic</title>
+	<style>
+		.flex{
+			width: 200px;
+			height: 400px;
+			background: #eee;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		.flex-text{
+/*			word-break: break-all;*/
+		}
+		.text-left{
+			text-align: left;
+		}
+		.text-right{
+			text-align: right;
+		}
+	</style>
 </head>
 <body>
 	<center>
 		<form action="">
-			<input type="file" id="file" onChange="preview(this)"/><br>
+			<input type="file" id="file" onChange="preview(this)" accept="image/gif, image/jpeg, image/png, image/jpg"/><br>
 			<img src="" id="previewimg" width="100px" height="150px"/><br>
 		</form>
+		<canvas id = 'canvas'></canvas>
 	</center>
+	<input id="newfile" type="file" />
+	进度：<span id="progress"></span>
+	<div id="box"></div>
+	<div class='flex'>
+		<span class='flex-text'>单行居中</span>
+		<span class='flex-text text-left'>多行居左多行居左多行居左多行居左多行居左多行居左</span>
+		<span class='flex-text text-right'>多行居右多行居右多行居右多行居右多行居右多行居右多行居右</span>
+	</div>
 </body>
 </html>
 <script>
+	//事件触发顺序
+	//readystatechange > loadstart > readystatechange > readystatechange > progress > readystatechange > load / error > loadend
  //上传图片
     function preview(obj){
-        var file =  document.getElementById('file').value;//获取文件
-        var index = file.lastIndexOf('.'); //获取最后一位小数点
-        var extension =  file.substr(index +  1);
+        var fileName =  document.getElementById('file').value;//获取文件
+		var file = obj.files[0];
+        var index = fileName.lastIndexOf('.'); //获取最后一位小数点
+        var extension =  fileName.substr(index +  1);
         var arr = ['jpeg','png','jpg','gif'];
+		var reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = function(){
+			console.info('reader this', this)
+			let canvas = document.getElementById('canvas');
+			let img = document.createElement('img');
+			img.src = reader.result;
+			img.onload = function(){
+				let ctx = canvas.getContext('2d');
+				canvas.height = this.height;
+				canvas.width = this.width;
+				ctx.drawImage(img, 0, 0);
+				ctx.fillStyle = 'red';
+				ctx.textBaseline = 'middle';
+				ctx.fillText('Ant Design', 20, 20);
+			}
+		}
         if (isInArray(arr,extension)) {
             var img = document.getElementById("previewimg");
             img.src = window.URL.createObjectURL(obj.files[0]);
             var file = obj.files[0];
-            UpladFile(file);
+            UploadFile(file);
         } else {
             alert('请选择正确的图片格式');
             return false;
@@ -33,7 +81,7 @@
     }
 
     //上传文件方法
-    function UpladFile(fileObj) {
+    function UploadFile(fileObj) {
         var form = new FormData(); // FormData 对象
 		form.append("file", fileObj); // 文件对象
 		//form.append('_token','{{ csrf_token() }}');
@@ -41,9 +89,24 @@
 		xhr.open("post", "http://192.168.10.201:18087/file/upload", true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
 		xhr.send(form); //开始上传，发送form数据
 		xhr.onreadystatechange = function (e) {
-		   var data = xhr.responseText;
-		   console.log('e',e);
-		   console.log(data);
+			console.info('xhr', xhr)
+			switch(xhr.readyState){
+				case 0 : console.log(0,'未初始化....'); break;
+				case 1 : console.log(1,'请求参数已准备，尚未发送请求...'); break;
+				case 2 : console.log(2,'已经发送请求,尚未接收响应'); break;
+				case 3 : console.log(3,'正在接受部分响应.....'); break;
+				case 4 : console.log(4,'响应全部接受完毕'); break;
+			}
+
+			if(this.status === 200 && this.readyState === 4){
+				console.log(this.responseText);
+			}else if(this.status == 404){
+				console.log("网页不存在");
+			}
+//
+//			var data = xhr.responseText;
+//			console.log('e',e);
+//			console.log(data);
 		}
     }
 
@@ -61,4 +124,51 @@
         return false;
     }
 
+
+	//获取页面元素对象
+	var file = document.getElementById('newfile');
+	var output = document.getElementById('box');
+	var progress = document.getElementById('progress');
+	//onchange事件
+	file.onchange = function (e) {
+		console.log(e);
+		var files = e.target.files;
+		var file0 = files[0];
+		console.log(file0.size,file0.name,file0.type);
+		//fileReader对象
+		var fileReader = new FileReader();
+		var type = 'default';
+		//判断文件类型
+		if(/image/.test(file0.type)){
+			fileReader.readAsDataURL(file0);
+			type = 'image';
+		} else {
+			fileReader.readAsText(file0,'utf-8');
+			type = 'text';
+		}
+		//文件加载出错
+		fileReader.onerror = function () {
+			output.innerHTML = 'Could not read file, error code is ' + fileReader.error.code;
+		};
+		//加载成功后
+	   fileReader.onload = function () {
+			console.log('onload',fileReader)
+			var html = '';
+			switch (type) {
+				case 'image':
+				   html = '<img src=\"' + fileReader.result +'\">';
+				   break;
+				case 'text':
+					html = fileReader.result;
+					break;
+			}
+			output.innerHTML = html;
+		};
+		//进度条进度
+		fileReader.onprogress = function (event) {
+			if(event.lengthComputable) {
+				progress.innerHTML = event.loaded + '/' + event.total;
+			}
+		}
+	}
 </script>

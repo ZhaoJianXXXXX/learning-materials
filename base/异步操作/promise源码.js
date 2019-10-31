@@ -251,3 +251,20 @@ Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
     console.warn('Possible Unhandled Promise Rejection:', err); // eslint-disable-line no-console
   }
 };
+
+
+/*测试*/
+let a = new Promise(resolve => {
+	setTimeout(() => {
+		resolve(1)
+	}, 1000)
+}).then(val => val + 1).then(val => val)
+
+let b = new Promise(resolve => {
+	setTimeout(() => {
+		resolve(100)
+	}, 2000)
+}).then(val => val + 1).then(val => val)
+
+let res1 = Promise.race([a, b]).then(res => { console.info('final',res) })
+let res2 = Promise.all([a, b]).then(res => { console.info('final',res) })

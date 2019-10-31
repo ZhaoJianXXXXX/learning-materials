@@ -15,7 +15,7 @@ const server = http.createServer((req, res) => {
 	https.get('https://cnodejs.org/api/v1/topics', (resp) => {
 	    let data = "";
 	    resp.on('data', chunk => {
-		data += chunk;
+			data += chunk;
 	    });
 	    resp.on('end', () => {
 		res.writeHead(200, {

@@ -47,6 +47,7 @@
 				imgProps,
 			} = props;
 			let _imgArr = [];
+			let _imgArrPromise = new Promise(resolve => resolve([]));
 			let resize = debounce(() => this.imgRender(), 500);
 			window.addEventListener('resize', resize);
 			/**
@@ -67,6 +68,7 @@
 						}
 					})
 				});
+				_imgArrPromise = Promise.all(_imgArr);
 				return this;
 			}
 			/**
@@ -80,7 +82,7 @@
 				let fatherWidth = fatherNode.offsetWidth;
 				let singleRad = Math.PI * 2 / _imgArr.length;
 				let firstPoint = { ty: offsetY, tz: offsetZ };
-				let test = Promise.all(_imgArr).then(val => val.map((img) => {
+				let test = _imgArrPromise.then(val => val.map((img) => {
 					firstPoint.tx = (fatherWidth-img.width)/2;
 					let index = img.getAttribute('index');
 					let rad = singleRad*index;
@@ -119,7 +121,7 @@
 				 */
 				function rerenderLeft(_imgArr, position){
 					if(position > 0){
-						Promise.all(_imgArr).then(val => {
+						_imgArrPromise.then(val => {
 							//存储在未移动前每个图片的transform
 							let array = val.map((item) => item.style.transform);
 							val.map((img, i) => {
@@ -146,7 +148,7 @@
 				 */
 				function rerenderRight(_imgArr, position){
 					if(position < _imgArr.length && position !== 0){
-						Promise.all(_imgArr).then(val => {
+						_imgArrPromise.then(val => {
 							//存储在未移动前每个图片的transform
 							let array = val.map((item) => item.style.transform);
 							val.map((img, i) => {
@@ -188,7 +190,7 @@
 		let carousel = new Carousel({
 			fatherNode,
 			offsetY: 150,
-			offsetZ: 200,
+			offsetZ: 150,
 			imgProps : { width: 240, height: 180 }
 		});
 		carousel.setImgArr(imgArray).imgRender();
