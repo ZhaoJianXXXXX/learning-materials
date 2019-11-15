@@ -81,10 +81,10 @@
 			<img width = '85px' height = '100px' src = 'http://pdabc-dev.oss-cn-hangzhou.aliyuncs.com/20180918/d2df0708-f24b-4782-a6ab-eb47ea479ffa.png'/>
 		</div>
 		<img src = 'http://pdabc-dev.oss-cn-hangzhou.aliyuncs.com/20180918/7bdc3625-e97d-4045-a6f7-fd27c85c065c.png'/>
-		<form action = 'http://192.168.10.156:8087/pdabc-common/oauth/adm' method="post" name="login">
+		<form action = 'http://192.168.10.156:8087/pdabc-common/oauth/adm' method="post" name="login" onSubmit = 'return check(this)'>
 			用户帐号<input type=text name="userId" size="18" value="" ><br>
 			登录密码<input type="password" name="password" size="19" value=""/>
-				   <input type='submit' name="submit" value="登陆" onclick="check(this.form)">
+				   <input type='submit' name="submit" value="登陆">
 		</form>
 		<div class = 'self-upload'>
 			<input type="file" id="file" multiple onchange="changepic(this)" accept="image/jpg,image/jpeg,image/png,image/PNG" class="input-file-1">
@@ -126,8 +126,8 @@
 				form.password.focus();
 				return false;
 			}
-			return true;
-			//return false;
+//			return true;
+			return false;
 	//		form.submit();
 	}
 	</script>

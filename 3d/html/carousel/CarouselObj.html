@@ -35,8 +35,8 @@
 	<body>
 		<div id = 'carousel'></div>
 	</body>
-	<script type = 'text/javascript' src = '../../js/mouse-rotate.js'></script>
-	<script type = 'text/javascript' src = '../../js/debounce.js'></script>
+	<script type = 'text/javascript' src = '../../js/utils/mouse-rotate.js'></script>
+	<script type = 'text/javascript' src = '../../js/utils/debounce.js'></script>
 	<script type = 'text/javascript'>
 		//旋转木马类
 		function Carousel(props = {}){
@@ -64,7 +64,13 @@
 						img.onload = function(){
 							this.height = imgProps && imgProps.height || this.height;
 							this.width = imgProps && imgProps.width || this.width;
-							resolve(this)
+							resolve(this);
+						}
+						img.onerror = function(){
+							this.alt = '该图片加载失败';
+							this.height = imgProps && imgProps.height || this.height;
+							this.width = imgProps && imgProps.width || this.width;
+							resolve(this);
 						}
 					})
 				});
@@ -82,23 +88,15 @@
 				let fatherWidth = fatherNode.offsetWidth;
 				let singleRad = Math.PI * 2 / _imgArr.length;
 				let firstPoint = { ty: offsetY, tz: offsetZ };
-				let test = _imgArrPromise.then(val => val.map((img) => {
+				_imgArrPromise.then(val => val.map((img) => {
 					firstPoint.tx = (fatherWidth-img.width)/2;
-					let index = img.getAttribute('index');
+					let index = img.getAttribute('position');
 					let rad = singleRad*index;
 					let tx = firstPoint.tx-firstPoint.tx*Math.sin(rad);
 					let ty = offsetY*Math.cos(rad);
 					let tz = offsetZ*Math.cos(rad);
 					img.style.transform = `translateX(${tx}px) translateY(${ty}px) translateZ(${tz}px)`;
-					img.onclick = function(){
-						_imgArr.map((clickImg, clickIndex) => {
-							clickImg.then((clickImgNode) => {
-								if(clickImgNode.getAttribute('index') === this.getAttribute('index')){
-									rotateCarousel(this)
-								}
-							})
-						})
-					}
+					img.onclick = () => rotateCarousel(img);
 					fatherNode.appendChild(img);
 				}));
 			}
@@ -131,7 +129,7 @@
 								let imgPos = Number(img.getAttribute('position'));
 								imgPos = imgPos < 1 ? array.length-1 : imgPos-1;
 								img.style.transform = array[index];
-								img.setAttribute('position', imgPos)
+								img.setAttribute('position', imgPos);
 							})
 							position -= 1;
 							//每过一段时间移动一次 直到点击的元素到正中间为止
@@ -176,15 +174,23 @@
 				window.removeEventListener('resize', resize);
 				this.imgRender()
 			}
+
+			this.getDetails= function(){
+				console.info('_imgArr',_imgArr)
+				console.info('_imgArrPromise',_imgArrPromise)
+				_imgArrPromise.then(val => {
+					console.info('_imgArrPromise.then', val)
+					val.map(img => { console.info('img.src', img.src) })
+				})
+			}
 		}
 	</script>
 	<script type = 'text/javascript'>
+		let src = new Array(5).fill().map((item, index) =>  `../../image/sea${index}.webp`);
+//		let src = ['../../image/sea4.webp']
 //		let imgArray = new Array(6).fill().map(() => ({ src: './image/ride.gif' }))
-		let imgArray = new Array(15).fill().map(() => {
-			let src = (Math.random() * 9 + 1) > 5 ? '../../image/ride.gif' : '../../image/card.jpg';
-//			let src = '../../image/ride.gif';
-//			let src = '../../image/card.jpg';
-			return { src };
+		let imgArray = new Array(10).fill().map((item, index) => {
+			return { src: src[index%src.length] };
 		})
 		let fatherNode = document.getElementById('carousel');
 		let carousel = new Carousel({

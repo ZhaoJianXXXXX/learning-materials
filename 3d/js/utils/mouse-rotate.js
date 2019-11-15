@@ -10,7 +10,7 @@ window.mouseRotate = function(ev,id) {
     document.onmousemove = (inner_ev) => {
         let inner_e = inner_ev || window.event;
         let transX = -(inner_e.clientY - initY) / 2;
-		let transY = -(inner_e.clientX - initX) / 2;
+		let transY = (inner_e.clientX - initX) / 2;
         this.style.cursor = 'pointer';
 		this.style.userSelect = 'none';
         this.style.transition = null;

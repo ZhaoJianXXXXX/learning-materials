@@ -256,8 +256,62 @@ input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
 }
 
 
+28. require和import export和module.exports
+	//1.js
+	var counter = 3;
+	function inCounter (){
+	   counter++;
+	}
+	module.exports = {
+		counter : counter,
+		inCounter : inCounter,
+	};
 
+	//2.js
+	var counter = 3;
+	function inCounter (){
+	   counter++;
+	}
+	module.exports = {
+		counter : counter,
+		inCounter : inCounter,
+	};
 
+	//3.js
+	export let counter3 = 3;
+	export function inCounter3() {
+		 counter3++;
+	}
+
+	//4.js
+	export let counter4 = 3;
+	export function inCounter4() {
+		 counter4++;
+	}
+
+	//test
+	import one from './1';
+	let two = require('./2');
+	import { counter3 , inCounter3 } from './3';
+	let { counter4 , inCounter4 } = require('./4');
+
+	console.log('import + module.exports', one.counter);	//import + module.exports 3
+	one.inCounter();
+	console.log('import + module.exports', one.counter);	//import + module.exports 3
+
+	console.log('require + module.exports', two.counter);	//require + module.exports 3
+	two.inCounter();
+	console.log('require + module.exports', two.counter);	//require + module.exports 3
+
+	console.log('import + export', counter3);				//import + export 3
+	inCounter3();
+	console.log('import + export', counter3);				//import + export 4
+
+	console.log('require + export', counter4);				//require + export 3
+	inCounter4();
+	console.log('require + export', counter4);				//require + export 3
+
+	//只有import + export情况下 值是动态的
 
 
 

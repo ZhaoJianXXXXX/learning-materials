@@ -116,32 +116,49 @@ let orderNormal = function(orderType, pay, stock){
     }    
 }
 
-let Chain = function(fn){
-    this.fn = fn;
-    this.successor = null;
-    this.setNextSuccessor = function(successor){
-        return this.successor = successor;  
-    }
-    this.passRequest = function(){
-        let ret = this.fn.apply(this, arguments);
-        if(ret == 'nextSuccessor'){
-            return this.successor && this.successor.passRequest.apply(this.successor, arguments)
-        }
-    }
-}
+//职责连构造1
+	let Chain = function(fn){
+		this.fn = fn;
+		this.successor = null;
+		this.setNextSuccessor = function(successor){
+			return this.successor = successor;  
+		}
+		this.passRequest = function(){
+			let ret = this.fn.apply(this, arguments);
+			if(ret == 'nextSuccessor'){
+				return this.successor && this.successor.passRequest.apply(this.successor, arguments)
+			}
+		}
+	}
 
-let chainOrder500 = new Chain(order500);
-let chainOrder200 = new Chain(order200);
-let chainOrderNormal = new Chain(orderNormal);
+	let chainOrder500 = new Chain(order500);
+	let chainOrder200 = new Chain(order200);
+	let chainOrderNormal = new Chain(orderNormal);
 
-chainOrder500.setNextSuccessor(chainOrder200).setNextSuccessor(chainOrderNormal);
-//chainOrder200.setNextSuccessor(chainOrderNormal);
+	chainOrder500.setNextSuccessor(chainOrder200).setNextSuccessor(chainOrderNormal);
+	//chainOrder200.setNextSuccessor(chainOrderNormal);
 
-chainOrder500.passRequest(1, true, 500);        //500元订金已付，得到100元优惠券
-chainOrder500.passRequest(2, true, 500);        //200元订金已付，得到50元优惠券
-chainOrder500.passRequest(3, true, 500);        //普通购买，无优惠券
-chainOrder500.passRequest(1, false, 0);         //产品库存不足
+	chainOrder500.passRequest(1, true, 500);        //500元订金已付，得到100元优惠券
+	chainOrder500.passRequest(2, true, 500);        //200元订金已付，得到50元优惠券
+	chainOrder500.passRequest(3, true, 500);        //普通购买，无优惠券
+	chainOrder500.passRequest(1, false, 0);         //产品库存不足
 
+//职责链构造2
+	Function.prototype.nextPrize = function(fn){
+		let self = this;
+		return function(){
+			let ret = self.apply(this, arguments);
+			if(ret === 'nextSuccessor'){
+				return fn.apply(this, arguments);
+			}
+			return ret;
+		}
+	}
+
+	let order = order500.nextPrize(order200).nextPrize(orderNormal);
+	order(1, true, 500)
+	order(2, true, 500)
+	order(1, false, 500)
 
 /*判断浏览器类型*/
 let userAgent = window.navigator.userAgent;

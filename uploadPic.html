@@ -27,7 +27,7 @@
 <body>
 	<center>
 		<form action="">
-			<input type="file" id="file" onChange="preview(this)" accept="image/gif, image/jpeg, image/png, image/jpg"/><br>
+			<input type="file" id="file" onChange="preview(this)" accept="image/gif, image/jpeg, image/png, image/jpg, image/webp"/><br>
 			<img src="" id="previewimg" width="100px" height="150px"/><br>
 		</form>
 		<canvas id = 'canvas'></canvas>
@@ -51,7 +51,7 @@
 		var file = obj.files[0];
         var index = fileName.lastIndexOf('.'); //获取最后一位小数点
         var extension =  fileName.substr(index +  1);
-        var arr = ['jpeg','png','jpg','gif'];
+        var arr = ['jpeg','png','jpg','gif','webp'];
 		var reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = function(){
@@ -60,13 +60,14 @@
 			let img = document.createElement('img');
 			img.src = reader.result;
 			img.onload = function(){
+				console.info('canvas',canvas)
 				let ctx = canvas.getContext('2d');
 				canvas.height = this.height;
 				canvas.width = this.width;
 				ctx.drawImage(img, 0, 0);
-				ctx.fillStyle = 'red';
+				ctx.fillStyle = '#ff0000';
 				ctx.textBaseline = 'middle';
-				ctx.fillText('Ant Design', 20, 20);
+				ctx.fillText('这是水印', 20, 20);
 			}
 		}
         if (isInArray(arr,extension)) {
@@ -166,6 +167,7 @@
 		};
 		//进度条进度
 		fileReader.onprogress = function (event) {
+			console.info('onprogress', event)
 			if(event.lengthComputable) {
 				progress.innerHTML = event.loaded + '/' + event.total;
 			}

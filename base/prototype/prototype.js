@@ -138,3 +138,61 @@ class Son extends Father{
 let son = new Son({ id : 'sonId' });
 son.getId()         //sonId
 son.getName()       //FatherName
+
+
+
+//静态方法
+class Animal{
+  	static getVoice(){
+		console.info('各种叫');
+	}
+	constructor(){
+		this.id = '123'
+	}
+	getName(name){
+		console.info(name)
+	}
+}
+
+class Dog extends Animal{
+	getName(name){
+		super.getName(name)
+	}
+}
+
+Animal.getVoice()	//各种叫
+Dog.getVoice()		//各种叫
+
+//此时B类会继承A类中的静态方法 B类可在内部重写此静态方法替换A类中的方法
+class Animal{
+  	static getVoice(){
+		console.info('各种叫');
+	}
+	constructor(){
+		this.id = '123'
+	}
+	getName(name){
+		console.info(name)
+	}
+}
+
+class Dog extends Animal{
+	static getVoice(){
+		console.info('汪汪');
+	}
+	getName(name){
+		super.getName(name)
+	}
+}
+
+Animal.getVoice()	//各种叫
+Dog.getVoice()		//汪汪
+
+
+
+
+
+
+
+
+

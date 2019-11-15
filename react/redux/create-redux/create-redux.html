@@ -1,0 +1,99 @@
+<!doctype>
+<html>
+	<head>
+		<meta charset = 'utf-8'/>
+	</head>
+	<body>
+		<div id = 'title'></div>
+		<div id = 'content'></div>
+		<div id = 'number'></div>
+		<button onclick = 'changeTitle()'>改变标题</button>
+		<button onclick = 'changeContent()'>改变内容</button>
+	</body>
+	<script type = 'text/javascript'>
+		function createStore(reducer){
+			let state = null;
+			let listeners = [];
+			let getState = () => state;
+			let subscribe = (item) => listeners.push(item);
+			let dispatch = (action = {}) => {
+				state = reducer(state, action);
+				listeners.forEach(item => item());
+			}
+			dispatch({})
+			return{
+				getState,
+				subscribe,
+				dispatch
+			}
+		}
+		function reducer(state = {}, action = {}){
+			switch(action.type){
+				case 'updateState': return { ...state, ...action.payload };
+				default: return state;
+			}
+		}
+	</script>
+	<script type = 'text/javascript'>
+		let renderProps = (state, olderState, domId, key, callback) => {
+			if(state[key] !== olderState[key]){
+				let node = document.getElementById(domId);
+				callback(node, state[key]);
+			}
+		}
+		//渲染组件宏命令
+		function renderApp(state = {}, olderState = {}){
+			if(state !== olderState){
+				renderTitle(state, olderState);
+				renderContent(state, olderState);
+			}
+		}
+		//渲染标题
+		function renderTitle(state, olderState){
+			renderProps(state, olderState, 'title', 'titleText', (node, value) => { node.innerHTML = value });
+			renderProps(state, olderState, 'title', 'titleColor', (node, value) => { node.style.color = value });
+		}
+		//渲染内容
+		function renderContent(state, olderState){
+			renderProps(state, olderState, 'content', 'contentText', (node, value) => { node.innerHTML = value });
+			renderProps(state, olderState, 'content', 'contentColor', (node, value) => { node.style.color = value });
+		}
+		//构造一个store
+		let store = createStore(reducer);
+		let state = {
+			titleText: '标题',
+			titleColor: '#5d9cec',
+			contentText: '内容',
+			contentColor: '#5d9',
+			number: 0
+		}
+
+		//初始化state
+		let initState = (function(store, state){
+			const { dispatch } = store;
+			dispatch({ type : 'updateState' , payload : state })
+		})(store, state);
+
+		//获取初始state
+		let olderState = store.getState();
+
+		//初始化渲染
+		renderApp(store.getState());
+
+		//添加渲染改动监听
+		store.subscribe(() => {
+			let newState = store.getState();
+			renderApp(newState, olderState);
+		})
+	</script>
+	<script type = 'text/javascript'>
+		function changeTitle(){
+			const { dispatch } = store;
+			dispatch({ type: 'updateState', payload: { titleText: Math.random(), titleColor: '#000' } })
+		}
+		function changeContent(){
+			const { dispatch } = store;
+			dispatch({ type: 'updateState', payload: { contentText: Math.random(), contentColor: '#ff0000' } })
+		}
+	</script>
+</html>

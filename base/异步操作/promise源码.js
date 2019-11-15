@@ -266,5 +266,5 @@ let b = new Promise(resolve => {
 	}, 2000)
 }).then(val => val + 1).then(val => val)
 
-let res1 = Promise.race([a, b]).then(res => { console.info('final',res) })
-let res2 = Promise.all([a, b]).then(res => { console.info('final',res) })
+let res1 = Promise.race([a, b]).then(res => { console.info('res1',res) })
+let res2 = Promise.all([a, b]).then(res => { console.info('res2',res) })

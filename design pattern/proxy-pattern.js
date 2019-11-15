@@ -169,6 +169,30 @@ let proxyImage = (function(){
 
 proxyImage.setSrc('./logo.png');
 
+//缓存代理 计算乘积
+function mult(){
+	let res = 1;
+	for(let i = 0; i < arguments.length; i++){
+		res = res * arguments[i]
+	}
+	return res;
+}
+
+let proxyMult = (function(){
+	let cache = {};
+	return function(){
+		let argsKey = Array.from(arguments).join(',');	//作为缓存的键名
+		if(cache.hasOwnProperty(argsKey)){
+			//走的缓存
+		 	return cache[argsKey]
+		}
+		return cache[argsKey] = mult.apply(this, arguments);
+	}
+})();
+
+proxyMult(1, 2, 3, 4)
+proxyMult(1, 2, 3, 4)
+
 /*
  * 总结
  * 使用代理模式遵循了单一职责的原则
