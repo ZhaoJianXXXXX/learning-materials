@@ -88,18 +88,18 @@ xiaoming.sendFlower(confidante);
 
 let xiaoming = {
     money : 500,
-    clearMoney : function(){
-        this.money = 0;   
+    clearMoney : function(consume){
+        this.money = this.money - consume;   
     },
     sendMoney : function(target){
         console.info('小明交出钱')
         confidante.receiveMoney(this.money);
-        this.clearMoney();
+        this.clearMoney(this.money);
     }
 }
 let confidante = {
-    receiveMoney : function(flower){
-        console.info('闺蜜收到钱');
+    receiveMoney : function(money){
+        console.info('闺蜜收到钱', money);
         goddess.goodMood(function(){
             let Flower = function(){};
             let flower = new Flower();

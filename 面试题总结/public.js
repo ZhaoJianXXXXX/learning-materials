@@ -313,6 +313,19 @@ input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
 
 	//只有import + export情况下 值是动态的
 
+29.cookie 和 token 都存放在 header 中，为什么不会劫持 token
+
+	xss攻击下，两者都凉凉
+
+	token不是为了防止XSS的，而是为了防止CSRF的；
+
+	CSRF攻击的原因是浏览器会自动带上cookie，而不会带上token；
+
+	以CSRF攻击为例：
+
+	cookie：用户点击了链接，cookie未失效，导致发起请求后后端以为是用户正常操作，于是进行扣款操作；
+	token：用户点击链接，由于浏览器不会自动带上token，所以即使发了请求，后端的token验证不会通过，所以不会进行扣款操作；
+
 
 
 

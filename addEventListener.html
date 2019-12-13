@@ -17,10 +17,18 @@
 </body>
 <script type = 'text/javascript'>
 	"use strict";
-	//addEventListener中的第三个参 数是useCapture, 一个bool类型。当为false时为冒泡获取(由里向外)，true为capture方式(由外向里)。
+	//addEventListener中的第三个参 数是useCapture, boolean
+	//当为false时为冒泡获取(由里向外)，true为capture方式(由外向里)。
 	let id1 = document.getElementById('id1');
 	let id2 = document.getElementById('id2');
 	let code = document.getElementById('code');
+	/**
+	 * 打印顺序(id2在id1内部)
+	 * id1=>false id2=>false id2 id1
+	 * id1=>false id2=>true id2 id1
+	 * id1=>true id2=>false id1 id2
+	 * id1=>true id2=>true id1 id2
+	 */
 	function choose(a, b){
 		id1.addEventListener('click', () => { console.info('id1') }, a);
 		id2.addEventListener('click', () => { console.info('id2') }, b);

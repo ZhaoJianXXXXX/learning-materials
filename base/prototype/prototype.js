@@ -172,7 +172,7 @@ class Animal{
 		this.id = '123'
 	}
 	getName(name){
-		console.info(name)
+		console.info(this, name)
 	}
 }
 
@@ -180,13 +180,20 @@ class Dog extends Animal{
 	static getVoice(){
 		console.info('汪汪');
 	}
+	constructor(props){
+		super(props);
+		this.id = '456'
+	}
 	getName(name){
 		super.getName(name)
 	}
 }
 
 Animal.getVoice()	//各种叫
-Dog.getVoice()		//汪汪
+Dog.getVoice()		//汪汪(重写)
+
+let dog = new Dog();
+dog.getName('dog')
 
 
 
