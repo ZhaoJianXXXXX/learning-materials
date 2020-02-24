@@ -152,7 +152,7 @@
 			output.innerHTML = 'Could not read file, error code is ' + fileReader.error.code;
 		};
 		//加载成功后
-	   fileReader.onload = function () {
+	    fileReader.onload = function () {
 			console.log('onload',fileReader)
 			var html = '';
 			switch (type) {

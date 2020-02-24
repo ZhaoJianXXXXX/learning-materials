@@ -3,8 +3,10 @@
 		<title>Hacker News</title>
 	</head>
 	<body>
-		<button onclick = "getDate()">请求当前日期</button>
+		<button onclick = "xhrGetDate()">xhr请求当前日期</button>
+		<button onclick = "fetchGetDate()">fetch请求当前日期</button>
 		<button onclick = "login()">登陆</button>
+		<button onclick = "aaaa()">登陆</button>
 	</body>
 	<script type = 'text/javascript'>
 		'use strict';
@@ -63,7 +65,41 @@
 
 	</script>
 	<script type = 'text/javascript'>
-		async function getDate(){
+
+		function aaaa(){
+			console.info('111')
+			let open = window.open('http://192.168.20.137:8000/#/login');
+			open.onload = function(){
+				console.info('222')
+			}
+		}
+
+		function fetchGetDate(){
+			fetch(`${window.BASE_URL}/pdabc-common/common/getCurTimeStamp`, {
+					url : `${window.BASE_URL}/pdabc-common/common/getCurTimeStamp`,
+					headers : {
+						'Content-Type' : 'application/json',
+						'access-token' : '7f84e9340cc046fa92ba6c1fa44ecc60',
+						'userId' : '123191',
+						'cookie' : 'Cookie'
+					},
+					data : JSON.stringify({
+						channel : "CRM",
+						password : "123456",
+						phone : "18358188430"
+					}),
+					method : 'get'
+				})
+				.then(response => response.json())
+				.then(function(data){
+					let p = document.createElement('p');
+					p.innerHTML = `时间：${data.data}`;
+					document.body.appendChild(p)
+				})
+				.catch(function(err){});
+		}
+
+		async function xhrGetDate(){
 			try{
 				let data = await request({
 					url : `${window.BASE_URL}/pdabc-common/common/getCurTimeStamp`,

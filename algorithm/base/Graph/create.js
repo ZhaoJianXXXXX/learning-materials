@@ -167,6 +167,26 @@ function Graph(){
 		}
 		return { distances: d, predecessors: pred }
 	}
+	this.dfs = function(callback){
+		let color = initialColor();
+		for(let i = 0 ; i < vertices.length ; i++){
+			if(color[vertices[i]] === 'white'){
+				visit(vertices[i], color, callback);
+			}
+		}
+		function visit(item, color, callback){
+			color[item] = 'gray';
+			typeof callback === 'function' && callback(item);
+			let neighbors = adjList[item];
+			for(let i = 0 ; i < neighbors.length ; i++){
+				let nItem = neighbors[i];
+				if(color[nItem] === 'white'){
+				 	visit(nItem, color, callback)
+				}
+			}
+			color[item] = 'black';
+		}
+	}
 }
 
 /*测试代码*/
@@ -186,4 +206,4 @@ graph.addEdge('B', 'E');
 graph.addEdge('B', 'F');
 graph.addEdge('E', 'I');
 //graph.check();
-graph.bfs(myVertices[0], function(e){ console.info('visit', e) })
+graph.BFS(myVertices[0], function(e){ console.info('visit', e) })
