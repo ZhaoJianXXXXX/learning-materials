@@ -8,6 +8,9 @@
 		运行：执行setSate时传入的callback方法，一般不会传callback参数
 		结束：更新isBatchingUpdates为false，并执行FLUSH_BATCHED_UPDATES这个wrapper中的close方法
  * 5.FLUSH_BATCHED_UPDATES在close阶段，会循环遍历所有的dirtyComponents，调用updateComponent刷新组件，并执行它的pendingCallbacks, 也就是setState中设置的callback。
+   this.setState(newSTate) -> newState存入pending队列 -> 判断是否处于batchUpdate
+   如果处于batchUpdate 保存组件与dirtyComponents中
+   如果不处于batchUpdate 遍历所有的dirtyComponents -> 调用updateComponent -> 更新 pengding state or props
  */
 
 /*
