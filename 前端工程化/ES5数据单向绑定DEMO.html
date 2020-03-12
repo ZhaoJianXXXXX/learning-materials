@@ -57,7 +57,7 @@
 		grow: ['北京', '天津']
 	}
 	// 字符串模板匹配
-	String.prototype.render = function(context) {
+	String.prototype.templateRender = function(context) {
 		let tokenReg = /(\\)?\{{([^\{\}\\]+)(\\)?\}}/g;
 		return this.replace(tokenReg, function(word, slash1, token, slash2) {
 			if (slash1 || slash2) {
@@ -80,5 +80,5 @@
 			return currentObject;
 		});
 	};
-	templateStr1.render(data)
+	templateStr1.templateRender(data)
 </script>
