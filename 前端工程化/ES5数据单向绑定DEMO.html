@@ -44,3 +44,41 @@
 		</script>
 	</body>
 </html>
+
+
+//模板字符串渲染
+<script type = 'text/javascript'>
+	let templateStr1 = 'i am {{name}},age {{age}},job {{job}}, 在{{grow[0]}}和{{grow[1]}}, 家里有{{family.son}}和{{family.daughter}}';
+	let data = {
+		name:'xbd',
+		age:18,
+		job:'CTO',
+		family: { son: '儿子', daughter: '女儿' },
+		grow: ['北京', '天津']
+	}
+	// 字符串模板匹配
+	String.prototype.render = function(context) {
+		let tokenReg = /(\\)?\{{([^\{\}\\]+)(\\)?\}}/g;
+		return this.replace(tokenReg, function(word, slash1, token, slash2) {
+			if (slash1 || slash2) {
+				return word.replace('\\', '');
+			}
+			let variables = token.replace(/\s/g, '').split('.');
+			let currentObject = context;
+			let i, length;
+			for (i = 0, length = variables.length; i < length; ++i) {
+				var curVariables = variables[i].split('['); // 用`[`进行字符串分割 a[0][1] → ["a", "0]", "1]"]
+				currentObject = currentObject[curVariables[0]]; // 第一位是数组名
+				if (curVariables.length > 1) { // 如果大于1，则有`[`符号，就是数组对象
+					curVariables.shift();  // 去掉数组名，循环["0]", "1]"]
+					curVariables.forEach(function(item) {
+						currentObject = currentObject[parseInt(item.substr(0, 1))]; // 用数组的索引取值
+					});
+				}
+				if (currentObject === undefined || currentObject === null) return '';
+			}
+			return currentObject;
+		});
+	};
+	templateStr1.render(data)
+</script>
