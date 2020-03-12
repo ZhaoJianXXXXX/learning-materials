@@ -48,12 +48,12 @@
 
 //模板字符串渲染
 <script type = 'text/javascript'>
-	let templateStr1 = 'i am {{name}},age {{age}},job {{job}}, 在{{grow[0]}}和{{grow[1]}}, 家里有{{family.son}}和{{family.daughter}}';
+	let templateStr = 'i am {{name}},age {{age}},job {{job}}, 在{{grow[0]}}和{{grow[1]}}, 家里有{{family.son}}和{{family.daughter}}和{{family.father[0]}}和{{family.father[1]}}';
 	let data = {
 		name:'xbd',
 		age:18,
 		job:'CTO',
-		family: { son: '儿子', daughter: '女儿' },
+		family: { son: '儿子', daughter: '女儿', father: ['生父', '继父'] },
 		grow: ['北京', '天津']
 	}
 	// 字符串模板匹配
@@ -80,5 +80,5 @@
 			return currentObject;
 		});
 	};
-	templateStr1.templateRender(data)
+	templateStr.templateRender(data)
 </script>
