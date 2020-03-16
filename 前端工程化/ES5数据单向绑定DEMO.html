@@ -67,7 +67,7 @@
 			let currentObject = context;
 			let i, length;
 			for (i = 0, length = variables.length; i < length; ++i) {
-				var curVariables = variables[i].split('['); // 用`[`进行字符串分割 a[0][1] → ["a", "0]", "1]"]
+				let curVariables = variables[i].split('['); // 用`[`进行字符串分割 a[0][1] → ["a", "0]", "1]"]
 				currentObject = currentObject[curVariables[0]]; // 第一位是数组名
 				if (curVariables.length > 1) { // 如果大于1，则有`[`符号，就是数组对象
 					curVariables.shift();  // 去掉数组名，循环["0]", "1]"]
