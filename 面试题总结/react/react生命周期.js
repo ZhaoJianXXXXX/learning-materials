@@ -49,7 +49,7 @@
 
     componentWillMount和componentWillReceiveProps中，setState会被react内部处理，而不触发render；
 
-    其他生命周期均正常出发更新渲染。
+    其他生命周期均正常触发更新渲染。
 
 
 6.setState的执行原理，可以分为两类：
@@ -68,7 +68,7 @@
 		1.setState批量更新处理(合成事件，生命周期函数) -> 此时批量更新状态batchUpdate关闭 -> 合成事件 -> 开启批量更新状态(isBatchUpdates) -> 执行函数内容，收集state/callback -> 关闭批量更新内容 -> 统一处理state执行更新(updateComponent) -> 重置状态，执行callback
 
 	原生事件中setState非批量更新状态
-		1.原生事件，addEventlistener，setTimeout...(原生时间) -> 此时批量更新状态batchUpdate关闭 -> 发起更新(enquereUpdates) -> 统一处理state执行更新(updateComponent) -> 重置状态，执行callback
+		1.原生事件，addEventlistener，setTimeout...(原生事件) -> 此时批量更新状态batchUpdate关闭 -> 发起更新(enquereUpdates) -> 统一处理state执行更新(updateComponent) -> 重置状态，执行callback
 
 	最后，总结一下setState：
 
