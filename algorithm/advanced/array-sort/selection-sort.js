@@ -23,3 +23,11 @@ function selectionSort(array){
         }
     }
 }
+
+
+//一维数组排序var
+arr=[1,5,7,9,16,2,4];
+//降序排列，return a-b; —>升序排列})  //括号里不写回调函数，则默认按照字母逐位升序排列，结果为[1,16,2,4,5,7,9]
+arr.sort(function(a,b){
+	return b-a;
+})
