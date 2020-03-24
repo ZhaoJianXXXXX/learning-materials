@@ -1,0 +1,31 @@
+<!doctype html>
+
+<html>
+	<head>
+		<link rel = "stylesheet" type = "text/css" href = "LazyLoad.css">
+		<script type = "text/javascript" src = "LazyLoad.js"></script>
+	</head>
+	<body>
+		<div id = 'father'>
+			<div class="img-warpper">
+				<img class="lazyload" data-original="https://media1.giphy.com/media/2A7yoKf2B87kotTApZ/200w.webp">
+			</div>
+			<div class="img-warpper">
+				<img class="lazyload" data-original="https://media1.giphy.com/media/2A7yoKf2B87kotTApZ/200w.webp">
+			</div>
+			<div class="img-warpper">
+				<img class="lazyload" data-original="https://media1.giphy.com/media/2A7yoKf2B87kotTApZ/200w.webp">
+			</div>
+			<div class="img-warpper">
+				<img class="lazyload" data-original="https://media1.giphy.com/media/2A7yoKf2B87kotTApZ/200w.webp">
+			</div>
+			<div class="img-warpper">
+				<img class="lazyload" data-original="https://media1.giphy.com/media/2A7yoKf2B87kotTApZ/200w.webp">
+			</div>
+		</div>
+	</body>
+	<script type = 'text/javascript'>
+		// 实例化对象，参数则是需要使用懒加载的图片类名
+		const lazy = new LazyLoad({ father : document.getElementById('father'), tag : '.lazyload' });
+	</script>
+</html>
