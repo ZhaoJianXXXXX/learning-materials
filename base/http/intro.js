@@ -24,53 +24,49 @@
 			4.3.第三次握手：客户端收到服务器的SYN+ACK包，向服务器发送确认包ACK(ack=k+1），此包发送完毕，客户端和服务器进入ESTABLISHED（TCP连接成功）状态，完成三次握手
 			完成三次握手，客户端与服务器开始传送数据
 
-		5.请求报文
-			请求行：用于声明“请求报文”、主机域名、资源路径和协议版本
-			请求头：说明客户端、服务器或报文的部分信息
-			请求体：用于存放需要发送给服务器的数据信息
+		5.报文
+			请求报文包含四部分：
+				a、请求行：包含请求方法、URI、HTTP版本信息，用于声明“请求报文”、主机域名、资源路径和协议版本
+				b、请求头：说明客户端、服务器或报文的部分信息
+				c、请求体：用于存放需要发送给服务器的数据信息
+				d、空行
 
-			5.1.请求行
-				5.1.1.请求方法
-					OPTION 请求“选项”的信息
-					HEAD 请求读取”URL标志信息的首部“信息
-					GET 请求读取“URL标志的信息“的信息
-					POST 为服务器添加信息
-					PUT 为指定的URL下添加（存储）一个文档
-					DELETE 删除指定URL所标志的信息
-					TRACE 用于进行环回测试的请求报文
-					CONNECT 用于代理服务器
-				5.1.2请求路径
-					要了解请求地址，先来了解下URL概念：
-					- 定义：Uniform Resoure Locator，统一资源定位符，是一种资源位置的抽象唯一识别方法。
-					- 作用：用于表示资源位置和访问这些资源的方法
-					- 组成： <协议>：//<主机>：<端口>/<路径>
+			响应报文包含四部分：
+				a、状态行：包含HTTP版本、状态码、状态码的原因短语
+				b、响应头
+				c、响应体
+				d、空行
 
-					协议：采用的应用层通信协议，比如在HTTP协议下的URL地址：HTTP：//<主机>：<端口>/<路径>
-					主机：请求资源所在主机的域名
-					端口和路径有时可以省略（HTTP默认端口号是80）
+			常见的首部：
 
-				5.1.3.请求头
-					5.1.3.1.请求和响应报文的通用Header
-						Content-Type：请求体/响应体的类型，如：text/plain applicaation.json
-						Accept：说明接受的类型，可以多个值，用半角逗号分开
-						Content-Length：请求体/响应体的长度，单位字节
-						Content-Encoding：请求体/响应体的编码格式，如gzip，deflate
-						Accept-Encoding：告知对方我方接受的Content-Encoding
-						ETag：给当前资源的标识，和Last-Modified，If-None-Match，If-Modified-Since配合，用于缓存控制
-						Cache-Control：取值一般为no-cache活max-age=XX，XX为整数，标识该资源缓存有效期(秒)
-					5.1.3.2.常见请求Header
-						Authorization：用于设置身份认证信息
-						User-Agent：用户标识，如：OS和浏览器的类型
-						If-Modified：值为上一次服务器返回的Last-Modified值，用于确认某个资源是否被修改过，没有更改过(304)就从缓存中取
-						If-None-Match：值为上一次服务器返回的ETag值，一般会和If-Modified-Since一起出现
-						Cookie：已有的Cookie
-						Referer：标识请求引用自哪个地址，比如你从页面A跳转页面B时，值为页面A的地址
-						Host：请求的主机和端口号
+				通用首部字段（请求报文与响应报文都会使用的首部字段）
+					Date：创建报文时间
+					Connection：连接的管理
+					Cache-Control：缓存的控制
+					Transfer-Encoding：报文主体的传输编码方式
 
-			5.2.响应行
-			5.3.状态码
-				 状态码分为5大类：
-				 	1xx  表示信息通知，如请求收到了或正在进行处理
+				请求首部字段（请求报文会使用的首部字段）
+					Host：请求资源所在服务器
+					Accept：可处理的媒体类型
+					Accept-Charset：可接收的字符集
+					Accept-Encoding：可接受的内容编码
+					Accept-Language：可接受的自然语言
+
+				响应首部字段（响应报文会使用的首部字段）
+					Accept-Ranges：可接受的字节范围
+					Location：令客户端重新定向到的URI
+					Server：HTTP服务器的安装信息
+
+				实体首部字段（请求报文与响应报文的的实体部分使用的首部字段）
+					Allow：资源可支持的HTTP方法
+					Content-Type：实体主类的类型
+					Content-Encoding：实体主体适用的编码方式
+					Content-Language：实体主体的自然语言
+					Content-Length：实体主体的的字节数
+					Content-Range：实体主体的位置范围，一般用于发出部分请求时使用
+
+				状态码5大类：
+					1xx  表示信息通知，如请求收到了或正在进行处理
 
 					2xx  表示成功，如接受或知道了
 
