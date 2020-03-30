@@ -25,6 +25,6 @@
 7.同一域名不同二级域名，不允许通信
 	http://www.a.com/a.js
 	http://a.com/b.js
-8.不同域名
+8.不同域名，不允许通信
 	http://www.cnblogs.com/a.js
 	http://www.a.com/b.js
