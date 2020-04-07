@@ -25,6 +25,20 @@ options请求有什么作用
 
 	另外在HTTP响应头，凡是浏览器请求中携带了身份信息，而响应头中没有返回Access-Control-Allow-Credentials: true的，浏览器都会忽略此次响应。
 
+
+	然后只能寄希望于减少发起options请求的次数，也就是说还是会用，但不是每次都用，查到的方法如下：
+	后端在请求的返回头部添加：
+
+	Access-Control-Max-Age：（number）  。数值代表preflight request  （预检请求）的返回结果（即 Access-Control-Allow-Methods 和Access-Control-Allow-Headers 提供的信息） 可以被缓存多久，单位是秒。
+
+	例如：将预检请求的结果缓存10分钟：
+
+	Access-Control-Max-Age: 600
+	不同浏览器有不同的上限。在Firefox中，上限是24h（即86400秒），而在Chromium 中则是10min（即600秒）。Chromium 同时规定了一个默认值 5 秒。
+	如果值为 -1，则表示禁用缓存，每一次请求都需要提供预检请求，即用OPTIONS请求进行检测。
+
+	Access-Control-Max-Age方法对完全一样的url的缓存设置生效，多一个参数也视为不同url。也就是说，如果设置了10分钟的缓存，在10分钟内，所有请求第一次会产生options请求，第二次以及第二次以后就只发送真正的请求了。
+
 options请求如何避免
 
 其实通过以上的分析，我们能得出以下解决方案：
@@ -32,3 +46,5 @@ options请求如何避免
 	1：使用代理，避开跨域。
 	2：将复杂跨域请求更改为简单跨域请求。
 	3：不使用带自定义配置的header头部。
+
+
