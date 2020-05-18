@@ -30,7 +30,7 @@ function* gen() {
 }
 
 var test = gen();
-test.next()
+test.next();
 
 /**
  * Generator 函数可以不用yield表达式，这时就变成了一个单纯的暂缓执行函数

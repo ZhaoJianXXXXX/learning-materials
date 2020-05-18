@@ -193,7 +193,7 @@ Animal.getVoice()	//各种叫
 Dog.getVoice()		//汪汪(重写)
 
 let dog = new Dog();
-dog.getName('dog')
+dog.getName('dog');
 
 
 
