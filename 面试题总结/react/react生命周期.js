@@ -78,10 +78,11 @@
 
 		3、callback与state同时收集，处理是在render之后，统一处理的。
 
-7.react合成事件与原生事件相关
+7.react合成事件与原生事件addEventListener相关(默认addEventListener第三个参数是false，即事件冒泡过程中执行函数)
     7.1、react合成事件会通过事件委托绑定在document上
     7.2、如果同时有自定义addEventListener也绑定在document上，则会先执行react合成事件，再执行原生事件
     7.2、如果想让react合成事件通过e.stopPropagation()阻止原生事件执行，那么需要将原生事件绑定在更高的级别，比如window
-    7.2、如果想让原生事件通过e.stopPropagation()阻止react合成事件执行，那么需要将原生事件绑定在更地的级别，比如ducument.body等
+    7.2、如果想让原生事件通过e.stopPropagation()阻止react合成事件执行，那么需要将原生事件绑定在更低的级别，比如ducument.body等
+    tip:捕获阶段反之
 
 
