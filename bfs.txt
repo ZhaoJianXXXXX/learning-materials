@@ -1,0 +1,80 @@
+<script>
+	//数据源
+	const data = [
+		{ id: '1', name: '哈哈部', pid: null },
+		{ id: '1.1', name: '营销部1', pid: '1' },
+		{ id: '1.2', name: '营销部2', pid: '1' },
+		{ id: '1.2.1', name: '营销部2.1', pid: '1.2' },
+		{ id: '2', name: '呵呵部', pid: null },
+		{ id: '2.1', name: '销售部1', pid: '2' },
+		{ id: '2.2', name: '销售部2', pid: '2' },
+	]
+
+    const params = {
+        idKey: 'id',        //主键字段名
+        labelKey: 'name',   //名称字段名
+        pidKey: 'pid',      //父节点id字段名
+        pidTop: null        //最上级元素(无父节点)的pid值
+    }
+    
+    const { idKey, labelKey, pidKey } = params;
+
+	let initColors = function(){
+		let res = {};
+		for(let i = 0; i < data.length; i++){
+			res[data[i][idKey]] = 'white';		
+		}	
+		return res;
+	}
+
+	let afterSearchData = function(name){
+		let res = [];
+		for(let i = 0; i < data.length; i++){
+			if(data[i][labelKey].indexOf(name) > -1){
+				res.push(data[i]); 		  
+			}			
+		}	
+		return res;	
+	}
+
+	let getParents = function(son){
+		let res = [];	
+		for(let i = 0; i < data.length; i++){
+			if(son[pidKey] === data[i][idKey]){
+				res.push(data[i]);   
+			}		
+		}	
+		return res;
+	}
+
+	let result = function(searchData = [], resKeys = [], resData = []){
+		let colors = initColors();	
+		//searchData数组模拟Queue操作 遵循FIFO原则
+		while(searchData && searchData.length > 0){
+			let current = searchData.shift();		//取出数组第一个元素
+			let parentItems = getParents(current);	//获取此元素的父元素
+			//如果当前项尚未被探索 则添加进结果数组
+			if(colors[current[idKey]] === 'white'){
+				resKeys.push(current[idKey]);
+				resData.push(current);
+			}
+			//准备搜索 标记灰色
+			colors[current[idKey]] = 'gray';
+			for(let i = 0; i < parentItems.length; i++){
+				let parentItem = parentItems[i];
+				let parentId = parentItem[idKey];	
+				//如果当前项的父节点未被探索 则标记探索记录(gray) 并且添加进结果数组中
+				if(colors[parentId] === 'white'){
+					colors[parentId] = 'gray';
+					resKeys.push(parentId);
+					resData.push(parentItem);
+					searchData.push(parentItem);
+				}
+			}
+			colors[current[idKey]] = 'black';
+		}
+		return { resKeys, resData };
+	}
+
+	result(afterSearchData('营销'))
+</script>

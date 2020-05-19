@@ -327,5 +327,7 @@ input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
 	token：用户点击链接，由于浏览器不会自动带上token，所以即使发了请求，后端的token验证不会通过，所以不会进行扣款操作；
 
 
+30.在线编辑网页（静态）
+    document.body.contentEditable = 'true';
 
 
