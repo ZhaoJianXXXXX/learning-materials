@@ -78,6 +78,23 @@ function getId () {
 })()
 
 
+/*async/await解析为yield函数*/
+
+const getData = () => new Promise(resolve => setTimeout(() => resolve("data"), 1000))
+
+var test = asyncToGenerator(
+    function* testG() {
+      // await被编译成了yield
+      const data = yield getData()
+      console.log('data: ', data);
+      const data2 = yield getData()
+      console.log('data2: ', data2);
+      return 'success'
+    }
+)
+
+test().then(res => console.log(res))
+
 //用最简单的方式实现了asyncToGenerator这个函数，这是babel编译async函数的核心，当然在babel中，generator函数也被编译成了一个很原始的形式，我们直接以generator替代
 function asyncToGenerator(generatorFunc) {
   // 返回的是一个新的函数

@@ -80,9 +80,6 @@ function* dataConsumer() {
 }
 
 let genObj = dataConsumer();
-genObj.next();
-// Started
-genObj.next('a')
-// 1. a
-genObj.next('b')
-// 2. b
+genObj.next();      // Started
+genObj.next('a');   // 1. a
+genObj.next('b');   // 2. b
