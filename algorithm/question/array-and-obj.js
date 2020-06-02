@@ -171,3 +171,28 @@
 		}
 		return array;
 	}
+
+12.回溯算法
+    //获取[1,2,3]所有排列组合方式
+    function test(arr){
+        return getTest(arr, [], [])
+    }
+
+    function getTest(arr, cur = [], res){
+        //拷贝一下，防止递归调用造成的影响
+        cur = [...cur];
+        if(cur.length === arr.length){
+            res.push(cur);
+            return res;
+        }
+        for(let i = 0 ; i < arr.length ; i++){
+            if(!cur.includes(arr[i])){
+                cur.push(arr[i]);
+                getTest(arr, cur, res);
+                cur.pop();
+            }
+        }
+        return res;
+    }
+
+    test([1,2,3]);
