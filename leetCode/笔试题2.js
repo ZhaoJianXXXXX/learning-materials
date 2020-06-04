@@ -252,30 +252,39 @@ let grid = [
     [1,1,1,0],
 ];
 
-shortestPath(grid, 1)
 
-function reverseList(node){
-    if(node === null){
-        return null;
-    }
-    let originNode = node;
-    let reverseNode = null;
-    function reverse(node){
-        if(node.next === null){
-            reverseNode = node;
-        }else{
-            let newNode = reverse(node.next);
-            newNode.next = node;
-            if(originNode === node){
-                node.next = null;
-                return reverseNode;
-            }else{
-                return node;
-            }
-        }
-    }
-    return reverse(node)
-}
+//function getNeighbors(point, end){
+//    if(point[0] < end[0] && point[1] < end[1]){
+//        return [[point[0] + 1, point[1]], [point[0], point[1] + 1]];
+//    }
+//    if(point[0] < end[0] && point[1] >= end[1]){
+//        return [[point[0] + 1, end[1]]];
+//    }
+//    if(point[0] >= end[0] && point[1] < end[1]){
+//        return [[end[0], point[1] + 1]];
+//    }
+//    return [];
+//}
+//
+//function findPath(start, end, pathNum){
+//    if(start[0] === end[0] && start[1] === end[1]){
+//        pathNum[0]++;
+//        return pathNum;
+//    }
+//    let neighbors = getNeighbors(start, end);
+//    for(let i = 0; i < neighbors.length; i++){
+//        findPath(neighbors[i], end, pathNum);
+//    }
+//    return pathNum;
+//}
+//
+//function uniquePaths(m, n){
+//    let start = [0, 0];
+//    let end = [m-1, n-1];
+//    return findPath(start, end, [0])[0];
+//}
+//
+//uniquePaths(3,2);
 
-reverseList()
+
 
