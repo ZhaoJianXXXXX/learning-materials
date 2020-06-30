@@ -46,10 +46,3 @@ const useLayoutEffect = (effectFunc, inputs) => {
 }
 
 export { useEffect, useLayoutEffect, runEffects, cleanupEffects };
-
-
-
-
-
-
-
