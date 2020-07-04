@@ -40,3 +40,51 @@ css
 
 可能根据简历里又会问一些简历中的内容
 可能也会有一些模拟情况问你如何解决，技术/开发流程/管理等等
+
+
+
+const arr = [1, 2, 3];
+
+//[1,1,1][1,1,2][1,1,3][1,2,1][1,2,2][1,2,3][1,3,1][1,3,2][1,3,3]
+
+function getCombines(arr){
+    let length = arr.length;
+    let ways = Math.pow(length, length);
+    let newArrs = [];
+
+    let groupNum = ways/length;        //每组的个数
+    let groupsNum = ways/groupNum;     //组数
+    for(let i = 0 ; i < groupsNum ; i++){
+        newArrs[i] = [];
+        for(let j = 0 ; j < groupNum ; j++){
+            newArrs[i][0] = arr[i % groupsNum]
+        }
+    }
+
+    return newArrs;
+}
+
+getCombines(arr)
+
+
+
+function test(arr){
+    let arrFormat = Array.from(new Set(arr)).sort((a, b) => a-b);
+    if(arrFormat && arrFormat.length > 0){
+        let newArr = [[arrFormat[0]]];
+        for(let i = 1 ; i < arrFormat.length ; i++){
+            let newArrItem = newArr[newArr.length-1];
+            if(arrFormat[i] === newArrItem[newArrItem.length-1] + 1){
+                newArrItem.push(arrFormat[i]);
+            }else{
+                newArr.push([arrFormat[i]])
+            }
+        }
+        return newArr;
+    }
+    return [];
+}
+test([2,10,3,4,5,11,10,11,20])
+
+
+

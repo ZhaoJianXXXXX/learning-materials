@@ -90,4 +90,93 @@
 
 		calc(callback);
 	</script>
+    <script>
+        //['flower', 'flow', 'flight'] 输出 'fl'
+        function getPre(arr){
+            let n = 0;
+            let flag = true;
+            let res = '';
+            let length = arr.length;
+            while(n >= 0 && flag){
+                let buffer = [];
+                for(let i = 0; i < length; i++){
+                    let now = arr[i].charAt(n);
+                    if(now && (buffer.length === 0 || buffer[0] === now)){
+                        buffer.push(now);
+                    }else{
+                        flag = false;
+                        break;
+                    }
+                    if(i === length - 1){
+                        res += buffer[0];
+                    }
+                }
+                n++;
+            }
+            return res;
+        }
+
+        function maxPrefix(arrs) {
+          if (!arrs || !arrs.length) return '';
+
+          let currentIndex = 0;
+
+          while (currentIndex < arrs[0].length) {
+            const refer = arrs[0][currentIndex];
+            // 是否全部匹配
+            const allMatch = arrs.reduce((pre, str) => {
+              return pre && str[currentIndex] === refer;
+            }, true);
+
+            if (allMatch) {
+              currentIndex++;
+            } else {
+              break;
+            }
+          }
+
+          return arrs[0].slice(0, currentIndex);
+        }
+
+        // 获取最大字符串 最小字符串的公共前缀
+        function longestCommonPrefix(strs) {
+          if (strs === null || strs.length === 0) return '';
+          if (strs.length === 1) return strs[0];
+
+          let min = 0;
+          let max = 0;
+          for (let i = 1; i < strs.length; i++) {
+            if (strs[min] > strs[i]) {console.info('min', strs[min], strs[i]); min = i};
+            if (strs[max] < strs[i]) {console.info('max', strs[max], strs[i]); max = i};
+          }
+          for (let j = 0; j < strs[min].length; j++) {
+            if (strs[min].charAt(j) !== strs[max].charAt(j)) {
+              return strs[min].substring(0, j);
+            }
+          }
+          // 若最小字符串完全匹配
+          return strs[min];
+        }
+
+        let arr = [];
+        let str = '';
+        let startTime = 0;
+        let endTime = 0;
+        let res = '';
+        for(let i = 0 ; i < 1000; i++){
+            str += 's';
+        }
+        for(let i = 0 ; i < 10000; i++){
+            arr.push(str);
+        };
+        startTime = new Date().getTime();
+        res = getPre(arr);
+//        res = maxPrefix(arr);
+//        res = longestCommonPrefix(arr);
+        endTime = new Date().getTime();
+        console.info(res);
+        console.info(startTime);
+        console.info(endTime);
+        console.info(endTime-startTime);
+    </script>
 </html>

@@ -171,3 +171,49 @@
 		}
 		return array;
 	}
+
+12.获取数组中字符串的公共前缀
+    //['flower', 'flow', 'flight'] => 'fl'
+    //方法1(推荐，贼快)
+    function longestCommonPrefix(strs) {
+        if (strs === null || strs.length === 0) return '';
+        if (strs.length === 1) return strs[0];
+        let min = 0;
+        let max = 0;
+        for (let i = 1; i < strs.length; i++) {
+            if (strs[min] > strs[i]) {console.info('min', strs[min], strs[i]); min = i};
+            if (strs[max] < strs[i]) {console.info('max', strs[max], strs[i]); max = i};
+        }
+        for (let j = 0; j < strs[min].length; j++) {
+            if (strs[min].charAt(j) !== strs[max].charAt(j)) {
+                return strs[min].substring(0, j);
+            }
+        }
+        // 若最小字符串完全匹配
+        return strs[min];
+    }
+
+    //方法2(我自己写的，也不慢)
+    function getPre(arr){
+        let n = 0;
+        let flag = true;
+        let res = '';
+        let length = arr.length;
+        while(n >= 0 && flag){
+            let buffer = [];
+            for(let i = 0; i < length; i++){
+                let now = arr[i].charAt(n);
+                if(now && (buffer.length === 0 || buffer[0] === now)){
+                    buffer.push(now);
+                }else{
+                    flag = false;
+                    break;
+                }
+                if(i === length - 1){
+                    res += buffer[0];
+                }
+            }
+            n++;
+        }
+        return res;
+    }
