@@ -172,7 +172,6 @@
 		return array;
 	}
 
-<<<<<<< HEAD
 12.获取数组中字符串的公共前缀
     //['flower', 'flow', 'flight'] => 'fl'
     //方法1(推荐，贼快)
@@ -218,8 +217,7 @@
         }
         return res;
     }
-=======
-12.回溯算法
+13.回溯算法
     //获取[1,2,3]所有排列组合方式
     function test(arr){
         return getTest(arr, [], [])
@@ -243,4 +241,3 @@
     }
 
     test([1,2,3]);
->>>>>>> origin/master
