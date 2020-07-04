@@ -157,16 +157,41 @@ function getNeighbors(x, y, grid){
     return res;
 }
 
+//BFS获取最短路径
+function getMinPath(grid, start, end){
+    let { colors, neighbors, distance } = getAllMsg(grid);
+    let queue = [start];
+    let pred = {};
+    while(queue.length > 0){
+        let current = queue.shift();
+        let current_neighbors = neighbors[current];
+        colors[current] = 'gray';
+        for(let i = 0; i < current_neighbors.length; i++){
+            let n = current_neighbors[i];
+            if(colors[n] === 'white'){
+                colors[n] = 'gray';
+                distance[n] = distance[current] + 1;
+                pred[n] = current;
+                queue.push(n)
+            }
+        }
+        colors[current] = 'black';
+    }
+    return { distance, pred };
+}
+
 //获取所有路径
 function getAllPath(grid, start, end){
     let { values, neighbors, distance, keys } = getAllMsg(grid);
     let pathArr = [];  // 保存找到的所有路径
+    let pathMinLength = null;
     const findPath = (sourceId, targetId, pathNodes = []) => {
         //存储当前路径的节点 拷贝避免引用传递导致递归调用时相互影响。
         pathNodes = [...pathNodes];
         pathNodes.push(sourceId);
         if (sourceId === targetId) {
             pathArr.push(pathNodes);
+            pathMinLength = (pathMinLength === null || pathMinLength > pathNodes.length) ? pathNodes.length : pathMinLength;
             return;
         }
         for(let i = 0; i < neighbors[sourceId].length; i++){
@@ -177,25 +202,22 @@ function getAllPath(grid, start, end){
         }
     }
     findPath(start, end, []);
-    pathArr.sort((path1, path2) => {
-        return path1.length - path2.length;
-    });
-    return pathArr;
+    return { pathArr, pathMinLength };
 }
 
-function hasEffectivePath(grid, paths, k){
+function hasEffectivePath(grid, pathsMsg, k){
     let { values } = getAllMsg(grid);
-    if(Array.isArray(paths) && paths.length > 0 && Array.isArray(paths[0]) && paths[0].length > 0){
-        let minLength = paths[0].length;
-        for(let i = 0; i < paths.length; i++){
-            if(paths[i].length === minLength){
+    let { pathArr, pathMinLength } = pathsMsg;
+    if(Array.isArray(pathArr) && pathArr.length > 0 && Array.isArray(pathArr[0]) && pathArr[0].length > 0){
+        for(let i = 0; i < pathArr.length; i++){
+            if(pathArr[i].length === pathMinLength){
                 let block = 0;
-                for(let j = 0; j < paths[i].length; j++){
-                    block += values[paths[i][j]];
+                for(let j = 0; j < pathArr[i].length; j++){
+                    block += values[pathArr[i][j]];
                     if(block > k){ break; }
                 }
                 if(block <= k){
-                    return minLength - 1;
+                    return pathMinLength - 1;
                 }
             }
         }
@@ -225,13 +247,44 @@ function shortestPath(grid = [[]], k = 0){
 
 let grid = [
     [0,0,0,0],
-    [1,1,1,1],
+    [1,1,0,1],
     [1,0,0,1],
     [1,1,1,0],
 ];
 
-shortestPath(grid, 1)
 
+//function getNeighbors(point, end){
+//    if(point[0] < end[0] && point[1] < end[1]){
+//        return [[point[0] + 1, point[1]], [point[0], point[1] + 1]];
+//    }
+//    if(point[0] < end[0] && point[1] >= end[1]){
+//        return [[point[0] + 1, end[1]]];
+//    }
+//    if(point[0] >= end[0] && point[1] < end[1]){
+//        return [[end[0], point[1] + 1]];
+//    }
+//    return [];
+//}
+//
+//function findPath(start, end, pathNum){
+//    if(start[0] === end[0] && start[1] === end[1]){
+//        pathNum[0]++;
+//        return pathNum;
+//    }
+//    let neighbors = getNeighbors(start, end);
+//    for(let i = 0; i < neighbors.length; i++){
+//        findPath(neighbors[i], end, pathNum);
+//    }
+//    return pathNum;
+//}
+//
+//function uniquePaths(m, n){
+//    let start = [0, 0];
+//    let end = [m-1, n-1];
+//    return findPath(start, end, [0])[0];
+//}
+//
+//uniquePaths(3,2);
 
 
 

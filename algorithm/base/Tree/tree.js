@@ -112,12 +112,27 @@ function BinarySearchTree(){
     this.tree = function(){
         return root
     }
+
+    //获取树的高度
+    this.height = function(){
+        return getHeight(root);
+    }
+
+    function getHeight(node){
+        if(node === null){
+            return 0;
+        }
+        let l = getHeight(node.left);
+        let r = getHeight(node.right);
+        return l > r ? ++l : ++r;
+    }
 }
 
 let tree = new BinarySearchTree();
 let array = [11,7,15,5,9,13,20,3,6,8,10,12,14,18,25];
 array.map((item) => { tree.insert(item) })
 tree.tree();
-tree.inOrderTraverse((node) => {console.info(node.key)})
-tree.preOrderTraverse((node) => {console.info(node.key)})
-tree.postOrderTraverse((node) => {console.info(node.key)})
+//tree.inOrderTraverse((node) => {console.info(node.key)})
+//tree.preOrderTraverse((node) => {console.info(node.key)})
+//tree.postOrderTraverse((node) => {console.info(node.key)})
+tree.height();
