@@ -39,11 +39,11 @@ A : macrotask：主代码块，setTimeout，setInterval等（可以看到，事�
 
 //只能实现1 2 3
 function CodingMan(name){
-	console.info(`Hi, this is ${name}!`);
+    console.info(`Hi, this is ${name}!`);
 	return {
 		sleep : function(s){
 			return {
-				eat : function(type){
+				eat: function(type){
 					return new Promise((resolve) => {
 						setTimeout(() => {
 							console.info(`Wake up after ${s}`);
@@ -55,7 +55,7 @@ function CodingMan(name){
 				}
 			}
 		},
-		eat : function(type){
+		eat: function(type){
 			console.info(type)
 			return this;
 		},
