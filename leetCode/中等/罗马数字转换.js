@@ -70,9 +70,7 @@ function dealK(params){
     if(num >= 1000 && num < 4000){
         let int = Math.floor(num / 1000);
         let point = num % 1000;
-        for(let i = 0; i < int; i++){
-            res += 'M';
-        }
+        res += 'M'.repeat(int);
         return { res, num: point };
     }
     return { res: '', num: params.num }
@@ -86,18 +84,14 @@ function dealH(params){
         let int = Math.floor(num / 100);
         let point = num % 100;
         if(int <= 3){
-            for(let i = 0; i < int; i++){
-                res += 'C';
-            }
+            res += 'C'.repeat(int);
         }else if(int === 4){
             res = 'CD'
         }else if(int === 5){
             res = 'D';
         }else if(int <= 8){
             res = 'D';
-            for(let i = 5; i < int; i++){
-                res += 'C'
-            }
+            res += 'C'.repeat(int - 5);
         }else if(int === 9){
             res = 'CM'
         }
@@ -114,18 +108,14 @@ function dealT(params){
         let int = Math.floor(num / 10);
         let point = num % 10;
         if(int <= 3){
-            for(let i = 0; i < int; i++){
-                res += 'X';
-            }
+            res += 'X'.repeat(int);
         }else if(int === 4){
             res = 'XL'
         }else if(int === 5){
             res = 'L';
         }else if(int <= 8){
             res = 'L';
-            for(let i = 5; i < int; i++){
-                res += 'X'
-            }
+            res += 'X'.repeat(int - 5);
         }else if(int === 9){
             res = 'XC'
         }
@@ -140,18 +130,14 @@ function dealS(params){
     let res = '';
     if(num < 10 && num >= 0){
         if(num <= 3){
-            for(let i = 0; i < num; i++){
-                res += 'I';
-            }
+            res += 'I'.repeat(num);
         }else if(num === 4){
             res = 'IV'
         }else if(num === 5){
             res = 'V';
         }else if(num <= 8){
             res = 'V';
-            for(let i = 5; i < num; i++){
-                res += 'I'
-            }
+            res += 'I'.repeat(num - 5);
         }else if(num === 9){
             res = 'IX';
         }
@@ -165,7 +151,7 @@ function intToRoman(num){
     return ret.res;
 }
 
-//console.info(intToRoman(1994));
+console.info(intToRoman(1994));
 
 //方法2(贪心算法)
 //执行用时 :164 ms, 在所有 JavaScript 提交中击败了64.14%的用户
