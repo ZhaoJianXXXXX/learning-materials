@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset = 'utf-8'>
+        <title>虚拟列表</title>
+        <style>
+            .list-view {
+                height: 400px;
+                overflow: auto;
+                position: relative;
+                border: 1px solid #aaa;
+            }
+
+            .list-view-phantom {
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                z-index: -1;
+            }
+
+            .list-view-content {
+                left: 0;
+                right: 0;
+                top: 0;
+                position: absolute;
+            }
+
+            .list-view-item {
+                padding: 5px;
+                color: #666;
+                line-height: 30px;
+                box-sizing: border-box;
+            }
+        </style>
+    </head>
+    <body>
+        <div class = 'list-view' onscroll = 'handleScroll()'>
+            <div class = 'list-view-phantom' id = 'list-view-phantom'>
+
+            </div>
+            <div id = 'content' class = 'list-view-content'>
+                <div class = 'list-view-item'>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type = 'text/javascript'>
+        const data = [];
+        const visibleData = [];
+        const dataNums = 100;
+        document.getElementById('list-view-phantom').style.height = `${dataNums * 30}px`;
+    </script>
+    <script type = 'text/javascript'>
+        function setContent(id){
+            let node = document.getElementById(id);
+            for(let i = 0; i < dataNums; i++){
+                let div = document.createElement('div');
+                div.setAttribute('class', 'list-view-item');
+                div.innerHTML = `name${i}`;
+                node.appendChild(div);
+            }
+        }
+        function clearContent(id){
+            document.getElementById(id).innerHTML = '';
+        }
+
+        function updateVisibleData(scrollTop) {
+            scrollTop = scrollTop || 0;
+            const visibleCount = Math.ceil(this.$el.clientHeight / this.itemHeight);
+            const start = Math.floor(scrollTop / this.itemHeight);
+            const end = start + visibleCount;
+            this.visibleData = this.data.slice(start, end);
+            this.$refs.content.style.webkitTransform = `translate3d(0, ${ start * this.itemHeight }px, 0)`;
+        }
+
+        function handleScroll() {
+            console.info('进来了')
+//            const scrollTop = this.$el.scrollTop;
+//            this.updateVisibleData(scrollTop);
+        }
+
+        setContent('content')
+    </script>
+</html>
