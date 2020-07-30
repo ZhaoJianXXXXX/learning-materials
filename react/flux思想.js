@@ -1,9 +1,16 @@
 Flux 的最大特点，就是数据的"单向流动"。
-1.用户访问 View
-2.View 发出用户的 Action
-3.Dispatcher 收到 Action，要求 Store 进行相应的更新
-4.Store 更新后，发出一个"change"事件
-5.View 收到"change"事件后，更新页面
+
+单向数据流
+    1.用户访问 View
+    2.View 发出用户的 Action
+    3.Dispatcher 收到 Action，要求 Store 进行相应的更新
+    4.Store 更新后，发出一个"change"事件
+    5.View 收到"change"事件后，更新页面
+
+双向数据流
+    1.双向数据绑定，带来双向数据流。数据（state）和视图（View）之间的双向绑定。
+
+    说到底就是 双向绑定 是（value 的单向绑定 + onChange 事件侦听）的一个语法糖
 
 
 传统前端的编程方式是命令式的，直接操纵 DOM，告诉浏览器该怎么干。这样的问题就是，大量的代码被用于操作 DOM 元素，且代码可读性差，可维护性低。
