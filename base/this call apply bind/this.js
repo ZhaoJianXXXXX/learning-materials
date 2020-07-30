@@ -55,6 +55,35 @@ let myClassEx3 = new myClass3();
 console.info(myClassEx3.name);               //'sven'   构造器不显式返回任何数据或者返回一个非对象类型的数据，就不会造成上述问题
 
 
+箭头函数和普通函数的区别如下。
+
+普通函数：根据调用我的人（谁调用我，我的this就指向谁）
+
+箭头函数：根据所在的环境（我再哪个环境中，this就指向谁）
+
+一针见血式总结:
+
+普通函数中的this:
+
+1. this总是代表它的直接调用者(js的this是执行上下文), 例如 obj.func ,那么func中的this就是obj
+
+2.在默认情况(非严格模式下,未使用 'use strict'),没找到直接调用者,则this指的是 window （常见的window的属性和方法有: alert, location,document,parseInt,setTimeout,setInterval等）(约定俗成)
+
+3.在严格模式下,没有直接调用者的函数中的this是 undefined
+
+4.使用call,apply,bind(ES5新增)绑定的,this指的是 绑定的对象 
+
+箭头函数中的this
+
+箭头函数没有自己的this, 它的this是继承而来; 默认指向在定义它时所处的对象(宿主对象),而不是执行时的对象, 定义它的时候,可能环境是window; 箭头函数可以方便地让我们在 setTimeout ,setInterval中方便的使用this
+
+要整明白这些, 我们需要首先了解一下作用域链:
+
+当在函数中使用一个变量的时候,首先在本函数内部查找该变量,如果找不到则找其父级函数,
+
+最后直到window,全局变量默认挂载在window对象下
+
+
 /*全面事例*/
 	/*
 	 * 1.全局 & 调用普通函数
