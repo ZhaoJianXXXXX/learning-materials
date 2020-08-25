@@ -7,4 +7,5 @@
 5.遇到img等，先正常解析dom结构，然后浏览器异步加载src，并继续解析文档
 6.当文档解析完成之后（即renderTree构建完成之后， 此时还未下载完对吧），document.readyState=‘interative’。活跃的 动态的
 7.文档解析完成后，所有设置有defer的脚本会按照顺序执行。
-8.文档解析完成之后 页面会触发document上的一个DOMContentLoad事件9.当页面所有部分都执行完成之后 document.readyState =‘complete’ 之后就可以执行window.onload事件了
+8.文档解析完成之后 页面会触发document上的一个DOMContentLoad事件
+9.当页面所有部分都执行完成之后 document.readyState =‘complete’ 之后就可以执行window.onload事件了
