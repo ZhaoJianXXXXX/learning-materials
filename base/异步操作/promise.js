@@ -181,6 +181,7 @@ new Promise((resolve) => {
 })
 .then(() => {
 	console.info('arrive here')
+    //Promise.reject('中断后续调用');         // 此行注释打开 会直接向外抛出错误，不会跳到catch中
 	//return Promise.reject('中断后续调用'); 	// 此行注释打开 rejected的状态将直接跳到catch里 剩下的调用不会再继续 直接跳到最后的catch中
 })
 .then(() => {
