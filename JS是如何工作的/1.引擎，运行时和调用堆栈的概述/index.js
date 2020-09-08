@@ -4,14 +4,14 @@ V8引擎由两个主要部件组成
     1.Memory Heap(内存堆)——内存分配地址的地方
     2.Call Stack(调用堆栈)——代码执行的地方
 
-    (引擎.png)
+    (image/引擎.png)
 
 /*RunTime(运行时)*/
 有些浏览器的API经常被使用到，比如说setTimeout。
 但是这些API却不是引擎提供的。
 那他们是从哪来的呢
 
-    (运行时.png)
+    (image/运行时.png)
 
 所以说我们还有很多引擎之外的API，我们把这些由浏览器提供的API称为Web API，比如DOM，AJAX，setTimeout等等
 
