@@ -15,7 +15,7 @@
 //  [3,2,1],
 //]
 
-function get(nums, res, cur){
+function get(nums, cur, res){
     cur = [...cur];
     if(nums.length === cur.length){
         res.push(cur);
@@ -24,7 +24,7 @@ function get(nums, res, cur){
     for(let i = 0; i < nums.length; i++){
         if(!cur.includes(nums[i])){
             cur.push(nums[i]);
-            get(nums, res, cur);
+            get(nums, cur, res);
             cur.pop();
         }
     }
