@@ -199,9 +199,3 @@ dog.getName('dog');
 
 
 
-
-
-
-
-
-

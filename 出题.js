@@ -238,63 +238,52 @@ function get(arys){
 get([[1, 4], [3, 6], [8, 12], [9, 15]]); //[[1, 6], [8, 15]]
 
 
-
-
-
-
-
-
-function Father(){
-	const [fn, setFn] = useState();
-
-	function click(f){
-		if(typeof fn !== 'function'){
-			setFn(f)
-		}
-	}
-
-	function runSonAdd(){
-		if(typeof fn === 'function'){
-			fn();
-		}
-		setFn();
-	}
-
-	return(
-		<div>
-			<Child1 click = { click }/>
-			<Child2 click = { click }/>
-			<div click = { runSonAdd }>runSonAdd</div>
-		</div>
-	)
-}
-
-function Child1({ click }){
-
-	function fn(){
-		//todo
-	}
-
-	function check(){
-		//todo
-		if(typeof click === 'function'){
-			click(fn);
-		}
-	}
-
-	return(
-		<div onClick = { check }>Child1</div>
-	)
-}
-
-
-
-function A(ary){
-	//todo
-}
-
 A([1,2]) => [[1,2], [2,1]]
 A([1,2,3]) => [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]]
+
+function Father(props){
+	this.name = props.name
+}
+Father.prototype.getName = function(){ return this.name }
+
+function Son(props){
+	Father.call(this, props);
+	this.sex = props.sex;
+}
+
+Son.prototype = Father.prototype;
+
+
+
+
+
+
+function A(){
+	function open(...rest){
+		console.info('rest', rest); //[1,2,3]
+	}
+	return(
+		<B click = { open }></B>
+	)
+}
+
+function B({ click }){
+
+	function test(){
+		if(typeof click === 'function'){
+			click(1,2,3)
+		}
+	}
+
+	return(
+		<div onClick = { test }>123</div>
+	)
+}
+
+
+
+
+
 
 
 
