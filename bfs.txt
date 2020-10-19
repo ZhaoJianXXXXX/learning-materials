@@ -2,8 +2,8 @@
 	//数据源
 	const data = [
 		{ id: '1', name: '哈哈部', pid: null },
-		{ id: '1.1', name: '营销部1', pid: '1' },
-		{ id: '1.2', name: '营销部2', pid: '1' },
+		{ id: '1.1', name: '哈哈部1', pid: '1' },
+		{ id: '1.2', name: '哈哈部2', pid: '1' },
 		{ id: '1.2.1', name: '营销部2.1', pid: '1.2' },
 		{ id: '2', name: '呵呵部', pid: null },
 		{ id: '2.1', name: '销售部1', pid: '2' },
@@ -77,4 +77,45 @@
 	}
 
 	result(afterSearchData('营销'))
+</script>
+
+
+<script>
+    const data = [
+        { id: "1", name: "哈哈部", pid: null },
+        { id: "1.1", name: "营销部1", pid: '1' },
+        { id: "1.2", name: "哈哈部2", pid: '1' },
+        { id: "1.2.1", name: "营销部2.1", pid: '1.2' },
+        { id: "1.2.1.1", name: "呵呵营销2.1.1", pid: '1.2.1' },
+        { id: "2", name: "呵呵部", pid: null },
+        { id: "2.1", name: "销售部1", pid: "2" },
+        { id: "2.1.1", name: "销售部1.1", pid: "2.1" },
+        { id: "2.1.1.1", name: "销售部1.1.1", pid: "2.1.1" },
+        { id: "2.1.2", name: "销售部1.2", pid: "2.1" },
+        { id: "2.2", name: "销售部2", pid: "2" }
+    ];
+
+    function trans(arrs, value) {
+        let results = [];
+        let obj = {};
+        for (let i = 0; i < arrs.length; i++) {
+            let item = arrs[i];
+            obj[item.id] = { count: 0, value: item };
+            if (item.name.includes(value)) {
+                let itemObj = item;
+                while (itemObj.pid) {
+                    if (obj[itemObj.pid].count < 1) {
+                        results.push(obj[itemObj.pid].value);
+                    }
+                    itemObj = obj[itemObj.pid].value;
+                    obj[itemObj.pid] && obj[itemObj.pid].count++;
+                }
+                obj[item.id].count++;
+                results.push(item);
+            }
+        }
+    return results;
+    }
+
+    console.log(trans(data, "营销"));
 </script>
