@@ -251,39 +251,31 @@ function Son(props){
 	this.sex = props.sex;
 }
 
-Son.prototype = Father.prototype;
+function Middle(){}
+
+Middle.prototype = = Father.prototype;
+Son.prototype = new Middle();
+Son.prototype.constructor = Son;
 
 
 
 
-
-
-function A(){
-	function open(...rest){
-		console.info('rest', rest); //[1,2,3]
-	}
-	return(
-		<B click = { open }></B>
-	)
+function copyRight(copyRight1, copyRight2){
+    copyRight1 = typeof copyRight1 === 'string' && copyRight1.split('.') || [];
+    copyRight2 = typeof copyRight2 === 'string' && copyRight2.split('.') || [];
+    const length = Math.max(copyRight1.length, copyRight2.length);
+    for(let i = 0; i < length; i++){
+        if((copyRight1[i] && !copyRight2[i]) || copyRight1[i] > copyRight2[i]){
+            return copyRight1.join('.');
+        }
+        if((!copyRight1[i] && copyRight2[i]) || copyRight1[i] < copyRight2[i]){
+            return copyRight2.join('.');
+        }
+    }
+    return 'equal';
 }
 
-function B({ click }){
-
-	function test(){
-		if(typeof click === 'function'){
-			click(1,2,3)
-		}
-	}
-
-	return(
-		<div onClick = { test }>123</div>
-	)
-}
-
-
-
-
-
+copyRight('1.0.1', '1.0.0')
 
 
 
