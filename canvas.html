@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset = 'utf-8'/>
+		<style>
+			html,body, div{
+				margin: 0;
+				padding: 0;
+			}
+            body{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                width: 100vw;
+            }
+            div, canvas{
+                box-sizing: border-box;
+            }
+		</style>
+	</head>
+	<body>
+        <button onclick = 'setData()'>这是个按钮</button>
+	</body>
+	<script type = 'text/javascript'>
+        function checkType(type, param){
+            return Object.prototype.toString.call(param) === `[object ${type}]`
+        }
+        function createElement(type = 'div', props = {}){
+            let dom = document.createElement(type);
+            for(let i in props){
+                dom.setAttribute(i, props[i]);
+            }
+            return dom;
+        }
+        function setCanvas(prefix, { width, height, attributes }){
+            const id = `${prefix}_${new Date().getTime()}`;
+            const canvas = createElement('canvas', Object.assign(attributes, { id }));
+            canvas.width = width;
+            canvas.height = height;
+            return { id, canvas, ctx: canvas.getContext('2d') }
+        }
+        function locateStart(ctx, point){
+            ctx.translate(...point);
+        }
+        //绘制轴线
+        function drawCoor(ctx, { start = [0, 0], end = [100, 100], strokeStyle, lineWidth }){
+            ctx.save();
+            ctx.moveTo(...start);
+            ctx.lineTo(...end);
+            ctx.lineWidth = lineWidth;
+            ctx.strokeStyle = strokeStyle;
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        //绘制数据
+        function drawData(ctx, { xCoor = {}, yCoor = [0, 0], data = [], xDataProps = {}, yDataProps = {} }){
+            const { start: xStart, end: xEnd } = xCoor;
+            const { start: yStart, end: yEnd } = yCoor;
+            const { key: xKey, name: xName, width: dataWidth } = xDataProps;
+            const { key: yKey, name: yName, nums: yNums } = yDataProps;
+            const length = data.length;
+            const xInterval = length < 2 ? xEnd[0] - xStart[0] : (xEnd[0] - xStart[0])/(length - 1);
+            let yMax = 0;
+            for(let i = 0; i < data.length; i++){
+                yMax = Math.max(data[i][yKey], yMax);
+            }
+            const yInterval = yMax > 0 && (yEnd[1] - yStart[1])/(yNums) || 0;
+            const yNumInterval = yMax > 0 && yMax/yNums;
+            //这句很关键，没有的话无法使用clearRect清空
+            ctx.beginPath();
+            for(let i = 0; i < data.length; i++){
+                const item = data[i];
+                if(checkType('Object', item)){
+                    //绘制x轴刻度
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(item[xKey], xStart[0] + xInterval * i, xStart[1]);
+                    //绘制数据
+                    if(i === 0){
+                        ctx.moveTo(xStart[0] + xInterval * i, yStart[1] + item[yKey]/yNumInterval*yInterval);
+                    }else{
+                        ctx.lineTo(xStart[0] + xInterval * i, yStart[1] + item[yKey]/yNumInterval*yInterval);
+                    }
+                    ctx.stroke();
+                }
+                if(checkType('Array', item)){
+
+                }
+            }
+            //绘制y轴刻度
+            for(let i = 0; i < yNums; i++){
+                ctx.textAlign = 'end';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(yNumInterval * i, yStart[0], yStart[1] + yInterval * i);
+            }
+            ctx.textAlign = 'end';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(yMax, yStart[0], yEnd[1]);
+        }
+	</script>
+    <script type = 'text/javascript'>
+        function DrawLine({ width, height, padding, xDataProps = {}, yDataProps = {}, data = [] }){
+            const father = createElement('div', { style: `position: relative; width: ${width}px; height: ${height}px` });
+            const prefix = 'zhu';
+            const attributes = { style: 'position: absolute; top: 0; left: 0; border: 1px solid #000' }
+            const coorCanvasProps = setCanvas(`${prefix}_coor`, { width, height, attributes });
+            const dataCanvasProps = setCanvas(`${prefix}_data`, { width, height, attributes });
+            function drawThisCoor(){
+                const { id, canvas, ctx } = coorCanvasProps;
+                const xCoor = { start: [padding, -padding], end: [width-padding, -padding] };
+                const yCoor = { start: [padding, -padding], end: [padding, -(height-padding)] };
+                ctx.save();
+                //迁移起点位置
+                locateStart(ctx, [0, height]);
+                //绘制x轴
+                drawCoor(ctx, Object.assign(xCoor, {}));
+                //绘制y轴
+                drawCoor(ctx, Object.assign(yCoor, {}));
+                ctx.restore();
+                return canvas;
+            }
+            function drawThisData(data){
+                const { id, canvas, ctx } = dataCanvasProps;
+                const xCoor = { start: [padding, -padding], end: [width-padding, -padding] };
+                const yCoor = { start: [padding, -padding], end: [padding, -(height-padding)] };
+                ctx.clearRect(0, 0, width, height);
+                ctx.save();
+                //迁移起点位置
+                locateStart(ctx, [0, height]);
+                //绘制数据
+                drawData(ctx, { xCoor, yCoor, width, height, data, xDataProps, yDataProps });
+                ctx.restore();
+                return canvas;
+            }
+            this.render = function(){
+                father.appendChild(drawThisCoor());
+                father.appendChild(drawThisData(data));
+                return father;
+            }
+            this.setData = function(data){
+                drawThisData(data);
+            }
+        }
+    </script>
+    <script>
+        let line = new DrawLine({
+            width: 600,
+            height: 400,
+            padding: 30,
+            xDataProps: { key: 'date', name: '日期', width: 10 },
+            yDataProps: { key: 'num', name: '数量', nums: 5 },
+            data: [
+                { date: '1', num: 10 },
+                { date: '2', num: 20 },
+                { date: '3', num: 15 },
+            ]
+        });
+        document.body.appendChild(line.render());
+        let setData = (function(){
+            let num = 0;
+            let data1 = [
+                { date: '第一项', num: 10 },
+                { date: '第二项', num: 20 },
+                { date: '第三项', num: 15 },
+                { date: '第四项', num: 30 },
+            ];
+            let data2 = [
+                { date: '第七项', num: 100 },
+                { date: '第八项', num: 200 },
+                { date: '第九项', num: 300 },
+                { date: '第十项', num: 400 },
+            ]
+            return function(){
+                if(num % 2 === 0){
+                    line.setData(data1);
+                }else{
+                    line.setData(data2);
+                }
+                num++;
+            }
+        })()
+    </script>
+</html>

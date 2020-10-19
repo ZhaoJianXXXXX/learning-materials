@@ -32,11 +32,3 @@ function generateParenthesis(n){
 }
 
 generateParenthesis(3);
-
-
-
-
-
-
-
-

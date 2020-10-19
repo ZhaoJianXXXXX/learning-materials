@@ -48,13 +48,14 @@
 
 //模板字符串渲染
 <script type = 'text/javascript'>
-	let templateStr = 'i am {{name}},age {{age}},job {{job}}, 在{{grow[0]}}和{{grow[1]}}, 家里有{{family.son}}和{{family.daughter}}和{{family.father[0]}}和{{family.father[1]}}';
+	let templateStr = 'i am {{name}},age {{age}},job {{job}}, 在{{grow[0]}}和{{grow[1]}}, 家里有{{family.son}}和{{family.daughter}}和{{family.father[0]}}和{{family.father[1]}}, 我要{{test.test.test}}';
 	let data = {
 		name:'xbd',
 		age:18,
 		job:'CTO',
 		family: { son: '儿子', daughter: '女儿', father: ['生父', '继父'] },
-		grow: ['北京', '天津']
+		grow: ['北京', '天津'],
+		test: { test: { test: '测试一下' } }
 	}
 	// 字符串模板匹配
 	String.prototype.templateRender = function(context) {
@@ -65,14 +66,13 @@
 			}
 			let variables = token.replace(/\s/g, '').split('.');
 			let currentObject = context;
-			let i, length;
-			for (i = 0, length = variables.length; i < length; ++i) {
+			for (let i = 0; i < variables.length; i++) {
 				let curVariables = variables[i].split('['); // 用`[`进行字符串分割 a[0][1] → ["a", "0]", "1]"]
 				currentObject = currentObject[curVariables[0]]; // 第一位是数组名
 				if (curVariables.length > 1) { // 如果大于1，则有`[`符号，就是数组对象
 					curVariables.shift();  // 去掉数组名，循环["0]", "1]"]
 					curVariables.forEach(function(item) {
-						currentObject = currentObject[parseInt(item.substr(0, 1))]; // 用数组的索引取值
+						currentObject = currentObject[parseInt(item.substr(0, item.length - 1))]; //除去字符串最后一个即可
 					});
 				}
 				if (currentObject === undefined || currentObject === null) return '';

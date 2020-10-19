@@ -1,7 +1,7 @@
 /*
- *代理模式
- *故事背景：小明xiaoming遇到了他的百分百女孩，我们称呼为goddess。小明决定送一束花向goddess表白，刚好小明认识goddess的闺蜜confidante，于是内向的小明让confidante替自己转交
- *虽然小明的故事必然以悲剧收场，因为追MM的更好方法是送一辆宝马
+ * 代理模式
+ * 故事背景：小明xiaoming遇到了他的百分百女孩，我们称呼为goddess。小明决定送一束花向goddess表白，刚好小明认识goddess的闺蜜confidante，于是内向的小明让confidante替自己转交
+ * 虽然小明的故事必然以悲剧收场，因为追MM的更好方法是送一辆宝马
  */
 
 //小明直接送花(把妹成功率0%)

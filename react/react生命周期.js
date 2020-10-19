@@ -14,6 +14,10 @@
 组件析构阶段：
 10.componentWillUnmount: 主要用于执行一些清理工作，比如取消网络请求，清除多余的DOM元素等
 
+新的生命周期：
+1.static getDerivedStateFromProps: 废除componentWillMount，componentWillReceiveProps，componentWillUpdate。一个静态函数，也就是这个函数不能通过this访问到class的属性，也并不推荐直接访问属性。而是应该通过参数提供的nextProps以及prevState来进行判断，根据新传入的props来映射到state。需要注意的是，如果props传入的内容不需要影响到你的state，那么就需要返回一个null，这个返回值是必须的，所以尽量将其写到函数的末尾
+2.getSnapshotBeforeUpdate: 在render之前调用，state已更新, 典型场景：获取render之前的dom状态
+
 /*shouldComponentUpdate事例*/
 1.没有导致state的值发生变化的setState是否会导致重渲染
 	会！

@@ -27,7 +27,16 @@ window.parseNum2 = function(num){
 
 
 
+function Father(...params){}
 
+function Son(...params){
+    Father.apply(this, params);
+}
 
+function Middle(){}
+
+Middle.prototype = Father.prototype;
+Son.prototype = new Middle();
+Son.prototype.constructor = Son;
 
 
