@@ -279,5 +279,41 @@ copyRight('1.0.1', '1.0.0')
 
 
 
+function A(score){
+    if(score >= 30){
+        return 'A';
+    }
+    return 'next';
+}
+
+function B(score){
+    if(score >= 20 && score < 30){
+        return 'B';
+    }
+    return 'next';
+}
+
+function C(score){
+    if(score >= 10 && score < 20){
+        return 'C';
+    }
+    return 'next';
+}
+
+function D(score){
+    if(score < 10){
+        return 'D';
+    }
+    return 'unknown';
+}
+
+function getComment(score){
+    return A.next(B).next(C).next(D)(score)
+}
+
+console.info(getComment(35));
+console.info(getComment(23));
+console.info(getComment(18));
+console.info(getComment(9));
 
 
