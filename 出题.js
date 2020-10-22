@@ -277,6 +277,17 @@ function copyRight(copyRight1, copyRight2){
 
 copyRight('1.0.1', '1.0.0')
 
+Function.prototype.next = function(fn){
+    let _this = this;
+    return function(){
+        let args = Array.from(arguments);
+        let res = _this.apply(this, args)
+        if(res === 'next'){
+            return fn.apply(this, args)
+        }
+        return res;
+    }
+}
 
 
 function A(score){
@@ -315,5 +326,3 @@ console.info(getComment(35));
 console.info(getComment(23));
 console.info(getComment(18));
 console.info(getComment(9));
-
-
