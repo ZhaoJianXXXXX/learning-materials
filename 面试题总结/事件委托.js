@@ -16,3 +16,11 @@ window.onload = function(){
 		//TODO
 	}
 }
+
+target：触发事件的源组件(事件注册/绑定所在组件)
+
+currentTarget：事件触发的当前事件
+
+（当前事件，可能是触发事件的源组件，可能是触发的事件组件（即触发事件源组件的子元素），
+
+此时点击子元还是父元素，都是当前事件，应用e.currentTarget）。

@@ -128,7 +128,7 @@
 8.数组展平(降维) 将[[1, 2], 3, [[[4], 5]]] 展平为 [1, 2, 3, 4, 5]
 	function flatten(arr) {
 		//concat时arr需要递归解构
-		return [].concat( ...arr.map(item => Array.isArray(item) ? flatten(item) : item) )
+		return [].concat(...arr.map(item => Array.isArray(item) ? flatten(item) : item))
 	}
 
 9.找出数组中重复出现过的元素
