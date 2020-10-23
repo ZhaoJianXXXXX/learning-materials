@@ -47,7 +47,7 @@
 
     禁止使用：componentWillUpdate，shouldComponentUpdate；
 
-    正常使用：componentWIllReceiveProps，componentDidMount。
+    正常使用：componentWillReceiveProps，componentDidMount。
 
 5.生命周期中setState是否触发更新：
 

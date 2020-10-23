@@ -287,6 +287,56 @@ function EventEmitter(maxListener){
     this.maxListener = maxListener;
 }
 
+Function.prototype.next = function(fn){
+    let _this = this;
+    return function(){
+        let args = Array.from(arguments);
+        let res = _this.apply(this, args)
+        if(res === 'next'){
+            return fn.apply(this, args)
+        }
+        return res;
+    }
+}
+
+
+function A(score){
+    if(score >= 30){
+        return 'A';
+    }
+    return 'next';
+}
+
+function B(score){
+    if(score >= 20 && score < 30){
+        return 'B';
+    }
+    return 'next';
+}
+
+function C(score){
+    if(score >= 10 && score < 20){
+        return 'C';
+    }
+    return 'next';
+}
+
+function D(score){
+    if(score < 10){
+        return 'D';
+    }
+    return 'unknown';
+}
+
+function getComment(score){
+    return A.next(B).next(C).next(D)(score)
+}
+
+console.info(getComment(35));
+console.info(getComment(23));
+console.info(getComment(18));
+console.info(getComment(9));
+
 EventEmitter.prototype.on = function (event, callback) {
     let listeners = this.listeners;
     if(listeners[event] && listeners[event].length >= this.maxListener) {
@@ -300,7 +350,6 @@ EventEmitter.prototype.on = function (event, callback) {
         listeners[event] = [callback];
     }
 }
-
 
 EventEmitter.prototype.emit = function (event) {
     let args = Array.from(arguments);
@@ -319,4 +368,3 @@ EventEmitter.prototype.once = function (event, listener) {
     }
     this.on(event, fn)
 }
-
