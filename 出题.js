@@ -260,24 +260,63 @@ Son.prototype.constructor = Son;
 
 
 
-function copyRight(copyRight1, copyRight2){
-    copyRight1 = typeof copyRight1 === 'string' && copyRight1.split('.') || [];
-    copyRight2 = typeof copyRight2 === 'string' && copyRight2.split('.') || [];
-    const length = Math.max(copyRight1.length, copyRight2.length);
+function compareVersion(version1, version2){
+    version1 = typeof version1 === 'string' && version1.split('.') || [];
+    version2 = typeof version2 === 'string' && version2.split('.') || [];
+    const length = Math.max(version1.length, version2.length);
     for(let i = 0; i < length; i++){
-        if((copyRight1[i] && !copyRight2[i]) || copyRight1[i] > copyRight2[i]){
-            return copyRight1.join('.');
+        if((version1[i] === '0' && !version2[i]) || (!version1[i] && version2[i] === '0') || version1[i] === version2[i]){
+            continue;
         }
-        if((!copyRight1[i] && copyRight2[i]) || copyRight1[i] < copyRight2[i]){
-            return copyRight2.join('.');
+        if((version1[i] && !version2[i]) || Number(version1[i]) > Number(version2[i])){
+            return 1;
+        }
+        if((!version1[i] && version2[i]) || Number(version1[i]) < Number(version2[i])){
+            return -1;
         }
     }
-    return 'equal';
+    return 0;
 }
 
-copyRight('1.0.1', '1.0.0')
+compareVersion('0.1', '1.1.1')
+compareVersion('13.37', '1.2')
+compareVersion('1.1', '1.1.0')
+
+function EventEmitter(maxListener){
+    this.listeners = {};
+    this.maxListener = maxListener;
+}
+
+EventEmitter.prototype.on = function (event, callback) {
+    let listeners = this.listeners;
+    if(listeners[event] && listeners[event].length >= this.maxListener) {
+        throw new Error(`监听器的最大数量是${this.maxListener}`);
+    }
+    if(Array.isArray(listeners[event])) {
+        if(listeners[event].indexOf(callback) === -1) {
+            listeners[event].push(callback);
+        }
+    }else{
+        listeners[event] = [callback];
+    }
+}
 
 
+EventEmitter.prototype.emit = function (event) {
+    let args = Array.from(arguments);
+    args.shift();
+    this.listeners[event].forEach(callback => {
+        callback(...args);
+    });
+}
 
-
+EventEmitter.prototype.once = function (event, listener) {
+    let _this = this;
+    function fn() {
+        let args = Array.from(arguments);
+        listener(...args);
+        _this.removeListener(event, fn);
+    }
+    this.on(event, fn)
+}
 
