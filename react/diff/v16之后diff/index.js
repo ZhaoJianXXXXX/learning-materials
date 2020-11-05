@@ -4,7 +4,7 @@ fiber 借助单链表数据结构将 diff 算法的递归遍历变为循环遍�
 
 beginWork() 主要做的事情是从顶向下生成所有的 Fiber Node，并标记 Diff。
 
-completeUnitOfWork() 当没有子节点，开始遍历兄弟节点作为下一个处理单元，处理完兄弟节点开始向上回溯，真到再次回去根节点为止，将收集向上回溯过程中的所有 diff，拿到 diff 后开始进入 commit 阶段。
+completeUnitOfWork() 当没有子节点，开始遍历兄弟节点作为下一个处理单元，处理完兄弟节点开始向上回溯，直到再次回去根节点为止，将收集向上回溯过程中的所有 diff，拿到 diff 后开始进入 commit 阶段。
 
 构建 workInProgress tree 的过程就是 diff 的过程，通过 requestIdleCallback 来调度执行一组任务，每完成一个任务后回来看看有没有插队的（更紧急的），把时间控制权交还给主线程，直到下一次 requestIdleCallback 回调再继续构建 workInProgress tree。
 
