@@ -9,7 +9,7 @@
  * 2.fulfilled 实现 操作成功
  * 3.rejected 被否决 操作失败
  *
- * Promise状态发生改变，就会触发then()里的响应函数处理后徐步骤
+ * Promise状态发生改变，就会触发then()里的响应函数处理后续步骤
  * Promise状态一经改变，不会再变
  */
 
