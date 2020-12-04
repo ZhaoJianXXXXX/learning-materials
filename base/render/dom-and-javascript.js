@@ -13,7 +13,7 @@
 
 1.虽然DOM是由JavaScript实现的。
 2.但是在浏览器中都是把DOM和JavaScript分开来实现的。
-3.比如IE中，JavaScript的实现名为JScript，放在"jscript.dll"文件中，而DOM则放在另一个叫做"mshtml.dll"的库中。
+3.比如IE中，JavaScript的实现名为JScript，放在"jscript."文件中，而DOM则放在另一个叫做"mshtml.dll"的库中。
 4.在Safari中，DOM和渲染是使用Webkit中的"WebCore"实现，而JavaScript是由独立的"JavaScriptCore"引擎实现。
 5.同样在Chrome中，DOM和渲染同样是使用"WebCore"来实现渲染，而JavaScript引擎则是他们自己研发的"V8引擎"。
 
