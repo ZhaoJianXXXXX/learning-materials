@@ -2,7 +2,7 @@
 
 1.我们可以自定义自己的URL scheme伪协议，bytedance://，snssdk1112://，aweme://
 2.客户端内打开H5页面的webview容器，可以拿到H5发出的所有请求（数据，资源等）
-3.客户端可以调用webview容器的借口，执行Javascript代码
+3.客户端可以调用webview容器的接口，执行Javascript代码
 
 所以JSBridge的简易执行过程H5 -> Native过程：
 
