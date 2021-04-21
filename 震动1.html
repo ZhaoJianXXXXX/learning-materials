@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+    <head>
+        <style>
+            div{
+                box-sizing: border-box;
+            }
+            .shake{
+                width: 100px;
+                height: 100px;
+                background: #ff0000;
+                transform: margin .5s;
+            }
+            #tags{
+                display: flex;
+                width: 200px;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+            .tags_item{
+                border: 1px solid #000;
+                padding: 2px 5px;
+                border-radius: 2px;
+                text-align: center;
+                flex-shrink: 0;
+                margin-right: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div onclick = 'hahahaha()'>跳11111111转</div>
+        <div class = 'shake' onclick = 'shakeFn(this)'></div>
+        <div id = 'tags'></div>
+        <div>
+            <textarea rows="3" cols="20" oninput = 'change(this)' id = 'textarea'></textarea>
+        </div>
+        <button onclick = 'submit()'>提交</button>
+        <div id = 'submitContent' style = 'white-space: pre'></div>
+    </body>
+    <script type = 'text/javascript'>
+        function hahahaha(){
+            // console.error('点击open')
+            window.open('https://www.baidu.com')
+        }
+        /*
+         * 字符串空格处理
+         * @params
+         * str string需要检验的字符串
+         * type string/number 1-所有空格  2-前后空格  3-前空格 4-后空格
+         * @return
+         * string 筛选过后的字符串
+         */
+         function specialTrim(str,type) {
+            switch (type) {
+                case 1:
+                    return str.replace(/\s+/g, "");
+                case 2:
+                    return str.replace(/(^\s*)|(\s*$)/g, "");
+                case 3:
+                    return str.replace(/(^\s*)/g, "");
+                case 4:
+                    return str.replace(/(\s*$)/g, "");
+                default:
+                    return str;
+            }
+        }
+    </script>
+    <script type = 'text/javascript'>
+        const tags = new Array(10).fill().map((_, i) => `这是一个tag${i}`);
+        window.onload = function(){
+            window.navigator.vibrate = window.navigator.vibrate || window.navigator.webkitVibrate || window.navigator.mozVibrate || window.navigator.msVibrate;
+            if(typeof window.navigator.vibrate === 'function') {
+               console.info("支持设备震动！");
+            }
+            tags.forEach(item => {
+                let children = document.createElement('div');
+                children.setAttribute('class', 'tags_item');
+                children.innerHTML = item;
+                children.onclick = function(){
+                    const textarea = document.getElementById('textarea');
+                    if(!!specialTrim(textarea.value, 2)){
+                        textarea.value += `\r\n${item}`;     
+                    }else{
+                        textarea.value = item;
+                    }
+                    textarea.focus();
+                }
+                document.getElementById('tags').appendChild(children);   
+            })
+        }
+        
+        function animation({ node, res, prop, timeout }){
+            return new Promise(resolve => {
+                node.style[prop] = res;
+                setTimeout(() => {
+                    resolve()
+                }, timeout)
+            })
+        }
+        
+        async function shakeFn(node){
+            if(typeof window.navigator.vibrate === 'function'){
+                window.navigator.vibrate(1000)
+            }
+            const steps = ['2px', '-2px', '2px', '0'];
+            const timeout = 50;
+            for(const step of steps){
+                await animation({ node, res: step, prop: 'marginLeft', timeout })
+            }
+        }
+        function change(prop){
+//            console.info('prop', prop.value)
+        }
+        
+        function submit(){
+            let content = document.getElementById('textarea').value;
+            if(typeof content === 'string'){
+                //按照换行划分，删除无用的空行，如果行内有字，则去除前后空格
+                let contentAry = content.split(/[(\r\n)\r\n]+/).filter(item => !!specialTrim(item, 2)).map(item => specialTrim(item, 2));
+                //以空格划分
+                let resContent = contentAry.join(' ');
+                console.info('contentAry',contentAry)
+                console.info('resContent',resContent)
+                document.getElementById('submitContent').innerHTML = resContent;
+            }
+        }
+//        
+//        "
+//                 
+//        两边都没有空格
+//        
+//        右边有空格     
+//          
+//          
+//          左边有空格
+//          
+//          左右都有空格    
+//        
+//        中间 有   空格  
+//        "
+//        
+//        => ['       ','两边都没有空格', '右边有空格     ', '     左边有空格'， '     左右都有空格   ', '中间 有   空格']
+//            
+//        => ['两边都没有空格', '右边有空格', '左边有空格','左右都有空格','中间 有   空格']
+//          
+//        "两边都没有空格  
+//        右边有空格     
+//        左边有空格
+//        左右都有空格    
+//        中间 有   空格  
+//        "
+//        => "两边都没有空格 右边有空格 左边有空格 左右都有空格 中间 有   空格 "
+//        
+//        
+    </script>
+</html>
