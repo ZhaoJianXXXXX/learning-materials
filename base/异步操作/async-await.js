@@ -56,19 +56,23 @@ function getId () {
 
 //串行 等待时间之和后输出(等待5s)
 (async function(){
+    let startTime = new Date();
     let name = await getName();
+    console.info('name', name, new Date() - startTime); //2000左右
     let id = await getId();
-    console.info(`name:${name}, id:${id}`)
+    console.info('id', id, new Date() - startTime); //5000左右
 })()
 
 //并行 等待最长时间后输出(等待3s)
 (async function(){
-	//先 生成所有promise 实例
-	let namePromise = getName();
+    let startTime = new Date();
+	  //先 生成所有promise 实例
+	  let namePromise = getName();
     let idPromise = getId();
     let name = await namePromise;
+    console.info('name', name, new Date() - startTime); //2000左右
     let id = await idPromise;
-    console.info(`name:${name}, id:${id}`)
+    console.info('id', id, new Date() - startTime); //3000左右
 })()
 
 //并行 等待最长时间后输出((等待3s)
