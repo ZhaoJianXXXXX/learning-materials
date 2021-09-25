@@ -1,0 +1,408 @@
+【让CM成为可能】
+
+	Concurrent Mode	是一组React的新功能，可帮助应用【保持响应】，并根据用户的设备性能和网速进行适当的调整
+
+【整体架构】
+	---------------------------------------
+    ｜			  Scheduler              ｜
+	---------------------------------------
+	---------------------------------------
+	｜			  Reconciler	         ｜
+	｜									 ｜
+	｜		Render	Fiber 	Diff         ｜
+	---------------------------------------		
+	---------------------------------------
+	｜			  Renderer			     ｜
+	｜									 ｜
+	｜	ReactNative	ReactTest 	ReactArt ｜
+	---------------------------------------
+	Scheduler-调度器
+		-配合时间切片，可以在当前宿主环境里面为每个工作单元复制一个可分配的时间，然后就可以实现异步可中断的更新
+		-在 React 整个 render 阶段，比如说在我们前提是开启了CM模式的时候，每次我们去遍历的时之前都会通过调用 scheduler 给我们提供的 yield 这个方法去判断本次更新是不是需要中断了。那这样的话可以让浏览器去有时间完成它的渲染
+		-调度任务的优先级，高优任务优先进入
+
+	Reconciler-协调器
+		-负责找出变化的组件（使用 Fiber 重构
+		-主要负责通过 diff 算法去对比【curernt Fiber】和【ReactElement】 然后生成【workInProgress Fiber】，这个阶段可以中断
+
+	Renderer-渲染器
+		-将【workInProgress Fiber】转换为真正的DOM节点
+		-负责将变化的组件渲染到页面上
+		
+【问题】
+		
+	【CPU层面】- 时间切片
+		-如果JS的执行时间超过了16毫秒，那页面就会产生卡顿。
+		-React在这个上面的解决思路就是在浏览器的每一帧里面，预留一些时间给JS线程，React再利用这部分时间去更新组件。
+		-当预留的时间不够用的时候，React可能会将这个线程交还给浏览器，让他给有其他的时间去渲染 UI 然后这个 React 则去等待下一层再去继续被中断的工作。
+
+	【IO层面】 
+		-由于需要等待数据的返回才能进行进一步的操作，可能导致我们的页面不能快速响应。
+		-React希望的是去控制组件的渲染的优先级去解决这个问题
+
+	Concurrent Mode就是为了解决上面的【CPU】和【IO】问题而设计的一套新的架构。
+	它的重点就是让组件的渲染是可中断的，并且是具有优先级的。
+	组成这个架构我们需要包括几个不同的模块，它们负责的职责是不一样。
+	
+【底层架构-Fiber】
+	React15的Reconciler采用的是递归的方式去执行。数据保存在了递归的调用栈里。这种方式肯定没法中断。所以React花费大概两年的时间重构完成了这个Fiber架构。
+	React16的Reconciler基于Fiber节点实现。
+		-每一个Fiber节点【对应】了一个ReactElement（is【对应】not【等于】）
+		-因为调用一个render函数产生的结果是一个ReactElement，但对于Fiber节点，它是由ReactElement创建而来的
+		
+	----------------------------------------------------------
+	【FiberNode示例】
+		function FiberNode(
+		  tag: WorkTag,
+		  pendingProps: mixed,
+		  key: null | string,
+		  mode: TypeOfMode,
+		) {
+		  // 作为静态数据结构的属性
+		  this.tag = tag;
+		  this.key = key;
+		  this.elementType = null;
+		  this.type = null;
+		  this.stateNode = null;
+
+		  // 用于连接其他Fiber节点形成Fiber树
+		  this.return = null;		//父节点
+		  this.child = null;		//第一个子节点
+		  this.sibling = null;		//兄弟节点
+		  this.index = 0;
+		  this.ref = null;
+
+		  // 动态工作单元的属性
+		  this.pendingProps = pendingProps;
+		  this.memoizedProps = null;
+		  this.updateQueue = null;
+		  this.memoizedState = null;
+		  this.dependencies = null;
+
+		  this.mode = mode;
+		  this.effectTag = NoEffect;
+		  this.nextEffect = null;
+		  this.firstEffect = null;
+		  this.lastEffect = null;
+
+		  // 调度优先级相关
+		  this.lanes = NoLanes;
+		  this.childLanes = NoLanes;
+
+		  // 指向该fiber在另一次更新时对应的fiber
+		  this.alternate = null;
+		}
+	----------------------------------------------------------
+
+	----------------------------------------------------------
+	【双缓存-两颗Fiber树】
+	function App(){
+		return(
+			<div id="app">
+				<h1>hello</h1>
+				<span>world</span>
+			</div>
+		)
+	} 
+	----------------------------------------------------------
+	
+	-正在屏幕中显示的是【current Fiber】树，正在内存里构建的是【workInProgess Fiber】树。两者通过一个【alternate】属性去连接
+	-React应用根节点使用current指针指向当前的current Fiber树
+	-当workInProgess Fiber树构建完成之后，就会交给render去渲染在页面上
+	-React应用的根节点的current指针就会指向当前的workInProgess Fiber树，完成两棵树的切换
+	
+	*React 将渲染盗墓树的机制改成了这样的两个Fiber树“交替工作”的形式，全部更新完毕后才切换指针
+	*在指针切换之前，可以随时放弃对另一棵树的修改，这样让更新中的中断成为可能
+	
+	
+	 【正在屏幕中显示】	                                                                  【正在构建】			
+	   【current】                                                                 	【workInProgress】
+	        ↓
+	-----div#root----- ←------------------------alternate------------------------→ -----div#root-----
+		|  		↑																		|  		↑
+	  child  return																	  child  return
+	    ↓       ｜																	    ↓      ｜
+	  -----App-----	   ←------------------------alternate------------------------→	 -----App-----
+	    |  		↑																	    |  		↑
+	  child  return																	  child  return
+	    ↓       |																	    ↓      ｜
+     -----div#app-----  ←---------------											 -----div#app-----  ←---------------
+	    |  		↑				      return											|  		↑				      return
+	  child  return                     ↑ 											  child  return                     ↑ 
+	    ↓       |                      |											    ↓       |                       |
+       -----h1-----   →sibling→   -----span-----   										-----h1-----   →sibling→   -----span-----
+		|  		↑                   |        ↑ 											 |      ↑                    |        ↑
+	  child  return				  child    return									   child  return			   child   return
+	    ↓       |                  ↓        ｜											↓       |                   ↓        ｜
+	 -----hello-----              -----world-----                     				  -----hello-----              -----world-----
+	 
+	 
+【Scheduler-调度器】
+
+    【requestIdleCallback】
+
+	-可以将一个大的任务拆分成多个小的任务，然后让浏览器在每一帧有剩余时间的情况下再去执行这个每一段小的任务
+	-函数里面我们就可以拿到当前浏览器在这一帧还剩余多少时间
+	-requestIdleCallback 的 FPS 只有 20, 这远远低于页面流畅度的要求！(一般 FPS 为 60 时对用户来说是感觉流程的, 即一帧时间为 16.7 ms), 这也是 React 需要自己实现 requestIdleCallback
+	-React使用了 MessageChannel 模拟实现，原理是一样的。
+
+	const bindClick = button.addEventListener('click', Work.onAsyncUnit);
+
+	bindClick();
+
+	var Work = {
+		// 有1w个任务
+		unit: 10000,
+		onOneUnit(){
+			for(let i = 0; i < 100000; i++){}
+		},
+		onAsyncUnit(){
+			//空闲时间1ms
+			const FREE_TIME = 1;
+			let _u = 0;
+			
+			function callback(ddl){
+				//当任务还没有被处理完 & 1帧还有的空余时间 > 1ms
+				while(_u < Work.unit && ddl.timeRemaining() > FREE_TIME){
+					Work.onOneUnit();
+					_u++;
+				}
+				
+				//任务干完，执行回调
+				if(_u >= Work.unit){
+					//todo 执行回调
+					return;
+				}
+				
+				// 任务没完成，继续等待空闲执行
+				window.requestIdleCallback(callback);
+			}
+			
+			window.requestIdleCallback(callback);
+		}
+	}
+	
+	【中断更新】
+	
+	在 React 整个 render 阶段，比如说在我们前提是开启了CM模式的时候，每次我们去遍历的时之前都会通过调用 scheduler 给我们提供的 yield 这个方法去判断本次更新是不是需要中断了。那这样的话可以让浏览器去有时间完成它的渲染
+	
+	每个任务中我们需要去判断它的剩余的时间是不是用完了。shouleYield这个函数就是用来检查这个剩余的时间是不是已经到期了
+	
+	每次到期都会跳出当前的工作循环，然后把交给线程的控制权交给浏览器，然后下次任务再继续当前的工作。这样话，一个很长的 JS 耗时的任务就会被切割成多个小段的任务
+	
+	function workLoopConcurrent(){
+		while(workInProgress !== null && !shouleYield()){
+			performUnitOfWork(workInProgress); 
+		}
+	}
+
+	shouldYield(...) -> Scheduler_shouldYield(...) -> unstable_shouldYield(...)
+	-> shouldYieldToHost(...)
+	-> getCurrentTime() <=deadline 
+	-> 
+		var yieldInterval; = 5; var deadline = 0;
+		var performWorkUnitDeadline = function(){
+			...
+			var currentTime = getCurrentTime();
+			deadline = currentTime + yieldInterval;
+			...
+		}
+
+	上述的代码时间间隔为5ms，为什么整个渲染不是5ms，而是12ms，13ms。其实React内部yieldInterval会通过当前设备性能做动态计算
+	
+	if(fps > 0){
+		yieldInterval = Math.floor(1000 / fps);
+	}else{
+		yieldInterval = 5;
+	}
+	
+	【isInputPending】
+	
+	现在，其实我们不仅仅是在使用 React 的时候才能享受到这个优化策略
+	在 chrome 的 87 的版本时。
+	React 团队和 chrome 团队合作了一下，然后在浏览器加入了一个新的api【isInputPending】应用于网页开发。
+	那如果我们不使用React，我们也可以去利用这个 API 去平衡 JS 的执行以及页面渲染或者用户输入之间的优先级。
+
+	while(workQueue.length > 0){
+		if(navigator.scheduling.isInutPending){
+			break;
+		}
+		let job = workQueue.shift();
+		job.execute();
+	}
+
+	while(workQueue.length > 0){
+		if(navigator.scheduling.isInputPending(
+			['mousedown', 'mouseup', 'keydown', 'keyup']
+		)){
+			break;
+		}
+		let job = workQueue.shift();
+		job.execute();
+	}
+	
+【优先级控制】
+	【任务优先级】
+	React 根据他对一些人机交互的实验的研究结果，其实为不同场景下我们产生的状态更新也赋予了不同的优先级。
+		-如果是生命周期方法：是最高优先级、同步执行的。
+		-受控的用户输入：比如输入框内输入文字，同步执行。
+		-交互事件：比如动画，高优先级执行。
+		-其他：比如数据请求，或者使用了 suspense、transition 这样的更新，是低优先级执行的。
+		
+	举个例子：
+		首先，我们有一个改变当前主题的这样一个更新，这个更新优先级比较低，而且比较耗时。
+		在主题改变这个状态更新的 render 阶段还没完成的时候，这时用户在 Input 框输入了一个新的字符。
+		用户输入这个操作的优先级是比较高的，这时，我们就会先中断 主题更新 这个操作，优先响应用户输入，然后呢再基于上一次更新的结果，继续进行 主题更新的 render 和 commit 流程。
+		这就是一次高优任务中断低优任务的操作。
+
+	<优先级实现>
+
+	// 立即执行的优先级，级别最高
+	export const ImmediatePriority = 1;
+
+	// 用户阻塞级别的优先级
+	export const UserBlockingPriority = 2;
+
+	// 正常的优先级
+	export const NormalPriority = 3;
+
+	// 较低的优先级
+	export const LowPriority = 4;
+
+	// 优先级最低，表示任务可以闲置
+	export const IdlePriority = 5;
+
+	function runWithPriority(priorityLevel, eventHandler){
+		switch(priorityLevel){
+			case ImmediatePriority: 
+			case UserBlockingPriority: 
+			case NormalPriority: 
+			case LowPriority: 
+			case IdlePriority: 
+				break;
+			default:
+				priorityLevel = NormalPriority;
+		}
+
+		let previousPriorityLevel = currentPriorityLevel;
+		currentPriorityLevel = priorityLevel;
+
+		try{
+			return eventHandler();
+		}finally{
+			currentPriorityLevel = previousPriorityLevel;
+		}
+	}
+	
+	<优先级控制>
+	-整个 React 应用，在同一时间可能会产生不同的任务。
+	-Scheduler 就会优先帮我们找到最高优先级的任务，去调度它的更新
+	-Scheduler 将所有已经准备就绪，可以执行的任务，都存在了一个叫 taskQueue 的队列中，而这个队列使用了小顶堆这种数据结构。在小顶堆中，所有的任务按照任务的过期时间，从小到大进行排列，这样 Scheduler 就可以只花费O(1)复杂度找到队列中最早过期，或者说最高优先级的那个任务
+	
+	//任务的过期时间比当前时间还短，表示他已经过期了，需要立即被执行
+	var IMMEDIATE_PRIORITY_TIMEOUT = -1;
+	
+	var USER_BLOCKING_PRIORITY_TIMEOUT = 250;
+	
+	var NORMAL_PRIORITY_TIMEOUT = 5000;
+	
+	var LOW_PRIORITY_TIMEOUT = 10000;
+	
+	var IDLE_PRIORITY_TIMEOUT = maxSigned31BitInt;
+	
+	var timeout;
+	
+	switch(priorityLevel){
+		case ImmediatePriority: 
+			timeout = IMMEDIATE_PRIORITY_TIMEOUT; 
+			break;
+		case UserBlockingPriority: 
+			timeout = USER_BLOCKING_PRIORITY_TIMEOUT; 
+			break;
+		case NormalPriority: 
+			timeout = NORMAL_PRIORITY_TIMEOUT; 
+			break;
+		case LowPriority: 
+			timeout = LOW_PRIORITY_TIMEOUT; 
+			break;
+		case IdlePriority: 
+			timeout = IDLE_PRIORITY_TIMEOUT; 
+			break;
+		default:
+			timeout = NORMAL_PRIORITY_TIMEOUT; 
+	}
+	
+	// 当前时间startTime
+	var expirationTime = startTime + timeout;
+	
+	【Fiber优先级】
+		
+	那么，我们刚刚讲到的这个优先级的机制，实际上是 React 的 Scheduler 的优先级机制，在 React 内部，Scheduler 是一个独立包，它只负责任务的调度，甚至不关心这个任务具体是干什么，即使我们将 Scheduler 脱离 React 使用，也是可以的。
+	
+	所以 Scheduler 内部的优先级机制也是独立于 React 的， React 内部也有一套自己的优先级机制，因为我们需要知道在一棵 Fiber 树里，哪些 Fiber 以及 哪些 Update 对象，是高优先级的。
+	
+	在 React16 中，Fiber 和 Update 的优先级和 任务的优先级 是类似。React 会根据不同的操作优先级给每个 Fiber 节点的 Update 增加一个 expirationTime 。
+	但是由于某些问题，React 已经在 Fiber 中不再使用 expirationTime 去表示优先级，这个我们后面再讲。
+
+		
+【生命周期的改变】
+
+	在新的 React 架构中，一个组件的渲染被分为两个阶段
+		render阶段：是可以被 React 打断的，一旦被打断，这阶段所做的所有事情都被废弃，当 React 处理完紧急的事情回来，依然会重新渲染这个组件，这时候工作会重做一遍
+		commit阶段：一旦开始就不能中断，也就是说第二个阶段的工作会直接做到这个组件的渲染结束
+	两个阶段的分界点，就是render函数，render函数之前所有的生命周期（包括render）都属于render阶段。之后的生命周期属于commit阶段
+	开启Concurrent Mode之后，render之前的所有生命周期都有可能会被打断，或者重复调用
+		- componentWillMount
+		- componentWillReceiveProps
+		- componentWillUpdate
+	React v16.3，React 干脆引入了一个新的生命周期函数 getDerivedStateFromProps，这个生命周期是一个 静态方法，在里面根本不能通过 this 访问到当前组件，输入只能通过参数，对组件渲染的影响只能通过返回值
+	
+		Initialization					Mounting							Updation								Unmounting
+	
+	setup props and state			componentWillMount			  props						state				componentWillUnMount
+										   ↓						↓						  ↓
+										 render			componentWillReceiveProps	shouldComponentUPdate
+										   ↓						↓						  ↓
+								   componentDidMount	  shouldComponentUpdate      componentWillUpdate
+																	↓						  ↓
+														   componentWillUpdate              render
+																	↓						  ↓
+																  render			  componentDidMount
+																	↓
+														    componentDidMount
+		
+		
+		
+【Suspense】
+
+	React 16.6 新增了 <Suspense> 组件，它主要是解决运行时的 IO 问题。
+	
+		举个例子：
+		const MonacoEditor = React.lazy(() => import('react-monaco-editor'));
+		<Suspense fallback={<div>Editor Loading...</div>}>
+			<MonacoEditor 
+			   height={500} 
+			   language="json" 
+			   theme="vs" 
+			   value={errorFileContext} 
+			   options={{}} 
+			/>
+		</Suspense>
+	
+	使用用 Suspense ，我们可以降低加载状的优先级，减少闪屏的问题。 
+		-数据很快返回的时候，我们可以不必显示加载状态，而是直接显示出来，避免闪屏。
+		-如果超时没有返回才显式加载状态。本质上讲 Suspense 内的组件子树比组件树的其他部分拥有更低的优先级。
+		
+	我们可以试想一下，如果没有 Suspense ，我们可能要去自己实现一个 loading，那么这个 loading 和其他组件渲染具有相同的优先级，这时无论 IO 有多快，我们的屏幕都会闪一下。
+	那么如果在请求 IO 的这段时间里，我们利用这段时间加载了其他的组件，只要时间足够小，我们就不需要展示 Lodaing，这样就可以减少闪屏的问题。
+	当然，Suspense 的作用不止于此，它更重要的还是优化了在 React 内部等待异步操作写法的问题
+	
+
+【react16的总结与缺陷】
+	虽然 React 16 的核心工作全部都是在 Concurrent Mode  上，但是这并不代表 Concurrent Mode  已经可以稳定使用了。
+	React 16 做的这些所有的工作只是让 Concurrent Mode  称为可能，并且在 Concurrent Mode  下做了一些小小的尝试，在 16 版本默认仍然是采用同步渲染的模式，为了后面的大范围开启 Concurrent Mode ，他还有很多努力要做。
+
+		
+		
+		
+	  

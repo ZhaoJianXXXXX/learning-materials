@@ -1,0 +1,209 @@
+【更灵活 Concurrent Renderring】
+
+React 发布了 18 的 Alpha 版本，由于 Concurrent Mode 带来的巨大的 Break Change ，React 还不能默认开启它。所以，React 干脆换了个名字，叫 Concurrent Rendering 并发渲染机制。
+在 React 17 版本里，React 已经支持了多版本共存，所以 React 推荐大家渐进式升级，而不是一刀切。只有由这些 新特性触发的更新会启用并发渲染，所以大家不需要改动很多代码也可以直接使用 React 18，可以根据自己的节奏去尝试这些新特性
+
+
+【createRoot】
+
+React 给我们提供了三种模式
+	- ReactDOM.render: 创建的应用属于 legacy ，在这个模式下更新还是同步的，一次 render 阶段对应一次 commit 阶段
+	- ReactDOM.createRoot: 默认开启了并发渲染，可以看到 在 React 18 ，createRoot 这个函数已经不再是 unstable
+	
+		import React from 'react';
+		import ReactDOM from 'react-dom';
+		import App from './App';
+		const container = document.getElementById('root');
+		// Create a root.
+		const root = ReactDOM.createRoot(container);
+		// Render the top component to the root.
+		root.render(<App />);
+	- createBlockingRoot: 通过createBlockingRoot函数创建的 blocking 模式，这个函数是方便我们进行上面两种模式的过渡
+	
+	特性对比
+				
+													Legacy 模式	  blocking 模式	  concurrent 模式
+	---------------------------------------------------------------------------------------------------
+	String Refs											✅				❌				❌
+	---------------------------------------------------------------------------------------------------
+	Legacy Context										✅				❌				❌
+	---------------------------------------------------------------------------------------------------
+	findDOMNode											✅				❌				❌
+	---------------------------------------------------------------------------------------------------
+	Suspense											✅				✅				✅
+	---------------------------------------------------------------------------------------------------
+	SuspenseList										❌				✅				✅
+	---------------------------------------------------------------------------------------------------
+	Suspense SSR + Hydration							❌				✅				✅
+	---------------------------------------------------------------------------------------------------
+	Progressive Hydration								❌				✅				✅
+	---------------------------------------------------------------------------------------------------
+	Selective Hydration									❌				❌				✅
+	---------------------------------------------------------------------------------------------------
+	Cooperative Multitasking							❌				❌				✅
+	---------------------------------------------------------------------------------------------------
+	AutoMatic batching of multiple setStates			❌				✅				✅
+	---------------------------------------------------------------------------------------------------
+	Priority-based Rendering							❌				❌				✅
+	---------------------------------------------------------------------------------------------------
+	Interruptible Prerendering							❌				❌				✅
+	---------------------------------------------------------------------------------------------------
+	useTransition										❌				❌				✅
+	---------------------------------------------------------------------------------------------------
+	useDefferredValue									❌				❌				✅
+	---------------------------------------------------------------------------------------------------
+	
+
+【批处理的优化】
+
+	在 React 15 中，React 实现了第一版的批处理机制。如果我们在一次事件回调中触发多次更新，他们会被合并为一次更新进行处理。
+	主要的原因是 batchedUpdates 这个函数本身是同步调用的，如果 fn 内部有异步执行，这时批处理早已执行完，所以这个版本的批处理无法处理异步函数。
+	但是，在 React 里我们有大量的状态更新要在异步回调里去做，那么在 React 18 呢，如果开启了异步渲染，就可以解决这个问题。
+	
+	class Example extends React.Component{
+		constructor(props){
+			super(props);
+			this.state = { val: 0 };
+		}
+		componentDidMount(){
+			this.setState({ val: this.state.val + 1 });
+			console.info(this.state.val);
+			this.setState({ val: this.state.val + 1 });
+			console.info(this.state.val);
+
+			setTimeout(() => {
+				this.setState({ val: this.state.val + 1 });
+				console.info(this.state.val);
+				this.setState({ val: this.state.val + 1 });
+				console.info(this.state.val);
+			})
+		}
+		render(){
+			return null;
+		}
+	}
+	
+	在 Concurrent 模式下，是以优先级为依据对更新进行合并的。这段代码最终的输出已经变成了 0、0、1、1，state中的val值为2
+	
+	在组件对应 fiber 挂载 update 后，就会进入「调度流程」。上面我们也讲到了 Scheduler 调度的作用就是，选出不同优先级的 update 中优先级最高的那个，以该优先级进入更新流程。进入调度后的流程大概如下:
+		- 首先我们取出当前所有优先级中最高优先级的 Lane，然后根据 Lane 获取本次需要调度的优先级。
+		- 然后我们需要获取在执行正式更新流程之前，是否之前存在一个调度，如果存在的话，和本次调度的优先级进行对比。
+		- 如果是第一次执行 setState ，这个 existingCallbackPriority 肯定是不存在的，所以第一次出发会将 更新流程 performConcurrentWorkOnRoot 通过 scheduleCallback 进行调度。
+		- 但是第二次 setState 进来，由于之前已经有了一次调度了，而且和本地的优先级是一致的，就会直接 return，不再调用 scheduleCallback 对 performConcurrentWorkOnRoot 进行调度。
+		- 那么，一定时间过后，前面所有同一优先级的更新就会一起进入正式的更新流程。由于后面的 setState 是在 setTimeout 中调用的，setTimeout 具有较低的优先级，所有会放到下一个批次执行，所以，最终打印的结果是 0、0、1、1
+
+	
+	----------------------------------------------------------		---------------------------------------
+	|												 		 |	   	|									  |
+	|	setState1 			setState2 			setState3	 |	 	|	setState4 			setState5	  |
+	|												 		 |		|									  |
+	----------------------------------------------------------		---------------------------------------
+			↓					↓					↓								  ↓			 		  ↓
+	----------------------------------------------------------		---------------------------------------
+	|		↓					↓					↓		 |		|		  ↓			 		  ↓		  |
+	|	  lane1			  	  lane2			  	  lane3		 |		|		lane4				lane5	  |
+	|		↓					↓					↓		 |		|		  ↓					  ↓       |
+  ——|callbackPriority1	callbackPriority2	callbackPriority3|	  ——|callbackPriority4  callbackPriority5 |
+  |	|		|					|					| 		 |	  | |		  |				  	  |		  |
+  |	|		↓					|				  	| 		 |	  |	|		  ↓				  	  |	  	  |
+  |	|existingCallbackPriority-----------------------		 |	  |	|existingCallbackPriority------		  |
+  |	----------------------------------------------------------	  | ---------------------------------------
+  |																  |
+  |	----------------------------------------------------------	  |	---------------------------------------
+  |	|					scheduleCallback					 |	  |	|		   scheduleCallback			  |
+  |	|	   -------------------------------------------		 |	  |	|	--------------------------------  |
+  |→|	   |		performConcurrentWorkOnRoot		 |		 |	  |→|	|  performConcurrentWorkOnRoot |  |
+	|	   -------------------------------------------       |		|	--------------------------------  |
+	|--------------------------------------------------------|		|-------------------------------------|
+	
+
+【startTransition & useTransition】
+	
+	React 18 新增的一个 API：【startTransition】
+	
+	这个 API 可以让我们手动区分非紧急的状态更新，本质上还是对组件渲染优先级的控制。
+	比如现在有这样一个场景：我们要去 Input 框输入一个值，然后下面需要同时给出通过我们输入后的值过滤出来的一些数据
+	
+	所有在 startTransition 回调中的更新都会被认为是 非紧急处理，如果出现更紧急的更新（比如用户又输入了新的值），则上面的更新都会被中断，直到没有其他紧急操作之后才会去继续执行更新。比我们人工实现一个防抖更优雅：
+	
+	----------------------------------------------------------
+		import { startTransition } from 'react';
+
+		// Urgent: Show what was typed
+		setInputValue(input);
+
+		// Mark any state updates inside as transitions
+		startTransition(() => {
+		  // Transition: Show the results
+		  setSearchQuery(input);
+		});
+	----------------------------------------------------------
+	
+	同时，React 还给我们提供了一个带有 isPending 过渡标志的 Hook：【useTransition】
+	----------------------------------------------------------
+		import { useTransition } from 'react'; 
+
+		const [isPending, startTransition] = useTransition();
+		
+		{ isPending && <Spinner/> }
+	----------------------------------------------------------
+		
+	总结：startTransition 的实现其实也很简单，所有 在 startTransition 回调中执行的操作都会拿到一个 isTransition 标记，根据这个标记， React 会把更新赋予更低的优先级。
+	
+
+【useDeferredValue】
+
+	除了手动标记某些操作的优先级，我们还能去标记某个具体状态的优先级。React 18 给我们提供了一个新的 Hook useDeferredValue
+	
+	场景：用户输入了一些信息后，我们需要对这些信息做一些处理然后渲染到下面的详情里，如果这个处理比较耗时，那么连续的用户输入会有卡顿的感觉
+	实际上，我们希望的是用户的输入能得到快速的响应，但是下面详情的渲染多等待一会其实无所谓
+	
+	这时，我们可以通过 useDeferredValue 创建一个 deferredText，真正的意思是 deferredText 的渲染被标记为了低优先级，它还有另一个参数，这个渲染的最大延迟时间。我们可以大概猜测到，useDeferredValue 的实现机制应该和 expairedTime 是类似的。
+	
+	--------------------------------------------------------------------
+	import { useDeferredValue } from 'react';
+
+	function App(){
+		const [text. setText] = useState('hello');
+		const deferredText = useDeferredValue(text, { timeoutMs: 2000 });
+		
+		return(
+			<div>
+				{/* 保持将当前文本传递给 input */}
+				<input value={text} onChange={handleChange}/>
+				...
+				{/* 但在必要时可以将列表“延后” */}
+				<MySlowList text={deferredText}>
+			</div
+		)
+	}
+	--------------------------------------------------------------------
+	
+	总结：防抖的主要问题是，不管我们的电脑渲染的有多快，它都会有一个固定的延迟，而 useDeferredValue 呢，只会在渲染比较耗时的情况下把优先级滞后，在多数情况下是不会有不必要的延迟的
+
+
+【SSR 下的懒加载支持】
+
+	在 React 18 以前， SSR 模式下是不支持使用 Suspense 组件的，而在 React 18 中，服务端渲染的组件也支持使用 <Suspense> 了：如果你把组件包裹在了<Suspense>中，服务端首先会把 fallback 中的组件作为 HTML 流式传输，一旦主组件加载完成，React 会发送新的 HTML 来替换整个组件
+
+	<Layout> 
+	  <Article/> 
+	  <Suspense fallback={<Spinner />}>
+		 <Comments/> 
+	  </Suspense>
+	</Layout>
+	
+	比如上面的代码，<Article> 组件首先会被渲染，<Comments> 组件将被 fallback 替换为 <Spinner> 。一旦 <Comments> 组件加载完成后，React 会才将其发送到浏览器，替换 <Spinner> 组件。
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

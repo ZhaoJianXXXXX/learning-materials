@@ -1,0 +1,118 @@
+【半自动批处理】
+
+
+【整体架构】
+  	--------------------------------------
+	|			Reconciler				 |
+	|									 |
+	|		Render	VDom 	Diff  	     |
+	--------------------------------------
+	--------------------------------------
+	|			Renderer 				 |
+	|									 |
+	|  ReactNative	ReactTest 	ReactArt |
+	--------------------------------------
+	
+Reconciler-协调器
+	-主要负责调用render生成虚拟dom然后进入diff，找出变化后的虚拟dom
+	
+Renderer-渲染器
+	-主要负责Reconciler的通知，将变化后的组件渲染到当前的宿主环境。
+	-浏览器不同宿主环境可能会有不同
+
+	----------------------------------------------------------
+	【经典面试题】
+	class Example extends React.Component{
+		constructor(props){
+			super(props);
+			this.state = { val: 0 };
+		}
+		componentDidMount(){
+			this.setState({ val: this.state.val + 1 });
+			console.info(this.state.val);
+			this.setState({ val: this.state.val + 1 });
+			console.info(this.state.val);
+
+			setTimeout(() => {
+				this.setState({ val: this.state.val + 1 });
+				console.info(this.state.val);
+				this.setState({ val: this.state.val + 1 });
+				console.info(this.state.val);
+			})
+		}
+		render(){
+			return null;
+		}
+	}
+	----------------------------------------------------------
+
+1.假设react本身没有批处理机制，每次执行setState都会立即触发一次页面渲染，打印顺序应该为1234
+2.假设react有一个完美的批处理机制，那应该等到生命周期里面所有的setState执行完之后，统一再去处理所有的渲染，打印顺序应该是0000
+3.实际上打印顺序为0023，state中的val值为3，从setTimeout中的打印结果看出，setState调用本身是同步的。而在正常生命周期方法中不能立刻拿到更新结果是因为react引入了一个批处理机制。
+4.引入这个机制主要是为了解决如果是setState同步执行，浏览器可能一直被JS线程阻塞，那么浏览器会表现为掉帧，卡顿。所以会引入这个机制，主要解决同一个上下文多次出发更新造成卡顿的现象。
+
+
+	----------------------------------------------------------
+	【批处理简单实现】
+	 _processPendingState: function (props, context) {
+	  var inst = this._instance;
+	  var queue = this._pendingStateQueue;
+	  var replace = this._pendingReplaceState;
+	  this._pendingReplaceState = false;
+	  this._pendingStateQueue = null;
+
+	  if (!queue) {
+	   return inst.state;
+	  }
+
+	  if (replace && queue.length === 1) {
+	   return queue[0];
+	  }
+
+	  var nextState = _assign({}, replace ? queue[0] : inst.state);
+	  for (var i = replace ? 1 : 0; i < queue.length; i++) {
+	   var partial = queue[i];
+	   _assign(nextState, typeof partial === 'function' ? partial.call(inst, nextState, props, context) : partial);
+	  }
+
+	  return nextState;
+	 },
+	 ----------------------------------------------------------
+
+	
+	----------------------------------------------------------
+	【主要关注】
+	Object.assign(
+	 nextState,
+	 {index: state.index+ 1},
+	 {index: state.index+ 1}
+	)
+	----------------------------------------------------------
+
+1.上面这个方法用来合并所有state暂存队列，最后会返回一个合并后state
+2.在react生命周期或者合成事件，不管我们调多少次setState都不会立刻去执行更新。而是先把这个state存入一个pending state queue队列中，将需要更新的组件存入一个dirty component里面
+3.这是最早的版本批处理实现
+4.当上一次更新机制完成之后，所有的组件也就是最顶层的组件didMount之后，会将isBatchingUpdates的变量设置为false，这个时候执行之前积累的setState。
+5.react内部会通过一个batch update这样的函数去调用所有需要批处理的事件或者生命周期
+
+----------------------------------------------------------
+batchedUpdates : function (callback, a, b, c, d, e) {
+	var alreadyBatchingUpdates = ReactDefaultBatchingStrategy.isBatchingUpdates;
+	ReactDefaultBatchingStrategy.isBatchingUpdates = true;
+	//如果当前事务正在更新过程在中，则调用callback，既enqueueUpdate
+	if (alreadyBatchingUpdates) {
+		return callback(a, b, c, d, e);
+	}else{
+		//否则执行更新事务
+		return transaction.perform(callback, null, a, b, c, d, e);
+	}
+}
+----------------------------------------------------------
+1.可以看到batchedUpdates方法中是同步调用，但是如果回调函数中有异步代码，这个时候批处理已经操作完毕，所以在react这个版本中我们没有办法处理异步函数
+2.react在这个时候提供了一个unstableBatchUpdate这个方法，让我们去手动支持批处理
+
+
+【总结与缺陷】
+1.虽然 React 在 15 的这个版本引入了批处理这样的优化逻辑，但是由于 reacts 实物本身这个架构是递归同步更新。
+2.如果节点非常多的话，即使是只有一次 state 的变更，那 React 也会要进行复杂的递归，且更新一旦开始，中途可能就无法中断了，直到遍历完整个数才能去释放这个主线程。
+3.当递归的层级很深的时候，那递归的更新的时间可能会超过 16 毫秒。如果这个时候还有用户的操作或者其他的动画渲染，就会表现为卡顿

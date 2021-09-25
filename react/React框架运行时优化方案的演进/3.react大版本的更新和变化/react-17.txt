@@ -1,0 +1,101 @@
+【稳定 Concurrent Mode 的过渡版本】
+
+【没有新特性？】
+
+	React17 的更新日志里基本没有什么新特性。
+	
+	但是从官方仅有的一些描述中我们可以发现：React17 是一个用以稳定CM的过渡版本。
+	
+	由于 Concurrent Mode 带来的 Breaking Change 会使很多库都不兼容，我们不可能都在新项目里去用，所以 React 给我们提供了支持单项目多版本共存的支持，另外还有一个很重要的支持就是：使用 Lanes 重构了 CM 的优先级算法。
+
+
+【实现多版本共存】
+
+	-React 采用的是 事件委托 的方式，它自己实现了一套事件机制，自己模拟了事件冒泡和捕获的过程，主要是为了抹平了各个浏览器的兼容性问题。
+	-比如它并不会在你声明它们的时候就将它们 attach 到对应 DOM 节点上。 相反地，React 会直接在 document 节点上为每种事件类型 attach 一个处理器。这种方法不但在大型应用树上有性能优势，还会使添加新功能更容易。
+	-但是如果页面上有多个 React 版本，它们都会在 document 上注册事件。这会破坏 事件冒泡这些机制，外部的树仍然会接收到这个事件，这就使嵌套不同版本的 React 难以实现。
+	
+	这就是 React 要改变 attach 事件到 DOM 的底层实现方式的原因。
+
+	在 React 17 中，React 会把事件 attach 到 React 渲染树的根 DOM 容器中，而不再 attach 到 document 级别
+	
+	const rootNode = document.getElementById('root'); 
+	ReactDOM.render(<App />, rootNode);
+
+
+【新的优先级算法-lanes】
+
+	背景：
+		在 React 16 之前，React 在 Fiber 中也使用 expirationTime 表示优先级。
+		但是在 React 17 中，React 使用 Lanes 重构了 Fiber 的优先级算法。
+		
+	以前 expirationTime 的问题：
+		-在 expirationTime 最开始被设计的时候，React 体系中还没有 Suspense 异步渲染 的概念。
+		-假如现在有这样的场景: 有 3 个任务, 其优先级 A > B > C，正常来讲只需要按照优先级顺序执行就可以。
+		-但是现在有这样的情况：A 和 C 任务是 CPU 密集型，而 B 是IO密集型 （Suspense 会调用远程 api, 算是 IO 任务）， 即 A(cpu) > B(IO) > C(cpu)，在--这种情况下呢，高优先级 IO 任务会中断低优先级 CPU 任务，这显然，是不合理的。
+		-那么使用 expirationTime ，它是以某一优先级作为整棵树的优先级更新标准，而并不是某一个具体的组件，这时我们的需求是需要把 任务B 从 一批任务 中分离出来，先处理 cpu 任务 A 和 C ，如果通过 expirationTime 实现呢，是比较困难的，它很难表示批的概念，也很难从一批任务里抽离单个任务，这时呢，我们就需要一种更细粒度的优先级
+		
+	于是呢，Lanes 就出现了。以前使用 expirationTime 表示的字段，都改为了 lane。比如：
+		
+	update.expirationTime -> update.lane
+	fiber.expirationTime -> fiber.lanes
+
+		
+	-Lane和Lanes就是单复数的关系，代表单个任务的定义为Lane，代表多个任务的定义为Lanes。
+	
+	-React共定义了18种Lane/Lanes变量，每一个变量占有1个或多个bit位，每一种Lane/Lanes都有对应的优先级
+	
+	-越低优先级lanes占用的位越多
+		InputDiscreteLanes（离散用交互的优先级）占了2个位
+		TransitionLanes占了9个位
+		原因在于越低优先级的更新越容易被打断（如果当前优先级的所有赛道都被占用了，则把当前优先级下降一个优先级），导致积压下来，所以需要更多的位
+		相反，最高优的同步更新的SyncLane不需要多余的lanes
+		
+	
+	export const NoLanes: Lanes = /* 						*/0b0000000000000000000000000000000;
+	export const NoLane: Lane = /*							*/0b0000000000000000000000000000000;
+	
+	export const SyncLane: Lane = /*						*/0b0000000000000000000000000000001;
+	export const SyncBatchLane: Lane = /*					*/0b0000000000000000000000000000010;
+	
+	export const InputDiscreteHydrationLane: Lane = /*		*/0b0000000000000000000000000000100;
+	export const InputDiscreteLanes: Lanes = /*				*/0b0000000000000000000000000011000;
+	
+	export const InputContinuousHydrationLane: Lane = /*	*/0b0000000000000000000000000100000;
+	export const InputContinuousLanes: Lanes = /*			*/0b0000000000000000000000011000000;
+	
+	export const DefaultHydrationLane: Lane = /*			*/0b0000000000000000000000100000000;
+	export const DefaultLanes: Lanes = /*					*/0b0000000000000000000111000000000;
+	
+	export const TransitionHydrationLane: Lane = /*			*/0b0000000000000000001000000000000;
+	export const TransitionLanes: Lanes = /*				*/0b0000000001111111110000000000000;
+	
+	export const RetryLanes: Lanes = /*						*/0b0000011110000000000000000000000;
+	
+	export const SomeRetryLane: Lanes = /*					*/0b0000010000000000000000000000000;
+	
+	export const SelectiveHydrationLane: Lane = /*			*/0b0000100000000000000000000000000;
+	
+	export const NonIdleLanes: Lanes = /*					*/0b0000111111111111111111111111111;
+	
+	export const IdleHydrationLane: Lane = /*				*/0b0001000000000000000000000000000;
+	export const IdleLanes: Lanes = /*						*/0b0110000000000000000000000000000;
+	
+	export const OffscreenLane: Lane = = /*					*/0b1000000000000000000000000000000;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+		
+		

@@ -1,0 +1,21 @@
+在 chrome 的 87 的版本时。
+React 团队和 chrome 团队合作了一下，然后在浏览器加入了一个新的api【isInputPending】应用于网页开发。
+那如果我们不使用React，我们也可以去利用这个 API 去平衡 JS 的执行以及页面渲染或者用户输入之间的优先级。
+
+while(workQueue.length > 0){
+	if(navigator.scheduling.isInutPending){
+		break;
+	}
+	let job = workQueue.shift();
+	job.execute();
+}
+
+while(workQueue.length > 0){
+	if(navigator.scheduling.isInputPending(
+		['mousedown', 'mouseup', 'keydown', 'keyup']
+	)){
+		break;
+	}
+	let job = workQueue.shift();
+	job.execute();
+}

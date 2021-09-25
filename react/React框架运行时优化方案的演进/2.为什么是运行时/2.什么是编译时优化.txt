@@ -1,0 +1,37 @@
+拿vue来举例
+
+1.框架本身使用的是模板的语言，模板语言的特点就是语法受限，使用v-if，v-for等指定的语法去编码，显然这是不够动态
+2.但是由于语法是可以枚举的，所以它可以在预编译层面上去做更多的预判，让vue在运行时有更好的性能。
+3.比如说vue3.0在编译时就做了一个小的优化
+	传统的虚拟dom的diff算法一定要通过虚拟dom层级一层一层的遍历，所以diff的性能和模板的大小正相关
+	但是diff的性能和代码里有多少是静态节点/动态节点是没有关系的。比如说有的组件只有很少的动态节点，那么传统的遍历方式都是性能的浪费
+	静态节点在组件更新阶段不可能发生变化，如果在diff阶段能够跳过这些静态内容，我们可以避免这些无用dom树的遍历
+	最早的优化思路的来源：跳过静态内容，只对比动态内容
+	实际优化策略：
+		它的complier可以根据节点的动态属性，为每一个虚拟dom去创建不同的patch flag（比如说节点用动态的text或者class都会被打上flag）
+		配合block tree就可以做到不同节点的【靶向更新】
+		
+
+传统vdom的性能瓶颈
+
+<template>
+	<div id="content">                            Diff <div>
+		<p class="text>input</p>					Diff props of <div>
+		<p class="text>input</p>					Diff children of <div>
+		<p class="text>{{ message }}</p>    => 			Diff <p>
+		<p class="text>input</p>							Diff props of <p>
+		<p class="text>input</p>							Diff children of <p>
+	</div>												Repeat n times
+</template>
+
+最简单的情况
+
+<template>
+	<div id="content">                            Diff <p> textContent
+		<p class="text>input</p>					
+		<p class="text>input</p>					
+		<p class="text>{{ message }}</p>    => 		
+		<p class="text>input</p>						
+		<p class="text>input</p>							
+	</div>												
+</template>
