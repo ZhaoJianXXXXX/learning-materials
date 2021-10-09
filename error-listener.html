@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+    <head>
+        <title>error-listener</title>
+    </head>
+    <body>
+    </body>
+    <!-- <script type = 'text/javascript'>
+        class MyProxy{
+            constructor(){
+                let errorCallback = () => {};
+                const myProxy = (func, key, ...rest) => {
+                    if(key === 'onError'){
+                        console.error('in onError', func, key, rest)
+                        errorCallback = rest[0];
+                        return;  
+                    }
+                    try{
+                        return func(...rest)    
+                    }catch(e){
+                        errorCallback({ reqName: key, error: e });
+                    }
+                }    
+                this.proxy = new Proxy({}, {
+                    get: (target, propKey, receiver) => {
+                        console.info('get', target, propKey, receiver)
+                        if(propKey in target && typeof target[propKey] === 'function'){
+                            return (...args) => myProxy(target[propKey], propKey, ...args);
+                        }else{
+                            return undefined;
+                        }
+                    }
+                });
+                this.proxy.onError = () => {};
+                return this.proxy;
+            }
+        }
+        let myProxy = new MyProxy();
+        myProxy.func1 = (e) => { throw new Error('我特么出错了呀1'); return `func1-${e}` };
+        myProxy.func2 = (e) => { return `func2-${e}` };
+        myProxy.onError((errorInfo) => {
+            console.error('errorInfo', errorInfo)
+        });
+        let f1 = myProxy.func1();
+        // let f2 = myProxy.func2();
+        // console.info('f1', f1);
+        // console.info('f2', f2);
+    </script> -->
+    <script type = 'text/javascript'>
+        class MyLocalStorage{
+            getItem(...params){
+                try{
+                    const data = window.localStorage.getItem(...params);
+                    // 主要针对是被JSON.stringify后的字符串做处理, 假设一个普通字符串不可JSON.parse，直接原样返回
+                    // 如果是数字类型的字符串，避免类型转换('123' => 123)，需要isNaN判断
+                    // 目前应用范围不是很广泛，后续如果复用可以再丰富内容
+                    return typeof data === 'string' && isNaN(Number(data)) ? JSON.parse(data) : data;
+                }catch(e){
+                    // 出现意外情况，原样返回
+                    console.error('MyLocalStorage.getItem Error', e);
+                    return window.localStorage.getItem(...params);
+                }
+            }
+            setItem(...params){
+                try{
+                    let [key, data] = params;
+                    data = typeof data === 'object' ? JSON.stringify(data) : data;
+                    return window.localStorage.setItem(key, data);
+                }catch(e){
+                    console.error('MyLocalStorage.setItem Error', e);
+                    return window.localStorage.setItem(...params);    
+                }
+            }
+        }
+
+        const myLocalStorage = new MyLocalStorage();
+
+        class OpenModalType{
+        // 弹窗情况
+        modalTypeShow = {
+            '1': false,           // 是否弹过完成任务1的弹窗
+            '2': false,           // 是否弹过完成任务2的弹窗
+            '1&finish': false,    // 先完成任务2并已弹窗，又完成任务1
+            '2&finish': false,     // 先完成任务1并已弹窗，又完成任务2
+            '1&2&finish': false,  // 任务1和任务2完成且都没有弹过
+        }
+        split(str, key = '&'){
+            return typeof str === 'string' && str.split(key) || [str];
+        }
+        setType(){
+            try{
+                // 保证缓存单例不会重置（除非用户手动清除/意料之外对缓存值的改变）
+                const data = myLocalStorage.getItem('modalTypeShow');
+                const dataIsObj = Object.prototype.toString.call(data) === '[object Object]';
+                // 缓存不存在，重置缓存
+                const resetCondition1 = !data; 
+                // 缓存类型和预期不符（不是对象），重置缓存
+                const resetCondition2 = !dataIsObj;
+                // 如果缓存类型也符合预期（是对象），但是缓存中对象的属性和预期对象属性不同（sort方法是避免两对象属性相同但顺序不同导致判断失败），重置缓存
+                const resetCondition3 = !(dataIsObj && JSON.stringify(Object.keys(data).sort()) === JSON.stringify(Object.keys(this.modalTypeShow).sort()));
+                if(resetCondition1 || resetCondition2 || resetCondition3){
+                    myLocalStorage.setItem('modalTypeShow', this.modalTypeShow); 
+                }
+            }catch(e){
+                // 意料之外的错误不做处理
+                console.error('OpenModalType.setType Error', e);
+            }finally{
+                return this;
+            }
+        }
+        getType(firstComplete, secondComplete){
+            let res = null;
+            try{
+                let modalTypeShow = myLocalStorage.getItem('modalTypeShow');
+                // 只完成任务1且任务1弹窗未弹过
+                if(firstComplete && !secondComplete && !modalTypeShow['1']){
+                    modalTypeShow['1'] = true;
+                    res = this.split('1');
+                } 
+                // 只完成任务2且任务2弹窗未弹过
+                else if(!firstComplete && secondComplete && !modalTypeShow['2']){
+                    modalTypeShow['2'] = true;
+                    res = this.split('2');
+                }
+                // 先完成任务2并已弹窗，又完成任务1
+                else if(firstComplete && secondComplete && !modalTypeShow['1'] && modalTypeShow['2'] && !modalTypeShow['1&finish']){
+                    modalTypeShow['1&finish'] = true;
+                    res = this.split('1&finish');
+                }
+                // 先完成任务1并已弹窗，又完成任务2
+                else if(firstComplete && secondComplete && modalTypeShow['1'] && !modalTypeShow['2'] && !modalTypeShow['2&finish']){
+                    modalTypeShow['2&finish'] = true;
+                    res = this.split('2&finish');  
+                }
+                // 任务1和任务2完成且都没有弹过
+                else if(firstComplete && secondComplete && !modalTypeShow['1'] && !modalTypeShow['2'] && !modalTypeShow['1&2&finish']){
+                    modalTypeShow['1&2&finish'] = true; 
+                    res = this.split('1&2&finish');
+                }
+                myLocalStorage.setItem('modalTypeShow', modalTypeShow);
+                return res;
+            }catch(e){
+                console.error('OpenModalType.getType Error', e)
+                return null;
+            }   
+        }
+        reset(){
+            for(let i in this.modalTypeShow){
+                this.modalTypeShow[i] = false;
+            }
+            myLocalStorage.setItem('modalTypeShow', this.modalTypeShow); 
+            return this;       
+        }
+    }
+
+    let openModalType = new OpenModalType();
+    openModalType.setType();
+
+
+    // 测试用例
+    // 用例1
+    console.info('================1===============');
+    openModalType.reset();
+    console.info(openModalType.getType(false, true));        // ['2']                   进入页面，只完成任务2 => type = '2' & 弹出modal（奖励2）                   
+    console.info(openModalType.getType(false, true));        // null                    又进入页面，还是只有任务2完成 => type = null & 不弹modal                    
+    console.info(openModalType.getType(true, true));         // ['1', 'finish']         又进入页面，任务1和2都完成 => type = '1 & finish' & 弹出modal（奖励1+碎片）  
+    console.info(openModalType.getType(true, true));         // null                    又进入页面 => type = null & 不弹窗                                      
+
+    // 用例2
+    console.info('================2===============');
+    openModalType.reset();
+    console.info(openModalType.getType(true, false));        // ['1']                   进入页面，只完成任务1 => type = '1' & 弹出modal（奖励1）
+    console.info(openModalType.getType(true, false));        // null                    又进入页面，还是只有任务1完成 => type = null & 不弹modal
+    console.info(openModalType.getType(true, true));         // ['2', 'finish']         又进入页面，任务1和2都完成 => type = '2 & finish' & 弹出modal（奖励2+碎片）
+    console.info(openModalType.getType(true, true));         // null                    又进入页面 => type = null & 不弹窗
+
+    // 用例3
+    console.info('================3===============');
+    openModalType.reset();
+    console.info(openModalType.getType(true, true));         // ['1', '2', 'finish']    进入页面，任务1和任务2都完成 => type = '1 + 2' & 弹出modal（奖励1 + 奖励2 + 碎片）
+    console.info(openModalType.getType(true, true));         // null                    又进入页面 => type = null & 不弹窗
+
+    // 用例4（bug状态）
+    console.info('================4===============');
+    openModalType.reset();
+    console.info(openModalType.getType(true, false));        // ['1']                   进入页面，只完成任务1 => type = '1' & 弹出modal（奖励1）
+    console.info(openModalType.getType(false, true));        // ['2']                   又进入页面，只完成任务2 => type = '2' & 弹出modal（奖励2）
+    console.info(openModalType.getType(true, true));         // null                    又进入页面 => type = null & 不弹窗
+
+    // 用例5（bug状态）
+    console.info('================5===============');
+    openModalType.reset();
+    console.info(openModalType.getType(false, true));         // ['2']                  进入页面，只完成任务2 => type = '2' & 弹出modal（奖励2）
+    console.info(openModalType.getType(true, false));         // ['1']                  又进入页面，只完成任务1 => type = '1' & 弹出modal（奖励1）
+    console.info(openModalType.getType(true, true));          // null                   又进入页面 => type = null & 不弹窗
+    </script>
+</html>
