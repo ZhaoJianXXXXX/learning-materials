@@ -2,15 +2,18 @@
  * Event Loop macrotask microtask
  */
 
+// 什么是事件循环
 Event Loop(事件循环)
     js 从上到下解析方法，将其中的同步任务按照执行顺序排列到执行栈中；当程序调用外部的 API 时（比如 ajax、setTimeout 等），会将此类异步任务挂起，继续执行执行栈中的任务。等异步任务返回结果后，再按照顺序排列到事件队列中；主线程先将执行栈中的同步任务清空，然后检查事件队列中是否有任务，如果有，就将第一个事件对应的回调推到执行栈中执行，若在执行过程中遇到异步任务，则继续将这个异步任务挂起，等异步任务返回结果后，再按照顺序排列到事件队列中主线程每次将执行栈清空后，就去事件队列中检查是否有任务，如果有，就每次取出一个推到执行栈中执行，这个循环往复的过程被称为“Event Loop 事件循环”
 
+// 什么是宏任务
 macrotask(宏任务)
 	1.可以理解是每次执行栈执行的代码就是一个宏任务（包括每次从事件队列中获取一个事件回调并放到执行栈中执行）
 	2.每一个task会从头到尾将这个任务执行完毕，不会执行其它
 	3.浏览器为了能够使得JS内部task与DOM任务能够有序的执行，会在一个task执行结束后，在下一个 task 执行开始前，对页面进行重新渲染（task->渲染->task->...）
     4.包括：script(整个代码块)，I/O，xhr，setTimeout，setInterval，setImmediate（仅Node），requestAnimationFrame（仅浏览器），UI交互事件, postMessage, MessageChannel
 
+// 什么是微任务
 microtask(微任务)
 	1.可以理解是在当前 task 执行结束后立即执行的任务
 	2.也就是说，在当前task任务后，下一个task之前，在渲染之前
@@ -28,6 +31,39 @@ microtask(微任务)
 	4.当前宏任务执行完毕，开始检查渲染，然后GUI线程接管渲染
 	5.渲染完毕后，JS线程继续接管，开始下一个宏任务（从事件队列中获取）
 
+
+/*例题*/
+const a = async () => {
+	console.log('a');
+}
+const b = async () => {
+	console.log('b start');
+	await a();
+	console.log('b end');
+}
+
+b();
+
+console.log('out1');
+
+new Promise((resolve) => {
+	console.log('promise start');
+	resolve();
+	console.log('promise end');
+}).then(() => {
+	console.log('promise then');
+});
+
+console.log('out2');
+
+// b start
+// a
+// out1
+// promise start
+// promise end
+// out2
+// b end
+// promise then
 
 /*例题*/
 setTimeout(_ => console.log(4))

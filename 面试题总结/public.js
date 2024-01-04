@@ -1,4 +1,4 @@
-1.	Q : HTTP 状态消息 200 302 304 403 404 500 分别表示什么?
+1.Q : HTTP 状态消息 200 302 304 403 404 500 分别表示什么 / http状态码?
 	A : 200：请求已成功，请求所希望的响应头或数据体将随此响应返回。
 		302：请求的资源临时从不同的 URI 响应请求。由于这样的重定向是临时的，客户端应当继续向原有地址发送以后的请求。只有在 Cache-Control 或 Expires 中进行了指定的情况下，这个响应才是可缓存的。
 		304：如果客户端发送了一个带条件的 GET 请求且该请求已被允许，而文档的内容（自上次访问以来或者根据请求的条件）并没有改变，则服务器应当返回这个状态码。304 响应禁止包含消息体，因此始终以消息头后的第一个空行结尾。
@@ -79,7 +79,7 @@
 		在根据最终的样式来渲染render树，这种做法性能方面确实会比较好一点。
 
 
-11. Q : js中new一个对象的过程
+11. Q : js中new一个对象的过程 / 如何实现new / new实现
 	A :
 	 1. 创建空对象 let obj = {};
 	 2. 设置新对象的__proto__属性指向构造函数的prototype对象 obj.__proto__ = ClassA.prototype;
@@ -175,9 +175,14 @@
 
 18. Q : package.json中的版本号前面的符号的意义
 	A :
-		波浪符号（~）：他会更新到当前minor version（也就是中间的那位数字）中最新的版本。放到我们的例子中就是：body-parser:~1.15.2，这个库会去匹配更新到1.15.x的最新版本，如果出了一个新的版本为1.16.0，则不会自动升级。波浪符号是曾经npm安装时候的默认符号，现在已经变为了插入符号。
+		波浪符号（~）：
+      他会更新到当前minor version（也就是中间的那位数字）中最新的版本。
+      放到我们的例子中就是：body-parser:~1.15.2，这个库会去匹配更新到1.15.x的最新版本，如果出了一个新的版本为1.16.0，则不会自动升级。
+      波浪符号是曾经npm安装时候的默认符号，现在已经变为了插入符号。
 
-		插入符号（^）：这个符号就显得非常的灵活了，他将会把当前库的版本更新到当前major version（也就是第一位数字）中最新的版本。放到我们的例子中就是：bluebird:^3.3.4，这个库会去匹配3.x.x中最新的版本，但是他不会自动更新到4.0.0。
+		插入符号（^）：
+      这个符号就显得非常的灵活了，他将会把当前库的版本更新到当前major version（也就是第一位数字）中最新的版本。
+      放到我们的例子中就是：bluebird:^3.3.4，这个库会去匹配3.x.x中最新的版本，但是他不会自动更新到4.0.0。
 
 		总结一下：
 
@@ -208,7 +213,8 @@
 	4.在Safari中，DOM和渲染是使用Webkit中的"WebCore"实现，而JavaScript是由独立的"JavaScriptCore"引擎实现。
 	5.同样在Chrome中，DOM和渲染同样是使用"WebCore"来实现渲染，而JavaScript引擎则是他们自己研发的"V8引擎"。
 
-	由于DOM和JavaScript是被分开独立实现的，因此，每一次在通过js操作DOM的时候，就需要先去连接js和DOM，我们可以这样理解：把DOM和JavaScript比作两个岛，他们之间通过一个收费的桥连接着，每一次访问DOM的时候，就需要经过这座桥，并且给“过路费”，访问的次数越多，路费就会越高，并且访问到DOM后，操作具体的DOM还需要给“操作费”，由于浏览器访问DOM的操作很多，因此，“路费”和“操作费”自然会增加，这就是为什么操作DOM会很慢的原因
+	由于DOM和JavaScript是被分开独立实现的，因此，每一次在通过js操作DOM的时候，就需要先去连接js和DOM，我们可以这样理解：
+  把DOM和JavaScript比作两个岛，他们之间通过一个收费的桥连接着，每一次访问DOM的时候，就需要经过这座桥，并且给“过路费”，访问的次数越多，路费就会越高，并且访问到DOM后，操作具体的DOM还需要给“操作费”，由于浏览器访问DOM的操作很多，因此，“路费”和“操作费”自然会增加，这就是为什么操作DOM会很慢的原因
 
 21.let，const 声明的变量不会绑定给window对象 而var会
 
@@ -313,18 +319,53 @@ input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
 
 	//只有import + export情况下 值是动态的
 
-29.cookie 和 token 都存放在 header 中，为什么不会劫持 token
+29.
+	1. cookie和token区别
+    token：
+      通常叫它令牌。
+      最简单的token组成:
+        uid(用户唯一的身份标识)
+        time(当前时间的时间戳)
+        sign(签名，由token的前几位+哈希算法压缩成一定长的十六进制字符串可以防止恶意第三方拼接token请求服务器)。
+      还可以把不变的参数也放进token，避免多次查库。
 
-	xss攻击下，两者都凉凉
+    cookie：
+      Cookie 技术产生源于 HTTP 协议在互联网上的急速发展。
+      随着互联网时代的蓬勃发展，人们需要更复杂的互联网交互活动，就必须同服务器保持活动状态。
+      于是，在浏览器发展初期，为了适应用户的需求技术上推出了各种保持 Web 浏览状态的手段，其中就包括了 Cookie 技术。
 
-	token不是为了防止XSS的，而是为了防止CSRF的；
+    cookie 是 http 规范，token 是自定义传递的。
 
-	CSRF攻击的原因是浏览器会自动带上cookie，而不会带上token；
+    cookie 没有被浏览器存储，下一次请求时便会带上，而 token 需要自己存储在浏览器，下一次请求时再请求头中带上。
+    
+    token 默认没有跨域限制。
 
-	以CSRF攻击为例：
+  2.token相比cookie的优势
+    支持跨域访问：Cookie是不允许垮域访问的，这一点对Token机制是不存在的，前提是传输的用户认证信息通过HTTP头传输。
 
-	cookie：用户点击了链接，cookie未失效，导致发起请求后后端以为是用户正常操作，于是进行扣款操作；
-	token：用户点击链接，由于浏览器不会自动带上token，所以即使发了请求，后端的token验证不会通过，所以不会进行扣款操作；
+    无状态(也称：服务端可扩展性)：Token机制在服务端不需要存储session信息，因为Token 自身包含了所有登录用户的信息，只需要在客户端的cookie或本地介质存储状态信息。
+    
+    更适用CDN：可以通过内容分发网络请求你服务端的所有资料（如：javascript，HTML,图片等），而你的服务端只要提供API即可。
+    
+    去耦：不需要绑定到一个特定的身份验证方案。Token可以在任何地方生成，只要在你的API被调用的时候，你可以进行Token生成调用即可。
+    
+    更适用于移动应用：当你的客户端是一个原生平台（iOS, Android，Windows 8等）时，Cookie是不被支持的（你需要通过Cookie容器进行处理），这时采用Token认证机制就会简单得多。
+    
+    CSRF：因为不再依赖于Cookie，所以你就不需要考虑对CSRF（跨站请求伪造）的防范。
+    
+    性能：一次网络往返时间（通过数据库查询session信息）总比作一次HMACSHA256计算 的Token验证和解析要费时得多。
+
+	3. cookie 和 token 都存放在 header 中，为什么不会劫持 token
+    xss攻击下，两者都凉凉
+
+    token不是为了防止XSS的，而是为了防止CSRF的；
+
+    CSRF攻击的原因是浏览器会自动带上cookie，而不会带上token；
+
+    以CSRF攻击为例：
+
+    cookie：用户点击了链接，cookie未失效，导致发起请求后后端以为是用户正常操作，于是进行扣款操作；
+    token：用户点击链接，由于浏览器不会自动带上token，所以即使发了请求，后端的token验证不会通过，所以不会进行扣款操作；
 
 
 30.在线编辑网页（静态）
@@ -368,3 +409,141 @@ input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
         }
     });
 
+34.import和require的区别 / require和import的区别
+	1、require是commonJS规范的模块化语法，import是es6规范的模块化语法
+
+	2、require是运行是加载（可以在js中的任意地方使用），import是编译时加载（只能放到文件的最开头）
+
+	3、require通过module.exports导出的是exports对象，import通过export导出是指定输出的代码；
+
+	4、require导入的值被修改时，源对象不会被改变，相当于深拷贝；import导入的对象值被改变时，源对象也会被改变，相当于浅拷贝。
+
+35.深拷贝和浅拷贝的区别 / 浅拷贝和深拷贝的区别
+	1、浅拷贝，指的是重新分配一块内存，创建一个新的对象，但里面的元素是原对象中各个子对象的引用。
+
+	2、深拷贝，是指重新分配一块内存，创建一个新的对象，并且将原对象中的元素，以递归的方式，通过创建新的子对象拷贝到新对象中。
+		因此，新对象和原对象没有任何关联。
+
+	3、区别：可变对象就不会这样会修改值后另存到一个新的地址上，而是直接再原对象的地址上把值给改变了，这个对象依然执行这个地址
+
+	4、本质区别：可变对象修改了值，不会新建一个内存地址的对象，不可变对象如果修改了值，及时复制了一份新的内存地址，
+		原始地址的值不会被改变。
+
+36.深拷贝注意的点
+	1.WeakMap解决循环引用
+	// WeakMap中“weak”表示弱映射的键是“弱弱地拿着”的。意思就是，这些键不属于正式的引用，不会阻止垃圾回收。
+	// 但要注意的是，弱映射中值的引用可不是“弱弱地拿着”的。只要键存在，键/值对就会存在于映射中，并被当作对值的引用，因此就不会被当作垃圾回收。
+	function deepClone(obj, hashMap = new WeakMap()) {
+		// 如果传入的类型不对，则不做处理
+		if (typeof obj !== "object" || obj === null) {
+		  return;
+		}
+		// 查缓存字典中是否已有需要克隆的对象，有的话直接返回同一个对象（同一个引用，不用递归无限创建进而导致栈溢出了）
+		if (hashMap.has(obj)) {
+		  return hashMap.get(obj);
+		}
+		let newObj = {}; // 新对象
+		const dataKeys = Object.keys(obj); // 获取原对象所有键值
+		dataKeys.forEach((value) => {
+		  const currentValue = obj[value];
+		  // 基础类型直接赋值
+		  if (typeof currentValue !== "object" || currentValue === null) {
+			newObj[value] = currentValue;
+		  } else if (Array.isArray(currentValue)) {
+			// 实现数组的深拷贝
+			newObj[value] = [...currentValue];
+		  } else if (currentValue instanceof Set) {
+			// 实现set数据的深拷贝
+			newObj[value] = new Set([...currentValue]);
+		  } else if (currentValue instanceof Map) {
+			// 实现map数据的深拷贝
+			newObj[value] = new Map([...currentValue]);
+		  } else if (currentValue instanceof Date) {
+			// 日期类型深拷贝
+			newObj[value] = new Date(currentValue.valueOf())
+		  } else {
+			hashMap.set(obj, newObj); // 哈希表缓存新值
+			// 普通对象则递归赋值
+			newObj[value] = deepClone(currentValue,hashMap);
+		  }
+	  
+		});
+		return newObj;
+	  }
+
+37.BFC
+  BFC（即块级格式化上下文），它是指一个独立的块级渲染区域，该区域拥有一套渲染规则来约束块级盒子的布局，且与区域外部无关。
+
+  触发BFC：
+  	overflow: auto/ hidden;
+	position: absolute/ fixed;
+	float: left/ right;
+	display: inline-block/ table-cell/ table-caption/ flex/ inline-flex
+  也可用排除法
+	overflow的值不是visible；
+	position的值不是static或relative
+	float的值不是none
+	display的值是inline-block 或 table-cell 或 flex 或 table-caption 或
+	inline-flex
+
+38.暂时性死区
+
+  暂时性死区：在代码块内，使用let和const命令声明变量之前，该变量都是不可用的，语法上被称为暂时性死区。
+  相关：
+  let 和 const 是使用块级作用域，而var 是使用函数作用域
+  let 和 const 声明之前访问对应的变量和常量，会抛出ReferenceError错误，但在var 声明之前就访问对应的变量，会得到undefined
+  暂时性死区的本质就是，只要一进入当前作用域，所要使用的变量就已经存在了，但是不可获取，只有等到声明变量的那一行代码出现，才可以获取和使用该变量。
+
+40.http only
+  http-only字段，就是加在cookie身上的一个“护身符”。
+  浏览器存在这种机制，只要cookie中含有Http-only字段，那么任何JavaScript脚本都没有权限读取这条cookie的内
+
+41. async和defer
+  async
+    当浏览器遇到带有async属性的脚本标签时，它会开始异步下载脚本，并在下载完成后立即执行。
+    这意味着脚本的加载和执行不会阻塞页面的解析和渲染过程。异步加载的脚本将在下载完成后立即执行，
+	而不管其他脚本或文档是否已经加载完成。
+    使用async属性时，脚本的执行顺序不受保证。如果有多个带有async属性的脚本，它们可能会以任意顺序执行，
+	因此脚本之间的依赖关系需要谨慎处理。
+  defer
+    当浏览器遇到带有defer属性的脚本标签时，它会开始异步下载脚本，但会等到文档解析完成后再执行脚本。
+    这意味着脚本的加载不会阻塞页面的呈现，但它们将按照它们在文档中的顺序执行。
+    使用defer属性时，脚本的执行被延迟到文档解析完成之后，但在DOMContentLoaded事件触发之前。
+	这使得脚本能够在文档完全解析之前对DOM进行操作。
+
+42.CSS是怎样渲染的
+	- 浏览器读取HTML文件时，如果在中引用了CSS文件，则会同时下载该CSS文件。
+	浏览器在下载CSS文件后，会对其进行解析。解析规则包括删除多余空格、注释以及根据文件中定义的选择器和属性，构造出规则列表等。
+	
+	样式计算：
+	- 当浏览器解析完CSS文件后，就会将样式应用到相应的HTML元素上。
+	这个过程中，选定的元素按照规则列表进行样式计算，得出已应用的样式列表。
+
+	布局：
+	- 完成样式计算之后，浏览器就会根据已经计算好的样式列表进行布局。
+	在这个步骤中，浏览器会确定元素在屏幕中应该如何排列，并计算出每个元素的精确位置和大小等。
+
+	绘制：
+	- 布局完成之后，浏览器就可以开始绘制了。
+	在这一步骤当中，浏览器根据已经计算好的位置，尺寸和样式属性将各个元素绘制到屏幕上。
+	重绘：
+	- 当元素的位置或样式属性发生变化时，浏览器就需要重新绘制这些元素。
+	这个过程称为重绘，它会涉及到一些优化，如页面只会重绘发生变化的部分等。
+
+43.CSS和js在浏览器的一个解析顺序和相互影响（阻塞）
+
+	DOM渲染对应GUI线程，js运行对应JS线程。两者互斥，不能同时运行。
+	
+	css的加载不会阻塞DOM的解析
+	css的加载会阻塞DOM的渲染
+	js的加载和执行会阻塞DOM的解析
+	js的加载和执行会阻塞DOM的渲染
+	css的加载会阻塞js的执行，不会阻塞js的加载
+	css的加载与js的加载之间是否有影响？不考虑，浏览器自身会偷看并预先下载
+	遇到script标签会触发渲染，以获得最新样式给js代码
+	CSS不会阻塞DOM解析，但是会阻塞DOM渲染，严谨一点则是CSS会阻塞render tree的生成，进而会阻塞DOM的渲染
+	浏览器遇到<script>标签且没有defer或async属性时会触发页面渲染
+	Body内部的外链CSS较为特殊，会形成FOUC现象，请慎用
+
+44.浏览器渲染机制
+	参考根目录下【浏览器】文件夹

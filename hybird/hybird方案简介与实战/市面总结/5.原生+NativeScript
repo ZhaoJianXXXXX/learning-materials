@@ -1,0 +1,12 @@
+NativeScript 是一种基于 JavaScript 的混合应用开发框架，由 Telerik（现在是 Progress）开发和维护。
+它允许开发人员使用 JavaScript、TypeScript 或 Angular 来构建原生应用程序，并支持 Android、iOS 和 Web。
+
+优点：
+（1）性能高：NativeScript 提供了原生组件和 API 的访问，因此具有更好的性能和响应速度。
+    与其他混合应用框架相比，它可以更快地加载和渲染页面。
+（2）跨平台支持：NativeScript 可以在多个平台上运行，包括 Android、iOS 和 Web，
+    开发人员可以在一个代码库中编写应用程序，并在不同平台上进行测试和部署。
+（3）强大的可定制性：NativeScript 允许开发人员使用原生代码和第三方库来扩展其功能，从而实现更高的可定制性。
+缺点：
+（1）学习曲线较陡峭：与其他混合应用框架相比，NativeScript 的学习曲线较陡峭，需要更多的时间和努力来学习和掌握。
+（2）社区相对较小：NativeScript 的社区相对较小，相对于其他框架来说，第三方库和插件的数量有限。

@@ -36,6 +36,9 @@
 - 这里我们使用「自顶向下」思想来考虑这个题目，然后用「自底向上」的方法来解题，
   体验算法的冰火两重天。
 
+  实现一个函数，从第一个参数，整数数组中，找到所有的组合, 并按照数组的长度有小到大的顺序
+  使得每个数组相加的值都等于第二个参数的值
+
 - dp[i]: 表示总金额为 i 的时候最优解法的硬币数
 
 - 我们想一下：求总金额 120 有几种方法？下面这个思路关键了 !!!
@@ -67,20 +70,18 @@
     问题都不会太大。
 
 //卧槽无情
-function coinChange(coins, amount) {
-  let dp = new Array(amount + 1).fill(null);
-  dp[0] = 0;
-
-  for (let i = 1; i <= amount; i++) {
-    for (let coin of coins) {
-      if (i - coin >= 0) {
-        dp[i] = Math.min(dp[i], dp[i - coin] + 1);
-      }
-    }
-  }
-
-  return dp[amount] === null ? -1 : dp[amount];
-}
+function coinChange(coins, amount) {    
+  let answer = [0];    
+  for(let i = 1; i <= amount; i++){        
+    answer[i] = amount + 1;        
+    for(j in coins){            
+      if(i - coins[j] >= 0){                
+        answer[i] = Math.min(answer[i - coins[j]] + 1, answer[i]);            
+      }        
+    }    
+  }    
+  return answer[amount] === amount + 1 ? -1 : answer[amount];
+};
 
 coinChange([1, 2, 5], 11)
 coinChange([2], 3)

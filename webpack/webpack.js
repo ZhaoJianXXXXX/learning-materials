@@ -1,5 +1,17 @@
-有没有去研究webpack的一些原理和机制，怎么实现的解析
+webpack生命周期
+1.Entry：指定webpack开始构建的入口模块，从该模块开始构建并计算出直接或间接依赖的模块或者库
+2.Output：告诉webpack如何命名输出的文件以及输出的目录
+3.Loaders：由于webpack只能处理javascript，所以我们需要对一些非js文件处理成webpack能够处理的模块，比如sass文件
+4.Plugins：
+	- Loaders将各类型的文件处理成webpack能够处理的模块，有着很强的能力。
+	- 插件的范围包括，从打包优化和压缩，一直到重新定义环境中的变量。但也是最复杂的一个。比如对js文件进行压缩优化的
+5.Chunk：
+	- coding split的产物，我们可以对一些代码打包成一个单独的chunk，比如某些公共模块，去重，更好的利用缓存。
+	- 或者按需加载某些功能模块，优化加载时间。
+	- 在webpack3及以前我们都利用，将一些公共代码分割成一个chunk，实现单独加载。在webpack4 中CommonsChunkPlugin被废弃，使用SplitChunksPlugin
 
+
+有没有去研究webpack的一些原理和机制，怎么实现的解析
 1.初始化参数：webpack配置参数合并从shell传入和webpack.config.js文件里配置的参数，生产最后的配置结果。
 2.开始编译：用上一步得到的参数初始化 Compiler 对象，加载所有配置的插件，执行对象的 run 方法开始执行编译；
 3.确定入口：根据配置中的 entry 找出所有的入口文件；

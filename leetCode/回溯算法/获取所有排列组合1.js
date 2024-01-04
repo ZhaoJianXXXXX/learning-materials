@@ -36,3 +36,23 @@ function permute(nums){
 }
 
 permute([1,2,3])
+
+const arr = [2, 3, 6, 7], sum = 7;
+const combineElements = (arr, sum) => {
+   const output = [];
+   const findCombination = (remain, path, start) => {
+      if (remain < 0) {
+         return;
+      }
+      if (remain === 0) {
+         output.push([...path]);
+         return;
+      }
+      for (let i = start; i < arr.length; i++) {
+         findCombination(remain − arr[i], [...path, arr[i]], i);
+      }
+   }
+   findCombination(sum, [], 0);
+   return output;
+};
+console.log(combineElements(arr, sum));

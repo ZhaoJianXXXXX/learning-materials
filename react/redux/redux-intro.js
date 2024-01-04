@@ -18,7 +18,9 @@ redux的三大优势：
 1.大体上，redux 的数据流是这样的
 	界面 => action => reducer => store => react => virtual dom => 界面
 2.Redux 异步控制(redux-thunk)
-	//它其实只干了一件事情，判断 actionCreator 返回的是不是一个函数，如果不是的话，就很普通地传给下一个中间件（或者 reducer）；如果是的话，那么把 dispatch、getState、extraArgument 作为参数传入这个函数里，实现异步控制。
+	//它其实只干了一件事情，判断 actionCreator 返回的是不是一个函数，
+	// 如果不是的话，就很普通地传给下一个中间件（或者 reducer）；
+	// 如果是的话，那么把 dispatch、getState、extraArgument 作为参数传入这个函数里，实现异步控制。
 	源码:
 		function createThunkMiddleware(extraArgument) {
 			return ({ dispatch, getState }) => next => action => {

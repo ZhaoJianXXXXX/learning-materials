@@ -111,7 +111,7 @@
 	-当workInProgess Fiber树构建完成之后，就会交给render去渲染在页面上
 	-React应用的根节点的current指针就会指向当前的workInProgess Fiber树，完成两棵树的切换
 	
-	*React 将渲染盗墓树的机制改成了这样的两个Fiber树“交替工作”的形式，全部更新完毕后才切换指针
+	*React 将渲染DOM树的机制改成了这样的两个Fiber树“交替工作”的形式，全部更新完毕后才切换指针
 	*在指针切换之前，可以随时放弃对另一棵树的修改，这样让更新中的中断成为可能
 	
 	
@@ -363,7 +363,7 @@
 										   ↓						↓						  ↓
 										 render			componentWillReceiveProps	shouldComponentUPdate
 										   ↓						↓						  ↓
-								   componentDidMount	  shouldComponentUpdate      componentWillUpdate
+								    componentDidMount	  shouldComponentUpdate      componentWillUpdate
 																	↓						  ↓
 														   componentWillUpdate              render
 																	↓						  ↓

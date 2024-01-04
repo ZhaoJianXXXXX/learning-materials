@@ -1,0 +1,16 @@
+npm
+npm 通过 install 来安装包，然后会在当前目录生成一个 package.json 文件 和 node_modules 文件夹
+package.json 文件保存了报的版本，node_modules 文件夹保存了完整的包文件。
+
+yarn
+yarn 通过 add 来安装包，同样地，它也会在当前目录总生成一个package.json 文件 和 node_modules 文件夹
+不同的是，它会有自己的锁定文件 yarn.lock, 此外它还会生成.yarn/cache/ 缓存文件夹。
+
+pnpm
+pnpm 项目的初始状态看起来就像一个 npm 项目一样，也是有 package.json 文件 和 node_modules 文件夹
+不同的是在 node_modules 文件夹中， 它有自己的文件夹目录 .pnpm，
+在这个目录中，它会用平铺的方式来存储各个包，然后以依赖名和版本号的名字命名，实现了版本的复用。
+而且它不是通过拷贝机器缓存中的依赖到项目目录下，而是通过硬链接的方式，这能减少空间占用。
+
+npx
+npx想要解决的主要问题，就是调用项目内部安装的模块。比如项目内部安装了测试工具webpack，我们要使用的话需要通过node-modules/.bin/webpack -v这样来使用，但是有了npx，我们可以直接npx webpack -v就能使用。此外，对于一些全局命令，如果不存在，它会自动下载安装到一个临时目录，然后使用，不会污染全局空间。

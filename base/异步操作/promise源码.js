@@ -174,6 +174,7 @@ Promise.prototype['finally'] = function(callback) {
   );
 };
 
+// Promise.all实现
 Promise.all = function(arr) {
   return new Promise(function(resolve, reject) {
     if (!arr || typeof arr.length === 'undefined')

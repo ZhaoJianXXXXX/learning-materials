@@ -99,7 +99,44 @@ var test = asyncToGenerator(
 
 test().then(res => console.log(res))
 
-//用最简单的方式实现了asyncToGenerator这个函数，这是babel编译async函数的核心，当然在babel中，generator函数也被编译成了一个很原始的形式，我们直接以generator替代
+// async实现
+
+// 虽然使用 Async/Await 可以使异步代码看起来像同步代码，但是底层仍然是异步执行的。
+// 那么，Async/Await 是如何通过同步的方式实现异步的呢？答案就是 Generator 函数和 Promise。
+
+
+// Generator 函数是一种特殊的函数，它可以被暂停和恢复执行
+// 在 Generator 函数中，我们可以使用 yield 关键字将控制权交给调用方
+// 并在下次调用时从上次暂停的位置继续执行。这种特性可以用来实现异步操作。
+
+function asyncToGenerator(generatorFunc) {
+  return function () {
+    const generator = generatorFunc.apply(this, arguments);
+    return new Promise((resolve, reject) => {
+      function step(key, arg) {
+        let generatorResult;
+        try {
+          generatorResult = generator[key](arg);
+        } catch (error) {
+          reject(error);
+        }
+        const { value, done } = generatorResult;
+        if (done) {
+          resolve(value);
+        } else {
+          Promise.resolve(value).then(
+            (result) => step("next", result),
+            (error) => step("throw", error)
+          );
+        }
+      }
+      step("next");
+    });
+  };
+}
+
+// 用最简单的方式实现了asyncToGenerator这个函数，这是babel编译async函数的核心
+// 当然在babel中，generator函数也被编译成了一个很原始的形式，我们直接以generator替代
 function asyncToGenerator(generatorFunc) {
   // 返回的是一个新的函数
   return function() {
