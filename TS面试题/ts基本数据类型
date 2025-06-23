@@ -1,0 +1,13 @@
+包括 
+  number、
+  string、
+  boolean、
+  null、
+  undefined、
+  void（表示无返回值）、
+  any（任意类型）、
+  never（表示永不存在的值的类型）、
+  object、
+  数组类型（如 number[] 或 Array<number>）、
+  元组类型（如 [string, number]）、
+  枚举类型（如 enum Color {Red, Green, Blue}）等。

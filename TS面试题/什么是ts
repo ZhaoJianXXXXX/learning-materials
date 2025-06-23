@@ -1,0 +1,7 @@
+1.什么是TS
+  TypeScript 是 JavaScript 的超集
+  添加了静态类型检查、接口、泛型、枚举等特性
+  最终编译成 JavaScript 代码运行。
+
+2.TS和JS的区别
+  JavaScript 是动态类型语言，没有编译时的类型检查。
