@@ -1,0 +1,13 @@
+
+对比
+  Worker 类型	          通信方式	          是否共享	          适用场景
+  Dedicated Worker	   主线程一对一	          ❌	            简单后台任务
+  Shared Worker	      多线程共享端口	        ✅	         跨窗口/标签页数据共享
+  Service Worker	     拦截网络请求	          ❌	           离线缓存、推送通知
+  Module Worker	       主线程一对一	          ❌	        模块化管理的复杂后台任务
+
+如何选择
+  需要后台计算 → Dedicated Worker
+  需要跨页面共享数据 → Shared Worker
+  需要离线缓存或推送通知 → Service Worker
+  需要模块化代码 → Module Worker

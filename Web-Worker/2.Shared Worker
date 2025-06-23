@@ -1,0 +1,20 @@
+共享 Worker
+特点：
+  可被多个脚本（如不同窗口、标签页或 iframe）共享。
+  通过共享的端口（port）通信，需显式调用 start()。
+适用场景：
+  需要跨窗口或标签页共享数据（如实时协作工具、状态同步）。
+示例：
+  // 主线程（多个页面均可创建）
+  const worker = new SharedWorker('shared-worker.js');
+  worker.port.onmessage = (e) => console.log(e.data);
+  worker.port.start(); // 必须调用 start()
+  worker.port.postMessage('Hello');
+  
+  // shared-worker.js
+  self.onconnect = (e) => {
+    const port = e.ports[0];
+    port.onmessage = (e) => {
+      port.postMessage(`Shared: ${e.data}`);
+    };
+  };

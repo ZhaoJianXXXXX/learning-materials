@@ -1,0 +1,16 @@
+服务 Worker
+特点：
+  支持 ES 模块（import/export），允许 Worker 代码模块化。
+  通过 new Worker(url, { type: 'module' }) 创建。
+适用场景：
+  需要模块化管理的复杂 Worker 代码（如拆分工具函数、依赖第三方库）。
+示例：
+  // 主线程
+  const worker = new Worker('worker-module.js', { type: 'module' });
+  worker.postMessage('Start');
+  
+  // worker-module.js
+  import { helper } from './helper.js';
+  self.onmessage = (e) => {
+    console.log(helper(e.data)); // 使用导入的模块
+  };

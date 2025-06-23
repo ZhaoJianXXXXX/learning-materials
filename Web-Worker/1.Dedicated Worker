@@ -1,0 +1,17 @@
+
+专用 Worker
+特点：
+    由单个脚本创建，只能与创建它的主线程通信（一对一）。
+    主线程和 Worker 线程通过 postMessage 和 onmessage 事件通信。
+适用场景：
+    需要后台执行耗时任务（如数据处理、复杂计算），但无需跨窗口或标签页共享。
+示例：
+  // 主线程
+  const worker = new Worker('worker.js');
+  worker.postMessage({ data: 'Hello' });
+  worker.onmessage = (e) => console.log(e.data);
+  
+  // worker.js
+  self.onmessage = (e) => {
+    self.postMessage(`Received: ${e.data}`);
+  };

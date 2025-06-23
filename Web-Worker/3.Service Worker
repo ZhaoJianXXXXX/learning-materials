@@ -1,0 +1,22 @@
+服务 Worker
+特点：
+  独立于网页的后台线程，用于拦截网络请求、缓存资源、实现离线功能。
+  生命周期由浏览器管理，需通过 navigator.serviceWorker.register() 注册。
+适用场景：
+  渐进式 Web 应用（PWA）、离线缓存、推送通知。
+示例：
+  // 主线程注册
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(registration => {
+      console.log('ServiceWorker 注册成功');
+    });
+  }
+  
+  // sw.js
+  self.addEventListener('fetch', (event) => {
+    event.respondWith(
+      caches.match(event.request).then(response => {
+        return response || fetch(event.request);
+      })
+    );
+  });
